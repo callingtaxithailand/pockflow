@@ -3,57 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PocketFlow - All-in-One Tracker</title>
+  <title>PocketFlow - All-in-One Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-black text-slate-100 font-sans antialiased">
 
   <div class="max-w-md mx-auto min-h-screen flex flex-col p-5 bg-zinc-950 border-x border-zinc-900 shadow-2xl">
     
+    <!-- Header -->
     <header class="flex justify-between items-center py-5 border-b border-zinc-900">
       <h1 class="text-4xl font-black tracking-tight text-indigo-400">PocketFlow</h1>
-      <span class="bg-zinc-900 text-zinc-400 text-xs font-bold px-3 py-1.5 rounded-full border border-zinc-800">พอร์ตหุ้น & ค่าใช้จ่าย</span>
+      <span class="bg-indigo-950 text-indigo-300 text-xs font-bold px-3 py-1.5 rounded-full border border-indigo-900">v2.0 Pro</span>
     </header>
 
+    <!-- ================= DASHBOARD ยอดรวม ================= -->
     <section class="my-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-xl space-y-4">
       <div>
         <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">พอร์ตหุ้นสหรัฐฯ (Dime - USD)</p>
         <h2 id="total-usd-portfolio" class="text-3xl font-black mt-0.5 text-white">$0.00</h2>
-        <div class="flex justify-between text-xs text-zinc-500 mt-0.5">
-          <span>ซื้อ: <span id="total-usd-buy" class="text-orange-400 font-bold">$0.00</span></span>
-          <span>ขาย: <span id="total-usd-sell" class="text-emerald-400 font-bold">$0.00</span></span>
-          <span>ปันผล: <span id="total-usd-div" class="text-amber-400 font-bold">$0.00</span></span>
-        </div>
       </div>
-
       <div class="pt-3 border-t border-zinc-800/60">
-        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">พอร์ตหุ้นไทย (TISCO, SCB - THB)</p>
+        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">พอร์ตหุ้นไทย (THB)</p>
         <h2 id="total-thb-portfolio" class="text-3xl font-black mt-0.5 text-teal-400">฿0.00</h2>
-        <div class="flex justify-between text-xs text-zinc-500 mt-0.5">
-          <span>ซื้อ: <span id="total-thb-buy" class="text-orange-400 font-bold">฿0.00</span></span>
-          <span>ขาย: <span id="total-thb-sell" class="text-emerald-400 font-bold">฿0.00</span></span>
-          <span>ปันผล: <span id="total-thb-div" class="text-amber-400 font-bold">฿0.00</span></span>
-        </div>
       </div>
-
       <div class="pt-3 border-t border-zinc-800/60">
         <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">ยอดรวมค่าใช้จ่ายสะสมทั้งหมด (THB)</p>
         <h2 id="total-expense-all" class="text-3xl font-black mt-0.5 text-rose-400">฿0.00</h2>
       </div>
     </section>
 
+    <!-- ตัวกรองรายงาน -->
     <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
       <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">ตัวกรองรายงานในระบบ</h3>
       <div class="grid grid-cols-3 gap-2">
-        <input type="date" id="filter-date" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
-        <select id="filter-month" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+        <input type="date" id="filter-date" class="bg-zinc-950 border border-zinc-800 text-xs rounded-lg p-2 text-white">
+        <select id="filter-month" class="bg-zinc-950 border border-zinc-800 text-xs rounded-lg p-2 text-white">
           <option value="">ทุกเดือน</option>
           <option value="01">มกราคม</option><option value="02">กุมภาพันธ์</option><option value="03">มีนาคม</option>
           <option value="04">เมษายน</option><option value="05">พฤษภาคม</option><option value="06">มิถุนายน</option>
           <option value="07">กรกฎาคม</option><option value="08">สิงหาคม</option><option value="09">กันยายน</option>
           <option value="10">ตุลาคม</option><option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option>
         </select>
-        <select id="filter-year" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+        <select id="filter-year" class="bg-zinc-950 border border-zinc-800 text-xs rounded-lg p-2 text-white">
           <option value="">ทุกปี</option>
           <option value="2026">2026</option>
           <option value="2025">2025</option>
@@ -61,84 +52,104 @@
       </div>
     </section>
 
+    <!-- ================= ฟอร์มบันทึกข้อมูล (สลับโหมดได้) ================= -->
     <section class="mb-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-5">
-      
       <div class="grid grid-cols-2 gap-2 mb-5 p-1 bg-zinc-950 rounded-xl border border-zinc-900">
-        <button type="button" onclick="switchFormMode('STOCK')" id="tab-STOCK" class="py-2.5 rounded-lg font-bold text-sm transition-all bg-indigo-600 text-white">📈 บันทึกรายการหุ้น</button>
-        <button type="button" onclick="switchFormMode('EXPENSE')" id="tab-EXPENSE" class="py-2.5 rounded-lg font-bold text-sm transition-all text-zinc-400">💸 บันทึกค่าใช้จ่าย</button>
+        <button type="button" onclick="switchFormMode('STOCK')" id="tab-STOCK" class="py-2.5 rounded-lg font-bold text-sm transition-all bg-indigo-600 text-white">📈 รายการหุ้น</button>
+        <button type="button" onclick="switchFormMode('EXPENSE')" id="tab-EXPENSE" class="py-2.5 rounded-lg font-bold text-sm transition-all text-zinc-400">💸 ค่าใช้จ่าย</button>
       </div>
 
       <h3 id="form-title" class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">บันทึกรายการหุ้นใหม่</h3>
 
+      <!-- ปุ่มชนิดหุ้น -->
       <div id="stock-type-container" class="grid grid-cols-3 gap-2.5 mb-4">
-        <button type="button" onclick="selectStockType('BUY')" id="btn-BUY" class="stock-type-btn bg-emerald-600 text-white font-black py-3 rounded-xl text-lg transition-all">ซื้อ</button>
-        <button type="button" onclick="selectStockType('SELL')" id="btn-SELL" class="stock-type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all">ขาย</button>
-        <button type="button" onclick="selectStockType('DIVIDEND')" id="btn-DIVIDEND" class="stock-type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all">ปันผล</button>
+        <button type="button" onclick="selectStockType('BUY')" id="btn-BUY" class="stock-type-btn bg-emerald-600 text-white font-black py-2 rounded-xl text-base">ซื้อ</button>
+        <button type="button" onclick="selectStockType('SELL')" id="btn-SELL" class="stock-type-btn bg-zinc-800 text-white font-black py-2 rounded-xl text-base">ขาย</button>
+        <button type="button" onclick="selectStockType('DIVIDEND')" id="btn-DIVIDEND" class="stock-type-btn bg-zinc-800 text-white font-black py-2 rounded-xl text-base">ปันผล</button>
       </div>
 
-      <div id="expense-type-container" class="mb-4 hidden">
-        <label class="text-xs text-zinc-400 mb-1 block">ประเภทค่าใช้จ่าย</label>
-        <select id="expense-category" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-lg font-bold text-white">
-          <option value="ซ่อมบำรุง รถยนต์">🔧 ซ่อมบำรุง รถยนต์</option>
-          <option value="ซ่อมบำรุง มอเตอร์ไซค์">🔧 ซ่อมบำรุง มอเตอร์ไซค์</option>
-          <option value="ค่าไฟฟ้า">⚡ ค่าไฟฟ้า</option>
-          <option value="ค่าน้ำประปา">💧 ค่าน้ำประปา</option>
-          <option value="ค่าส่วนกลาง">🏢 ค่าส่วนกลาง</option>
-          <option value="ค่าประกันภัย">🛡️ ค่าประกันภัย</option>
-          <option value="ภาษีรถยนต์">📄 ภาษีรถยนต์</option>
-          <option value="ภาษีมอเตอร์ไซค์">📄 ภาษีมอเตอร์ไซค์</option>
-        </select>
+      <!-- กล่องเลือกหมวดหมู่หลัก/ย่อย (สำหรับ Expense) -->
+      <div id="expense-type-container" class="mb-4 hidden space-y-3">
+        <div>
+          <label class="text-xs text-zinc-400 mb-1 block">หมวดหมู่หลัก</label>
+          <select id="expense-main-cat" onchange="updateSubCategories()" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-base font-bold text-white focus:outline-none"></select>
+        </div>
+        <div>
+          <label class="text-xs text-zinc-400 mb-1 block">หมวดหมู่ย่อย</label>
+          <select id="expense-sub-cat" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-base font-bold text-white focus:outline-none"></select>
+        </div>
       </div>
 
       <div class="space-y-3.5">
         <div id="field-stock-only" class="space-y-3.5">
           <div class="grid grid-cols-2 gap-2 mb-1">
-            <button type="button" onclick="selectCurrency('USD')" id="currency-USD" class="currency-btn bg-indigo-600 text-white font-bold py-2 rounded-lg text-xs">USD ($) หุ้นนอก Dime</button>
+            <button type="button" onclick="selectCurrency('USD')" id="currency-USD" class="currency-btn bg-indigo-600 text-white font-bold py-2 rounded-lg text-xs">USD ($) Dime</button>
             <button type="button" onclick="selectCurrency('THB')" id="currency-THB" class="currency-btn bg-zinc-800 text-white font-bold py-2 rounded-lg text-xs">THB (฿) หุ้นไทย</button>
           </div>
           <div>
             <label class="text-xs text-zinc-400 mb-1 block">ชื่อย่อหุ้น</label>
-            <input type="text" id="stock-symbol" placeholder="เช่น AAPL, TISCO, SCB" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black uppercase text-white focus:outline-none">
+            <input type="text" id="stock-symbol" placeholder="เช่น AAPL, TISCO" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-lg font-black uppercase text-white focus:outline-none">
           </div>
         </div>
 
         <div id="field-expense-only" class="hidden">
           <label class="text-xs text-zinc-400 mb-1 block">รายละเอียดเพิ่มเติม</label>
-          <input type="text" id="expense-note" placeholder="เช่น เปลี่ยนน้ำมันเครื่องรอบปี" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-lg text-white placeholder-zinc-600 focus:outline-none">
+          <input type="text" id="expense-note" placeholder="เช่น ค่าไฟเดือน ม.ค., เปลี่ยนน้ำมันเครื่อง" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-base text-white placeholder-zinc-600 focus:outline-none">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label id="label-amount" class="text-xs text-zinc-400 mb-1 block">จำนวนหุ้น / ปันผลสุทธิ</label>
-            <input type="number" step="any" id="main-amount" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black text-white">
+            <input type="number" step="any" id="main-amount" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-lg font-black text-white focus:outline-none">
           </div>
           <div id="field-price-container">
-            <label class="text-xs text-zinc-400 mb-1 block">ราคาต่อหุ้น (ปันผลใส่ 0)</label>
-            <input type="number" step="any" id="stock-price" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white">
+            <label class="text-xs text-zinc-400 mb-1 block">ราคาต่อหุ้น</label>
+            <input type="number" step="any" id="stock-price" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-lg font-bold text-white focus:outline-none">
           </div>
         </div>
 
         <div>
           <label class="text-xs text-zinc-400 mb-1 block">วันที่ทำรายการ</label>
-          <input type="date" id="main-date" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white">
+          <input type="date" id="main-date" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-base font-bold text-white focus:outline-none">
         </div>
 
-        <button type="button" id="btn-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg active:scale-98 mt-2">
-          บันทึกรายการเข้าสู่ระบบ
-        </button>
+        <button type="button" id="btn-submit" class="w-full bg-indigo-600 text-white text-lg font-black py-3.5 rounded-xl transition-all shadow-lg mt-2">บันทึกรายการ</button>
       </div>
     </section>
 
+    <!-- ================= ฟอร์มเพิ่มหมวดหมู่ใหม่ (หลัก/ย่อย) ================= -->
     <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
-      <h3 class="text-sm font-extrabold text-zinc-300 mb-3">สรุปย่อยแยกรายชื่อหุ้น & ประเภทรายจ่าย</h3>
-      <div id="summary-grouped-list" class="space-y-2 text-sm">
+      <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-3">🛠️ จัดการเพิ่มหมวดหมู่รายจ่าย</h3>
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="new-main-cat" placeholder="ชื่อหมวดหมู่หลักใหม่" class="bg-zinc-950 border border-zinc-800 text-xs rounded-lg p-2 text-white placeholder-zinc-600">
+          <button type="button" id="btn-add-main-cat" class="bg-zinc-800 text-white text-xs font-bold py-2 rounded-lg hover:bg-zinc-700">＋ เพิ่มหมวดหลัก</button>
         </div>
+        <div class="grid grid-cols-3 gap-2">
+          <select id="select-parent-cat" class="bg-zinc-950 border border-zinc-800 text-xs rounded-lg p-2 text-white col-span-1"></select>
+          <input type="text" id="new-sub-cat" placeholder="ชื่อหมวดหมู่ย่อยใหม่" class="bg-zinc-950 border border-zinc-800 text-xs rounded-lg p-2 text-white placeholder-zinc-600 col-span-1">
+          <button type="button" id="btn-add-sub-cat" class="bg-zinc-800 text-white text-xs font-bold py-2 rounded-lg hover:bg-zinc-700 col-span-1">＋ เพิ่มหมวดย่อย</button>
+        </div>
+      </div>
     </section>
 
-    <section class="flex-1">
-      <h3 class="text-xl font-extrabold text-zinc-300 mb-4">ประวัติธุรกรรมเรียงตามวันที่</h3>
-      <div id="master-transaction-list" class="space-y-3">
+    <!-- ================= REPORTS: รายงานสรุปผลแยกกลุ่มอย่างละเอียด ================= -->
+    <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-3">
+        <h3 class="text-sm font-extrabold text-zinc-300">📊 รายงานสรุปยอดแยกประเภท</h3>
+        <div class="flex space-x-1 bg-zinc-950 p-0.5 rounded-lg border border-zinc-800 text-xs">
+          <button onclick="switchReportTab('STOCK')" id="rep-tab-STOCK" class="px-2 py-1 rounded font-bold bg-indigo-600 text-white">หุ้น</button>
+          <button onclick="switchReportTab('EXPENSE')" id="rep-tab-EXPENSE" class="px-2 py-1 rounded font-bold text-zinc-400">ค่าใช้จ่าย</button>
         </div>
+      </div>
+      <!-- พื้นที่แสดงรายงานแยกตามแท็บ -->
+      <div id="report-content-area" class="space-y-2 text-xs"></div>
+    </section>
+
+    <!-- Timeline ประวัติธุรกรรมรวม -->
+    <section class="flex-1">
+      <h3 class="text-lg font-extrabold text-zinc-300 mb-4">ประวัติธุรกรรมเรียงตามวันที่</h3>
+      <div id="master-transaction-list" class="space-y-3"></div>
     </section>
 
   </div>
@@ -162,13 +173,79 @@
     let currentFormMode = 'STOCK'; 
     let selectedStockType = 'BUY';
     let selectedCurrency = 'USD';
+    let currentReportTab = 'STOCK';
 
     let allStocks = [];
     let allExpenses = [];
+    let categoriesData = {}; // โครงสร้าง { "หมวดหลัก": ["หมวดย่อย1", "หมวดย่อย2"] }
 
     document.getElementById('main-date').value = new Date().toISOString().split('T')[0];
 
-    // ฟังก์ชันทำงานเมื่อกดปุ่มสลับเลือก หุ้น หรือ ค่าใช้จ่าย
+    // --- ระบบจัดการหมวดหมู่รายจ่ายแบบอิสระ ---
+    onSnapshot(collection(db, "custom_categories"), (snap) => {
+      categoriesData = {};
+      // ตั้งหมวดหมู่ตั้งต้นไว้ให้เผื่อไม่มีข้อมูลในเบส
+      const defaultCats = {
+        "🔧 ซ่อมบำรุง": ["รถยนต์", "มอเตอร์ไซค์"],
+        "⚡ สาธารณูปโภค": ["ค่าไฟฟ้า", "ค่าน้ำประปา", "ค่าส่วนกลาง"],
+        "🛡️ ประกันและภาษี": ["ภาษีรถยนต์", "ภาษีมอเตอร์ไซค์", "ค่าประกันภัย"]
+      };
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        if(!categoriesData[data.main]) categoriesData[data.main] = [];
+        if(data.sub) categoriesData[data.main].push(data.sub);
+      });
+
+      if(Object.keys(categoriesData).length === 0) categoriesData = defaultCats;
+      renderCategoryDropdowns();
+      combineAndRender();
+    });
+
+    function renderCategoryDropdowns() {
+      const mainSelect = document.getElementById('expense-main-cat');
+      const parentSelect = document.getElementById('select-parent-cat');
+      
+      mainSelect.innerHTML = '';
+      parentSelect.innerHTML = '';
+
+      Object.keys(categoriesData).forEach(main => {
+        mainSelect.innerHTML += `<option value="${main}">${main}</option>`;
+        parentSelect.innerHTML += `<option value="${main}">${main}</option>`;
+      });
+      updateSubCategories();
+    }
+
+    window.updateSubCategories = function() {
+      const mainVal = document.getElementById('expense-main-cat').value;
+      const subSelect = document.getElementById('expense-sub-cat');
+      subSelect.innerHTML = '';
+      if(categoriesData[mainVal]) {
+        categoriesData[mainVal].forEach(sub => {
+          subSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+        });
+      }
+    }
+
+    // กดเพิ่มหมวดหมู่หลักเข้า Firebase
+    document.getElementById('btn-add-main-cat').addEventListener('click', async () => {
+      const name = document.getElementById('new-main-cat').value.trim();
+      if(!name) return;
+      await addDoc(collection(db, "custom_categories"), { main: name, sub: "" });
+      document.getElementById('new-main-cat').value = '';
+    });
+
+    // กดเพิ่มหมวดหมู่ย่อยเข้า Firebase
+    document.getElementById('btn-add-sub-cat').addEventListener('click', async () => {
+      const parent = document.getElementById('select-parent-cat').value;
+      const subName = document.getElementById('new-sub-cat').value.trim();
+      if(!subName || !parent) return;
+      await addDoc(collection(db, "custom_categories"), { main: parent, sub: subName });
+      document.getElementById('new-sub-cat').value = '';
+    });
+
+    // --- จบระบบจัดการหมวดหมู่ ---
+
     window.switchFormMode = function(mode) {
       currentFormMode = mode;
       document.getElementById('tab-STOCK').className = mode === 'STOCK' ? 'py-2.5 rounded-lg font-bold text-sm transition-all bg-indigo-600 text-white' : 'py-2.5 rounded-lg font-bold text-sm transition-all text-zinc-400';
@@ -182,7 +259,6 @@
         document.getElementById('field-expense-only').classList.add('hidden');
         document.getElementById('field-price-container').classList.remove('hidden');
         document.getElementById('label-amount').innerText = 'จำนวนหุ้น / ปันผลสุทธิ';
-        document.getElementById('btn-submit').className = 'w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg active:scale-98 mt-2';
       } else {
         document.getElementById('form-title').innerText = 'บันทึกค่าใช้จ่ายในบ้านใหม่';
         document.getElementById('stock-type-container').classList.add('hidden');
@@ -191,15 +267,14 @@
         document.getElementById('field-expense-only').classList.remove('hidden');
         document.getElementById('field-price-container').classList.add('hidden');
         document.getElementById('label-amount').innerText = 'จำนวนเงิน (บาท ฿)';
-        document.getElementById('btn-submit').className = 'w-full bg-rose-600 hover:bg-rose-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg active:scale-98 mt-2';
       }
     }
 
     window.selectStockType = function(type) {
       selectedStockType = type;
-      document.querySelectorAll('.stock-type-btn').forEach(btn => btn.className = 'stock-type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all');
+      document.querySelectorAll('.stock-type-btn').forEach(btn => btn.className = 'stock-type-btn bg-zinc-800 text-white font-black py-2 rounded-xl text-base');
       const colors = { 'BUY': 'bg-emerald-600', 'SELL': 'bg-rose-600', 'DIVIDEND': 'bg-amber-500 text-black' };
-      document.getElementById(`btn-${type}`).className = `stock-type-btn ${colors[type]} font-black py-3 rounded-xl text-lg transition-all shadow-lg`;
+      document.getElementById(`btn-${type}`).className = `stock-type-btn ${colors[type]} font-black py-2 rounded-xl text-base shadow-lg`;
     }
 
     window.selectCurrency = function(curr) {
@@ -208,36 +283,43 @@
       document.getElementById(`currency-${curr}`).className = 'currency-btn bg-indigo-600 text-white font-bold py-2 rounded-lg text-xs shadow-md';
     }
 
-    // บันทึกข้อมูล
+    window.switchReportTab = function(tab) {
+      currentReportTab = tab;
+      document.getElementById('rep-tab-STOCK').className = tab === 'STOCK' ? 'px-2 py-1 rounded font-bold bg-indigo-600 text-white' : 'px-2 py-1 rounded font-bold text-zinc-400';
+      document.getElementById('rep-tab-EXPENSE').className = tab === 'EXPENSE' ? 'px-2 py-1 rounded font-bold bg-rose-600 text-white' : 'px-2 py-1 rounded font-bold text-zinc-400';
+      combineAndRender();
+    }
+
+    // กดบันทึกข้อมูลหลัก
     document.getElementById('btn-submit').addEventListener('click', async () => {
       const date = document.getElementById('main-date').value;
       const mainAmount = parseFloat(document.getElementById('main-amount').value);
-
-      if (!mainAmount || !date) { alert('กรุณากรอกข้อมูลจำนวนเงิน/หุ้น และวันที่ด้วยครับ'); return; }
+      if (!mainAmount || !date) { alert('กรุณากรอกข้อมูลให้ครบถ้วนครับ'); return; }
 
       if (currentFormMode === 'STOCK') {
         const symbol = document.getElementById('stock-symbol').value.trim().toUpperCase();
         const price = parseFloat(document.getElementById('stock-price').value) || 0;
-        if(!symbol) { alert('กรุณากรอกชื่อหุ้นด้วยครับ'); return; }
-        
+        if(!symbol) { alert('กรุณากรอกชื่อย่อหุ้นด้วยครับ'); return; }
         const total = selectedStockType === 'DIVIDEND' ? mainAmount : mainAmount * price;
+        
         await addDoc(collection(db, "transactions"), {
           symbol, type: selectedStockType, currency: selectedCurrency, amount: mainAmount, price, total, date, isStock: true
         });
         document.getElementById('stock-symbol').value = '';
         document.getElementById('stock-price').value = '';
       } else {
-        const category = document.getElementById('expense-category').value;
+        const mainCat = document.getElementById('expense-main-cat').value;
+        const subCat = document.getElementById('expense-sub-cat').value;
         const note = document.getElementById('expense-note').value.trim();
+        
         await addDoc(collection(db, "household_expenses"), {
-          category, note, amount: mainAmount, date, isStock: false
+          category: `${mainCat} (${subCat})`, mainCat, subCat, note, amount: mainAmount, date, isStock: false
         });
         document.getElementById('expense-note').value = '';
       }
       document.getElementById('main-amount').value = '';
     });
 
-    // ฟังข้อมูล Realtime ทั้งสองฝั่ง
     onSnapshot(query(collection(db, "transactions"), orderBy("date", "desc")), (snap) => {
       allStocks = []; snap.forEach(d => allStocks.push({id: d.id, ...d.data()}));
       combineAndRender();
@@ -249,8 +331,7 @@
 
     window.deleteMasterItem = async function(id, isStock) {
       if (confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) {
-        const targetCollection = isStock ? "transactions" : "household_expenses";
-        await deleteDoc(doc(db, targetCollection, id));
+        await deleteDoc(doc(db, isStock ? "transactions" : "household_expenses", id));
       }
     }
 
@@ -273,8 +354,8 @@
       let filteredStocks = allStocks.filter(filterLogic);
       let filteredExpenses = allExpenses.filter(filterLogic);
 
-      let usdBuy = 0, usdSell = 0, usdDiv = 0;
-      let thbBuy = 0, thbSell = 0, thbDiv = 0;
+      // 1. คำนวณฝั่งหุ้น
+      let usdBuy = 0, usdSell = 0, usdDiv = 0, thbBuy = 0, thbSell = 0, thbDiv = 0;
       let stockSummary = {};
 
       filteredStocks.forEach(t => {
@@ -288,54 +369,68 @@
           if (t.type === 'SELL') thbSell += t.total;
           if (t.type === 'DIVIDEND') thbDiv += t.total;
         }
-
         if (!stockSummary[t.symbol]) stockSummary[t.symbol] = { currency: curr, buyShares: 0, sellShares: 0, divReceived: 0 };
         if (t.type === 'BUY') stockSummary[t.symbol].buyShares += t.amount;
         if (t.type === 'SELL') stockSummary[t.symbol].sellShares += t.amount;
         if (t.type === 'DIVIDEND') stockSummary[t.symbol].divReceived += t.amount;
       });
 
-      document.getElementById('total-usd-buy').innerText = `$${usdBuy.toFixed(2)}`;
-      document.getElementById('total-usd-sell').innerText = `$${usdSell.toFixed(2)}`;
-      document.getElementById('total-usd-div').innerText = `$${usdDiv.toFixed(2)}`;
       document.getElementById('total-usd-portfolio').innerText = `$${((usdBuy - usdSell) + usdDiv).toFixed(2)}`;
-
-      document.getElementById('total-thb-buy').innerText = `฿${thbBuy.toFixed(2)}`;
-      document.getElementById('total-thb-sell').innerText = `฿${thbSell.toFixed(2)}`;
-      document.getElementById('total-thb-div').innerText = `฿${thbDiv.toFixed(2)}`;
       document.getElementById('total-thb-portfolio').innerText = `฿${((thbBuy - thbSell) + thbDiv).toFixed(2)}`;
 
+      // 2. คำนวณฝั่งรายจ่าย
       let totalExpenseSum = 0;
-      let expenseSummary = {};
+      let expenseGroupSummary = {}; // เก็บแยก { หมวดหมู่หลัก: { ยอดรวม: X, หมวดหมู่ย่อย: {ย่อย1: Y} } }
 
       filteredExpenses.forEach(e => {
         totalExpenseSum += e.amount;
-        if (!expenseSummary[e.category]) expenseSummary[e.category] = 0;
-        expenseSummary[e.category] += e.amount;
+        const mc = e.mainCat || "อื่นๆ";
+        const sc = e.subCat || "ทั่วไป";
+        
+        if (!expenseGroupSummary[mc]) expenseGroupSummary[mc] = { total: 0, subs: {} };
+        if (!expenseGroupSummary[mc].subs[sc]) expenseGroupSummary[mc].subs[sc] = 0;
+        
+        expenseGroupSummary[mc].total += e.amount;
+        expenseGroupSummary[mc].subs[sc] += e.amount;
       });
       document.getElementById('total-expense-all').innerText = `฿${totalExpenseSum.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
 
-      const summaryContainer = document.getElementById('summary-grouped-list');
-      summaryContainer.innerHTML = '';
-      
-      for (const [stock, data] of Object.entries(stockSummary)) {
-        const netShares = data.buyShares - data.sellShares;
-        const sign = data.currency === 'USD' ? '$' : '฿';
-        summaryContainer.innerHTML += `
-          <div class="flex justify-between items-center bg-zinc-950 p-2 rounded-lg border border-zinc-900">
-            <div><span class="font-bold text-indigo-300">${stock}</span><span class="text-xs text-zinc-600 ml-1">(${data.currency})</span></div>
-            <div class="text-right text-xs"><p class="text-zinc-400">ถือ: <span class="text-white font-bold">${netShares.toFixed(2)}</span></p><p class="text-amber-400">ปันผล: ${sign}${data.divReceived.toFixed(2)}</p></div>
-          </div>`;
-      }
-      for (const [cat, sum] of Object.entries(expenseSummary)) {
-        summaryContainer.innerHTML += `
-          <div class="flex justify-between items-center bg-zinc-950 p-2 rounded-lg border border-zinc-900">
-            <span class="font-bold text-rose-300 text-xs">${cat}</span>
-            <span class="text-rose-400 font-bold text-sm">฿${sum.toLocaleString('th-TH', {minimumFractionDigits:2})}</span>
-          </div>`;
+      // 3. เรนเดอร์แท็บรายงานแยกประเภท
+      const reportArea = document.getElementById('report-content-area');
+      reportArea.innerHTML = '';
+
+      if (currentReportTab === 'STOCK') {
+        // รายงานหุ้นรายตัว
+        for (const [stock, data] of Object.entries(stockSummary)) {
+          const netShares = data.buyShares - data.sellShares;
+          const sign = data.currency === 'USD' ? '$' : '฿';
+          reportArea.innerHTML += `
+            <div class="bg-zinc-950 p-2.5 rounded-xl border border-zinc-900 flex justify-between items-center">
+              <div><span class="font-black text-indigo-400 text-sm">${stock}</span> <span class="text-[10px] text-zinc-600">(${data.currency})</span></div>
+              <div class="text-right text-xs"><p class="text-zinc-300">สุทธิ: <span class="text-white font-bold">${netShares.toFixed(2)} หุ้น</span></p><p class="text-amber-400">ปันผลรวม: ${sign}${data.divReceived.toFixed(2)}</p></div>
+            </div>`;
+        }
+        if(Object.keys(stockSummary).length === 0) reportArea.innerHTML = `<p class="text-zinc-600 text-center py-2">ไม่มีข้อมูลหุ้นในช่วงเวลานี้</p>`;
+      } else {
+        // รายงานรายจ่ายแยกแบบ โครงสร้างหมวดหมู่หลัก -> หมวดหมู่ย่อย
+        for (const [mainCat, data] of Object.entries(expenseGroupSummary)) {
+          let subRows = '';
+          for (const [subCat, subAmount] of Object.entries(data.subs)) {
+            subRows += `<div class="flex justify-between text-zinc-400 text-[11px] pl-3 border-l border-zinc-800 mt-1"><span>• ${subCat}</span><span>฿${subAmount.toLocaleString('th-TH',{minimumFractionDigits:2})}</span></div>`;
+          }
+          reportArea.innerHTML += `
+            <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-900 space-y-1.5">
+              <div class="flex justify-between items-center border-b border-zinc-900 pb-1">
+                <span class="font-bold text-rose-300 text-xs">${mainCat}</span>
+                <span class="text-rose-400 font-black text-sm">฿${data.total.toLocaleString('th-TH', {minimumFractionDigits:2})}</span>
+              </div>
+              ${subRows}
+            </div>`;
+        }
+        if(Object.keys(expenseGroupSummary).length === 0) reportArea.innerHTML = `<p class="text-zinc-600 text-center py-2">ไม่มีข้อมูลค่าใช้จ่ายในช่วงเวลานี้</p>`;
       }
 
-      // ผสมข้อมูลและจัดเรียงตามวันที่ (ใหม่ไปเก่า)
+      // 4. ผสมข้อมูลประวัติเรียงตาม Timeline
       let combinedList = [...filteredStocks, ...filteredExpenses];
       combinedList.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -348,26 +443,26 @@
           let typeColor = item.type === 'BUY' ? 'bg-emerald-950 text-emerald-400 border-emerald-900' : item.type === 'SELL' ? 'bg-rose-950 text-rose-400 border-rose-900' : 'bg-amber-950 text-amber-400 border-amber-900';
           const sign = item.currency === 'USD' ? '$' : '฿';
           listContainer.innerHTML += `
-            <div class="flex justify-between items-center p-3.5 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
-              <div class="flex items-center space-x-3">
-                <div class="${typeColor} border px-2 py-1 rounded-lg font-black text-xs">${typeBadge}</div>
-                <div><p class="text-lg font-black text-white leading-tight">${item.symbol}</p><p class="text-xs text-zinc-500 mt-0.5">${item.date} • ${item.amount} หุ้น</p></div>
+            <div class="flex justify-between items-center p-3 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
+              <div class="flex items-center space-x-2.5">
+                <div class="${typeColor} border px-1.5 py-0.5 rounded text-[10px] font-black">${typeBadge}</div>
+                <div><p class="text-base font-black text-white leading-tight">${item.symbol}</p><p class="text-[10px] text-zinc-500 mt-0.5">${item.date} • ${item.amount} หุ้น</p></div>
               </div>
               <div class="flex items-center space-x-3">
-                <p class="text-xl font-black text-zinc-200">${item.type === 'BUY' ? '-' : '+'}${sign}${item.total.toFixed(2)}</p>
-                <button onclick="deleteMasterItem('${item.id}', true)" class="text-zinc-600 hover:text-rose-500 font-bold p-1 text-base">✕</button>
+                <p class="text-lg font-black text-zinc-200">${item.type === 'BUY' ? '-' : '+'}${sign}${item.total.toFixed(2)}</p>
+                <button onclick="deleteMasterItem('${item.id}', true)" class="text-zinc-600 hover:text-rose-500 font-bold p-1 text-sm">✕</button>
               </div>
             </div>`;
         } else {
           listContainer.innerHTML += `
-            <div class="flex justify-between items-center p-3.5 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
-              <div class="flex items-center space-x-3">
-                <div class="bg-rose-950 text-rose-400 border border-rose-900 px-2 py-1 rounded-lg font-black text-xs">จ่าย</div>
-                <div><p class="text-lg font-black text-zinc-300 leading-tight">${item.category}</p><p class="text-xs text-zinc-500 mt-0.5">${item.date} ${item.note ? '• ' + item.note : ''}</p></div>
+            <div class="flex justify-between items-center p-3 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
+              <div class="flex items-center space-x-2.5">
+                <div class="bg-rose-950 text-rose-400 border border-rose-900 px-1.5 py-0.5 rounded text-[10px] font-black">จ่าย</div>
+                <div><p class="text-base font-black text-zinc-300 leading-tight">${item.category}</p><p class="text-[10px] text-zinc-500 mt-0.5">${item.date} ${item.note ? '• ' + item.note : ''}</p></div>
               </div>
               <div class="flex items-center space-x-3">
-                <p class="text-xl font-black text-rose-400">-฿${item.amount.toLocaleString('th-TH', {minimumFractionDigits:2})}</p>
-                <button onclick="deleteMasterItem('${item.id}', false)" class="text-zinc-600 hover:text-rose-500 font-bold p-1 text-base">✕</button>
+                <p class="text-lg font-black text-rose-400">-฿${item.amount.toLocaleString('th-TH', {minimumFractionDigits:2})}</p>
+                <button onclick="deleteMasterItem('${item.id}', false)" class="text-zinc-600 hover:text-rose-500 font-bold p-1 text-sm">✕</button>
               </div>
             </div>`;
         }
