@@ -4,121 +4,264 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PocketFlow - Dime Stock Tracker</title>
-  <!-- ใช้ Tailwind CSS สำหรับการจัดหน้าและดีไซน์ -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<!-- ปรับพื้นหลังเป็นสีดำสนิท (bg-black) -->
 <body class="bg-black text-slate-100 font-sans antialiased">
 
-  <!-- กล่องครอบขนาดหน้าจอมือถือ/คอมพิวเตอร์ -->
   <div class="max-w-md mx-auto min-h-screen flex flex-col p-5 bg-zinc-950 border-x border-zinc-900 shadow-2xl">
     
-    <!-- Header: ชื่อแอป PocketFlow (ขยายขนาดขึ้น 10%) -->
     <header class="flex justify-between items-center py-5 border-b border-zinc-900">
       <h1 class="text-4xl font-black tracking-tight text-indigo-400">PocketFlow</h1>
       <span class="bg-indigo-950 text-indigo-300 text-sm font-bold px-4 py-1.5 rounded-full border border-indigo-900">Dime Portfolio</span>
     </header>
 
-    <!-- Dashboard แสดงผลภาพรวม - ปรับพื้นหลังเข้ม และขยายตัวเลขใหญ่พิเศษขึ้น 10% -->
     <section class="my-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
-      <p class="text-sm uppercase tracking-wider text-zinc-400 font-semibold">มูลค่าพอร์ตโดยรวม</p>
-      <!-- ขยายขนาดตัวเลขยอดรวมหลัก -->
-      <h2 class="text-5xl font-black mt-2 mb-5 tracking-tight text-white">$1,245.80</h2>
+      <p class="text-sm uppercase tracking-wider text-zinc-400 font-semibold">มูลค่าพอร์ตโดยรวม (สุทธิ)</p>
+      <h2 id="total-portfolio" class="text-5xl font-black mt-2 mb-5 tracking-tight text-white">$0.00</h2>
       
       <div class="grid grid-cols-2 gap-4 pt-5 border-t border-zinc-800">
         <div>
-          <p class="text-sm text-zinc-400 font-medium">กำไร / ขาดทุนรวม</p>
-          <!-- ตัวเลขกำไรสีเขียวสว่าง เด่นชัด ขยายใหญ่ขึ้น -->
-          <p class="text-3xl font-extrabold text-emerald-400 mt-1">+$120.40</p>
+          <p class="text-sm text-zinc-400 font-medium">ยอดซื้อรวม (BUY)</p>
+          <p id="total-buy" class="text-2xl font-extrabold text-orange-400 mt-1">$0.00</p>
         </div>
         <div>
-          <p class="text-sm text-zinc-400 font-medium">เงินปันผลรวม</p>
-          <!-- ตัวเลขปันผลสีส้มทอง ขยายใหญ่ขึ้น -->
-          <p class="text-3xl font-extrabold text-amber-400 mt-1">$35.20</p>
+          <p class="text-sm text-zinc-400 font-medium">ยอดขายรวม (SELL)</p>
+          <p id="total-sell" class="text-2xl font-extrabold text-emerald-400 mt-1">$0.00</p>
+        </div>
+        <div class="col-span-2 pt-3 border-t border-zinc-800/50">
+          <p class="text-sm text-zinc-400 font-medium">เงินปันผลรวมทั้งหมด (DIVIDEND)</p>
+          <p id="total-dividend" class="text-3xl font-black text-amber-400 mt-1">$0.00</p>
         </div>
       </div>
     </section>
 
-    <!-- ส่วนฟอร์มบันทึกรายการ (Quick Record) - ตัวหนังสือใหญ่ขึ้น พิมพ์ง่าย -->
+    <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+      <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">ตัวกรองรายงาน</h3>
+      <div class="grid grid-cols-3 gap-2">
+        <input type="date" id="filter-date" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+        <select id="filter-month" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+          <option value="">ทุกเดือน</option>
+          <option value="01">มกราคม</option><option value="02">กุมภาพันธ์</option><option value="03">มีนาคม</option>
+          <option value="04">เมษายน</option><option value="05">พฤษภาคม</option><option value="06">มิถุนายน</option>
+          <option value="07">กรกฎาคม</option><option value="08">สิงหาคม</option><option value="09">กันยายน</option>
+          <option value="10">ตุลาคม</option><option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option>
+        </select>
+        <select id="filter-year" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+          <option value="">ทุกปี</option>
+          <option value="2026">2026</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+    </section>
+
     <section class="mb-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-5">
       <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">บันทึกรายการใหม่</h3>
       
-      <!-- ปุ่มเลือกประเภทรายการ ตัวอักษรใหญ่ หนา ชัดเจน -->
       <div class="grid grid-cols-3 gap-2.5 mb-4">
-        <button class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-center text-lg shadow-lg transition-all active:scale-95">ซื้อ (BUY)</button>
-        <button class="bg-rose-600 hover:bg-rose-500 text-white font-black py-3 rounded-xl text-center text-lg shadow-lg transition-all active:scale-95">ขาย (SELL)</button>
-        <button class="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black py-3 rounded-xl text-center text-lg shadow-lg transition-all active:scale-95">ปันผล (DIV)</button>
+        <button type="button" onclick="selectType('BUY')" id="btn-BUY" class="type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all">ซื้อ</button>
+        <button type="button" onclick="selectType('SELL')" id="btn-SELL" class="type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all">ขาย</button>
+        <button type="button" onclick="selectType('DIVIDEND')" id="btn-DIVIDEND" class="type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all">ปันผล</button>
       </div>
       
-      <!-- ช่องกรอกข้อมูล ขยายขนาดตัวอักษรพิมพ์ใหญ่ขึ้น 10% -->
       <div class="space-y-3.5">
         <div>
           <label class="text-xs text-zinc-400 mb-1 block">ชื่อหุ้น</label>
-          <input type="text" placeholder="เช่น AAPL, TSLA" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black uppercase text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600">
+          <input type="text" id="stock-symbol" placeholder="เช่น AAPL, TSLA" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black uppercase text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-xs text-zinc-400 mb-1 block">จำนวนหุ้น</label>
-            <input type="number" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white placeholder-zinc-600">
+            <label class="text-xs text-zinc-400 mb-1 block">จำนวนหุ้น / ยอดปันผล</label>
+            <input type="number" step="any" id="stock-amount" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white placeholder-zinc-600">
           </div>
           <div>
-            <label class="text-xs text-zinc-400 mb-1 block">ราคาต่อหุ้น</label>
-            <input type="number" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white placeholder-zinc-600">
+            <label class="text-xs text-zinc-400 mb-1 block">ราคาต่อหุ้น (ใส่ 0 ถ้าเป็นปันผล)</label>
+            <input type="number" step="any" id="stock-price" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white placeholder-zinc-600">
           </div>
         </div>
-        <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-98 mt-2">
+        <div>
+          <label class="text-xs text-zinc-400 mb-1 block">วันที่ทำรายการ</label>
+          <input type="date" id="stock-date" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white">
+        </div>
+        <button type="button" id="btn-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg active:scale-98 mt-2">
           บันทึกรายการลงพอร์ต
         </button>
       </div>
     </section>
 
-    <!-- ส่วนแสดงประวัติรายการล่าสุด (Recent Transactions) -->
-    <section class="flex-1">
-      <h3 class="text-xl font-extrabold text-zinc-300 mb-4">ประวัติรายการในระบบ</h3>
-      <div class="space-y-3">
-        
-        <!-- ตัวอย่าง: รายการซื้อหุ้น -->
-        <div class="flex justify-between items-center p-4 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
-          <div class="flex items-center space-x-4">
-            <div class="bg-emerald-950 text-emerald-400 border border-emerald-900 px-2.5 py-1.5 rounded-lg font-black text-sm tracking-wider">BUY</div>
-            <div>
-              <p class="text-xl font-black text-white leading-tight">AAPL</p>
-              <p class="text-sm text-zinc-500 mt-0.5">19 มิ.ย. 2026 • 2.5 หุ้น</p>
-            </div>
-          </div>
-          <p class="text-2xl font-black text-zinc-200">-$450.00</p>
+    <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+      <h3 class="text-sm font-extrabold text-zinc-300 mb-3">สรุปยอดปันผล & หุ้นรายตัว</h3>
+      <div id="stock-summary-list" class="space-y-2 text-sm">
         </div>
-
-        <!-- ตัวอย่าง: รายการรับปันผล -->
-        <div class="flex justify-between items-center p-4 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
-          <div class="flex items-center space-x-4">
-            <div class="bg-amber-950 text-amber-400 border border-amber-900 px-2.5 py-1.5 rounded-lg font-black text-sm tracking-wider">DIV</div>
-            <div>
-              <p class="text-xl font-black text-white leading-tight">O</p>
-              <p class="text-sm text-zinc-500 mt-0.5">15 มิ.ย. 2026 • ปันผล</p>
-            </div>
-          </div>
-          <p class="text-2xl font-black text-emerald-400">+$15.20</p>
-        </div>
-
-      </div>
     </section>
 
-    <!-- โค้ดเชื่อมต่อกับ Firebase (พร้อมใช้งานสำหรับขั้นตอนถัดไป) -->
-    <script type="module">
-      // คอนฟิกูเรชัน Firebase ของแอป PocketFlow ของคุณ
-      const firebaseConfig = {
-        apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
-        authDomain: "pocketflow-49763.firebaseapp.com",
-        projectId: "pocketflow-49763",
-        storageBucket: "pocketflow-49763.firebasestorage.app",
-        messagingSenderId: "213638502575",
-        appId: "1:213638502575:web:6028d33bead869f0405c5a"
-      };
-
-      // หมายเหตุ: โค้ดการกดปุ่มบันทึกเพื่อส่งค่าไปที่ Cloud Firestore จะถูกเขียนเชื่อมโยงเพิ่มที่นี่ในขั้นตอนต่อไปครับ
-    </script>
+    <section class="flex-1">
+      <h3 class="text-xl font-extrabold text-zinc-300 mb-4">ประวัติรายการ</h3>
+      <div id="transaction-list" class="space-y-3">
+        </div>
+    </section>
 
   </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // คอนฟิกูเรชันของคุณ
+    const firebaseConfig = {
+      apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
+      authDomain: "pocketflow-49763.firebaseapp.com",
+      projectId: "pocketflow-49763",
+      storageBucket: "pocketflow-49763.firebasestorage.app",
+      messagingSenderId: "213638502575",
+      appId: "1:213638502575:web:6028d33bead869f0405c5a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let selectedType = 'BUY';
+    let allTransactions = [];
+
+    // ตั้งค่าเริ่มต้นของวันที่ฟอร์มให้เป็นวันนี้ (ปี 2026)
+    document.getElementById('stock-date').value = new Date().toISOString().split('T')[0];
+
+    // ฟังก์ชันเลือกประเภท BUY / SELL / DIVIDEND
+    window.selectType = function(type) {
+      selectedType = type;
+      document.querySelectorAll('.type-btn').forEach(btn => btn.className = 'type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all');
+      
+      const colors = { 'BUY': 'bg-emerald-600', 'SELL': 'bg-rose-600', 'DIVIDEND': 'bg-amber-500 text-black' };
+      document.getElementById(`btn-${type}`).className = `type-btn ${colors[type]} font-black py-3 rounded-xl text-lg transition-all shadow-lg`;
+    }
+    selectType('BUY'); // เลือกซื้อเป็นค่าเริ่มต้น
+
+    // บันทึกข้อมูลลง Firebase
+    document.getElementById('btn-submit').addEventListener('click', async () => {
+      const symbol = document.getElementById('stock-symbol').value.trim().toUpperCase();
+      const amount = parseFloat(document.getElementById('stock-amount').value);
+      const price = parseFloat(document.getElementById('stock-price').value) || 0;
+      const date = document.getElementById('stock-date').value;
+
+      if (!symbol || !amount || !date) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนครับ');
+        return;
+      }
+
+      const total = selectedType === 'DIVIDEND' ? amount : amount * price;
+
+      try {
+        await addDoc(collection(db, "transactions"), {
+          symbol, type: selectedType, amount, price, total, date
+        });
+        // ล้างค่าในฟอร์มหลังบันทึกสำเร็จ
+        document.getElementById('stock-symbol').value = '';
+        document.getElementById('stock-amount').value = '';
+        document.getElementById('stock-price').value = '';
+      } catch (error) {
+        alert("เกิดข้อผิดพลาด: " + error.message);
+      }
+    });
+
+    // ฟังการเปลี่ยนแปลงของข้อมูลจาก Firebase แบบ Realtime
+    const q = query(collection(db, "transactions"), orderBy("date", "desc"));
+    onSnapshot(q, (snapshot) => {
+      allTransactions = [];
+      snapshot.forEach((doc) => {
+        allTransactions.push({ id: doc.id, ...doc.data() });
+      });
+      renderApp();
+    });
+
+    // ฟังก์ชันลบข้อมูล
+    window.deleteTransaction = async function(id) {
+      if (confirm("คุณแน่ใจใช่ไหมที่จะลบรายการนี้?")) {
+        await deleteDoc(doc(db, "transactions", id));
+      }
+    }
+
+    // ตัวตรวจจับการเปลี่ยนแปลงของตัวกรองรายงาน (วัน/เดือน/ปี)
+    document.getElementById('filter-date').addEventListener('change', renderApp);
+    document.getElementById('filter-month').addEventListener('change', renderApp);
+    document.getElementById('filter-year').addEventListener('change', renderApp);
+
+    // ฟังก์ชันคำนวณประมวลผล สรุปผล และแสดงผลหน้าจอ
+    function renderApp() {
+      const fDate = document.getElementById('filter-date').value;
+      const fMonth = document.getElementById('filter-month').value;
+      const fYear = document.getElementById('filter-year').value;
+
+      let filtered = allTransactions.filter(t => {
+        if (fDate && t.date !== fDate) return false;
+        if (fMonth && t.date.split('-')[1] !== fMonth) return false;
+        if (fYear && t.date.split('-')[0] !== fYear) return false;
+        return true;
+      });
+
+      // 1. คำนวณผลรวมแยกประเภท
+      let totalBuy = 0, totalSell = 0, totalDiv = 0;
+      let stockSummary = {};
+
+      filtered.forEach(t => {
+        if (t.type === 'BUY') totalBuy += t.total;
+        if (t.type === 'SELL') totalSell += t.total;
+        if (t.type === 'DIVIDEND') totalDiv += t.total;
+
+        // จัดกลุ่มรายหุ้น
+        if (!stockSummary[t.symbol]) stockSummary[t.symbol] = { buyShares: 0, sellShares: 0, divReceived: 0 };
+        if (t.type === 'BUY') stockSummary[t.symbol].buyShares += t.amount;
+        if (t.type === 'SELL') stockSummary[t.symbol].sellShares += t.amount;
+        if (t.type === 'DIVIDEND') stockSummary[t.symbol].divReceived += t.amount;
+      });
+
+      // อัปเดตตัวเลข Dashboard
+      document.getElementById('total-buy').innerText = `$${totalBuy.toFixed(2)}`;
+      document.getElementById('total-sell').innerText = `$${totalSell.toFixed(2)}`;
+      document.getElementById('total-dividend').innerText = `$${totalDiv.toFixed(2)}`;
+      document.getElementById('total-portfolio').innerText = `$${((totalBuy - totalSell) + totalDiv).toFixed(2)}`;
+
+      // 2. แสดงรายงานสรุปรายหุ้น
+      const summaryContainer = document.getElementById('stock-summary-list');
+      summaryContainer.innerHTML = '';
+      for (const [stock, data] of Object.entries(stockSummary)) {
+        const netShares = data.buyShares - data.sellShares;
+        summaryContainer.innerHTML += `
+          <div class="flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-900">
+            <span class="font-bold text-white text-base">${stock}</span>
+            <div class="text-right">
+              <p class="text-zinc-400">ถืออยู่: <span class="text-white font-bold">${netShares.toFixed(4)} หุ้น</span></p>
+              <p class="text-amber-400">ปันผลสะสม: <span>$${data.divReceived.toFixed(2)}</span></p>
+            </div>
+          </div>
+        `;
+      }
+
+      // 3. แสดงรายการประวัติพร้อมปุ่มลบ (ลบออกได้)
+      const listContainer = document.getElementById('transaction-list');
+      listContainer.innerHTML = '';
+      
+      filtered.forEach(t => {
+        let typeBadge = '', typeColor = '';
+        if (t.type === 'BUY') { typeBadge = 'BUY'; typeColor = 'bg-emerald-950 text-emerald-400 border-emerald-900'; }
+        if (t.type === 'SELL') { typeBadge = 'SELL'; typeColor = 'bg-rose-950 text-rose-400 border-rose-900'; }
+        if (t.type === 'DIVIDEND') { typeBadge = 'DIV'; typeColor = 'bg-amber-950 text-amber-400 border-amber-900'; }
+
+        listContainer.innerHTML += `
+          <div class="flex justify-between items-center p-4 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
+            <div class="flex items-center space-x-4">
+              <div class="${typeColor} border px-2.5 py-1.5 rounded-lg font-black text-sm tracking-wider">${typeBadge}</div>
+              <div>
+                <p class="text-xl font-black text-white leading-tight">${t.symbol}</p>
+                <p class="text-sm text-zinc-500 mt-0.5">${t.date} • ${t.amount} หุ้น</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <p class="text-2xl font-black text-zinc-200">${t.type === 'BUY' ? '-' : '+'}$${t.total.toFixed(2)}</p>
+              <button onclick="deleteTransaction('${t.id}')" class="text-rose-500 hover:text-rose-400 font-bold p-1 text-lg">✕</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
 </body>
 </html>
