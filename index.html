@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PocketFlow - Dime Stock Tracker</title>
+  <title>PocketFlow - Dime & Thai Stock Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-black text-slate-100 font-sans antialiased">
@@ -12,25 +12,27 @@
     
     <header class="flex justify-between items-center py-5 border-b border-zinc-900">
       <h1 class="text-4xl font-black tracking-tight text-indigo-400">PocketFlow</h1>
-      <span class="bg-indigo-950 text-indigo-300 text-sm font-bold px-4 py-1.5 rounded-full border border-indigo-900">Dime Portfolio</span>
+      <span class="bg-indigo-950 text-indigo-300 text-sm font-bold px-4 py-1.5 rounded-full border border-indigo-900">Multi-Currency</span>
     </header>
 
-    <section class="my-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
-      <p class="text-sm uppercase tracking-wider text-zinc-400 font-semibold">มูลค่าพอร์ตโดยรวม (สุทธิ)</p>
-      <h2 id="total-portfolio" class="text-5xl font-black mt-2 mb-5 tracking-tight text-white">$0.00</h2>
-      
-      <div class="grid grid-cols-2 gap-4 pt-5 border-t border-zinc-800">
-        <div>
-          <p class="text-sm text-zinc-400 font-medium">ยอดซื้อรวม (BUY)</p>
-          <p id="total-buy" class="text-2xl font-extrabold text-orange-400 mt-1">$0.00</p>
+    <section class="my-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-5">
+      <div>
+        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">พอร์ตหุ้นสหรัฐฯ (USD)</p>
+        <h2 id="total-usd-portfolio" class="text-4xl font-black mt-1 text-white">$0.00</h2>
+        <div class="flex justify-between text-sm text-zinc-400 mt-1">
+          <span>ซื้อ: <span id="total-usd-buy" class="text-orange-400 font-bold">$0.00</span></span>
+          <span>ขาย: <span id="total-usd-sell" class="text-emerald-400 font-bold">$0.00</span></span>
+          <span>ปันผล: <span id="total-usd-div" class="text-amber-400 font-bold">$0.00</span></span>
         </div>
-        <div>
-          <p class="text-sm text-zinc-400 font-medium">ยอดขายรวม (SELL)</p>
-          <p id="total-sell" class="text-2xl font-extrabold text-emerald-400 mt-1">$0.00</p>
-        </div>
-        <div class="col-span-2 pt-3 border-t border-zinc-800/50">
-          <p class="text-sm text-zinc-400 font-medium">เงินปันผลรวมทั้งหมด (DIVIDEND)</p>
-          <p id="total-dividend" class="text-3xl font-black text-amber-400 mt-1">$0.00</p>
+      </div>
+
+      <div class="pt-4 border-t border-zinc-800">
+        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">พอร์ตหุ้นไทย (THB)</p>
+        <h2 id="total-thb-portfolio" class="text-4xl font-black mt-1 text-teal-400">฿0.00</h2>
+        <div class="flex justify-between text-sm text-zinc-400 mt-1">
+          <span>ซื้อ: <span id="total-thb-buy" class="text-orange-400 font-bold">฿0.00</span></span>
+          <span>ขาย: <span id="total-thb-sell" class="text-emerald-400 font-bold">฿0.00</span></span>
+          <span>ปันผล: <span id="total-thb-div" class="text-amber-400 font-bold">฿0.00</span></span>
         </div>
       </div>
     </section>
@@ -65,8 +67,16 @@
       
       <div class="space-y-3.5">
         <div>
+          <label class="text-xs text-zinc-400 mb-1 block">สกุลเงิน</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="selectCurrency('USD')" id="currency-USD" class="currency-btn bg-indigo-600 text-white font-bold py-2 rounded-lg text-sm">USD ($) หุ้นนอก</button>
+            <button type="button" onclick="selectCurrency('THB')" id="currency-THB" class="currency-btn bg-zinc-800 text-white font-bold py-2 rounded-lg text-sm">THB (฿) หุ้นไทย</button>
+          </div>
+        </div>
+
+        <div>
           <label class="text-xs text-zinc-400 mb-1 block">ชื่อหุ้น</label>
-          <input type="text" id="stock-symbol" placeholder="เช่น AAPL, TSLA" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black uppercase text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600">
+          <input type="text" id="stock-symbol" placeholder="เช่น TISCO, SCB, AAPL" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black uppercase text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-zinc-600">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -74,7 +84,7 @@
             <input type="number" step="any" id="stock-amount" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white placeholder-zinc-600">
           </div>
           <div>
-            <label class="text-xs text-zinc-400 mb-1 block">ราคาต่อหุ้น (ใส่ 0 ถ้าเป็นปันผล)</label>
+            <label class="text-xs text-zinc-400 mb-1 block">ราคาต่อหุ้น (ปันผลใส่ 0)</label>
             <input type="number" step="any" id="stock-price" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white placeholder-zinc-600">
           </div>
         </div>
@@ -106,7 +116,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // คอนฟิกูเรชันของคุณ
     const firebaseConfig = {
       apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
       authDomain: "pocketflow-49763.firebaseapp.com",
@@ -120,20 +129,25 @@
     const db = getFirestore(app);
 
     let selectedType = 'BUY';
+    let selectedCurrency = 'USD';
     let allTransactions = [];
 
-    // ตั้งค่าเริ่มต้นของวันที่ฟอร์มให้เป็นวันนี้ (ปี 2026)
     document.getElementById('stock-date').value = new Date().toISOString().split('T')[0];
 
     // ฟังก์ชันเลือกประเภท BUY / SELL / DIVIDEND
     window.selectType = function(type) {
       selectedType = type;
       document.querySelectorAll('.type-btn').forEach(btn => btn.className = 'type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all');
-      
       const colors = { 'BUY': 'bg-emerald-600', 'SELL': 'bg-rose-600', 'DIVIDEND': 'bg-amber-500 text-black' };
       document.getElementById(`btn-${type}`).className = `type-btn ${colors[type]} font-black py-3 rounded-xl text-lg transition-all shadow-lg`;
     }
-    selectType('BUY'); // เลือกซื้อเป็นค่าเริ่มต้น
+
+    // ฟังก์ชันเลือกสกุลเงิน USD / THB
+    window.selectCurrency = function(curr) {
+      selectedCurrency = curr;
+      document.querySelectorAll('.currency-btn').forEach(btn => btn.className = 'currency-btn bg-zinc-800 text-white font-bold py-2 rounded-lg text-sm');
+      document.getElementById(`currency-${curr}`).className = 'currency-btn bg-indigo-600 text-white font-bold py-2 rounded-lg text-sm shadow-md';
+    }
 
     // บันทึกข้อมูลลง Firebase
     document.getElementById('btn-submit').addEventListener('click', async () => {
@@ -151,9 +165,8 @@
 
       try {
         await addDoc(collection(db, "transactions"), {
-          symbol, type: selectedType, amount, price, total, date
+          symbol, type: selectedType, currency: selectedCurrency, amount, price, total, date
         });
-        // ล้างค่าในฟอร์มหลังบันทึกสำเร็จ
         document.getElementById('stock-symbol').value = '';
         document.getElementById('stock-amount').value = '';
         document.getElementById('stock-price').value = '';
@@ -162,7 +175,7 @@
       }
     });
 
-    // ฟังการเปลี่ยนแปลงของข้อมูลจาก Firebase แบบ Realtime
+    // ดึงข้อมูลแบบ Realtime
     const q = query(collection(db, "transactions"), orderBy("date", "desc"));
     onSnapshot(q, (snapshot) => {
       allTransactions = [];
@@ -172,19 +185,16 @@
       renderApp();
     });
 
-    // ฟังก์ชันลบข้อมูล
     window.deleteTransaction = async function(id) {
       if (confirm("คุณแน่ใจใช่ไหมที่จะลบรายการนี้?")) {
         await deleteDoc(doc(db, "transactions", id));
       }
     }
 
-    // ตัวตรวจจับการเปลี่ยนแปลงของตัวกรองรายงาน (วัน/เดือน/ปี)
     document.getElementById('filter-date').addEventListener('change', renderApp);
     document.getElementById('filter-month').addEventListener('change', renderApp);
     document.getElementById('filter-year').addEventListener('change', renderApp);
 
-    // ฟังก์ชันคำนวณประมวลผล สรุปผล และแสดงผลหน้าจอ
     function renderApp() {
       const fDate = document.getElementById('filter-date').value;
       const fMonth = document.getElementById('filter-month').value;
@@ -197,45 +207,62 @@
         return true;
       });
 
-      // 1. คำนวณผลรวมแยกประเภท
-      let totalBuy = 0, totalSell = 0, totalDiv = 0;
+      // ตัวแปรคำนวณแยกสกุลเงิน
+      let usdBuy = 0, usdSell = 0, usdDiv = 0;
+      let thbBuy = 0, thbSell = 0, thbDiv = 0;
       let stockSummary = {};
 
       filtered.forEach(t => {
-        if (t.type === 'BUY') totalBuy += t.total;
-        if (t.type === 'SELL') totalSell += t.total;
-        if (t.type === 'DIVIDEND') totalDiv += t.total;
+        const curr = t.currency || 'USD'; // รองรับข้อมูลเก่าที่เป็น USD เสมอ
 
-        // จัดกลุ่มรายหุ้น
-        if (!stockSummary[t.symbol]) stockSummary[t.symbol] = { buyShares: 0, sellShares: 0, divReceived: 0 };
+        if (curr === 'USD') {
+          if (t.type === 'BUY') usdBuy += t.total;
+          if (t.type === 'SELL') usdSell += t.total;
+          if (t.type === 'DIVIDEND') usdDiv += t.total;
+        } else {
+          if (t.type === 'BUY') thbBuy += t.total;
+          if (t.type === 'SELL') thbSell += t.total;
+          if (t.type === 'DIVIDEND') thbDiv += t.total;
+        }
+
+        if (!stockSummary[t.symbol]) stockSummary[t.symbol] = { currency: curr, buyShares: 0, sellShares: 0, divReceived: 0 };
         if (t.type === 'BUY') stockSummary[t.symbol].buyShares += t.amount;
         if (t.type === 'SELL') stockSummary[t.symbol].sellShares += t.amount;
         if (t.type === 'DIVIDEND') stockSummary[t.symbol].divReceived += t.amount;
       });
 
-      // อัปเดตตัวเลข Dashboard
-      document.getElementById('total-buy').innerText = `$${totalBuy.toFixed(2)}`;
-      document.getElementById('total-sell').innerText = `$${totalSell.toFixed(2)}`;
-      document.getElementById('total-dividend').innerText = `$${totalDiv.toFixed(2)}`;
-      document.getElementById('total-portfolio').innerText = `$${((totalBuy - totalSell) + totalDiv).toFixed(2)}`;
+      // อัปเดต Dashboard แยก USD / THB
+      document.getElementById('total-usd-buy').innerText = `$${usdBuy.toFixed(2)}`;
+      document.getElementById('total-usd-sell').innerText = `$${usdSell.toFixed(2)}`;
+      document.getElementById('total-usd-div').innerText = `$${usdDiv.toFixed(2)}`;
+      document.getElementById('total-usd-portfolio').innerText = `$${((usdBuy - usdSell) + usdDiv).toFixed(2)}`;
 
-      // 2. แสดงรายงานสรุปรายหุ้น
+      document.getElementById('total-thb-buy').innerText = `฿${thbBuy.toFixed(2)}`;
+      document.getElementById('total-thb-sell').innerText = `฿${thbSell.toFixed(2)}`;
+      document.getElementById('total-thb-div').innerText = `฿${thbDiv.toFixed(2)}`;
+      document.getElementById('total-thb-portfolio').innerText = `฿${((thbBuy - thbSell) + thbDiv).toFixed(2)}`;
+
+      // แสดงรายงานสรุปรายหุ้น (รองรับ TISCO, SCB สัญลักษณ์ ฿)
       const summaryContainer = document.getElementById('stock-summary-list');
       summaryContainer.innerHTML = '';
       for (const [stock, data] of Object.entries(stockSummary)) {
         const netShares = data.buyShares - data.sellShares;
+        const sign = data.currency === 'USD' ? '$' : '฿';
         summaryContainer.innerHTML += `
           <div class="flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-900">
-            <span class="font-bold text-white text-base">${stock}</span>
+            <div>
+              <span class="font-bold text-white text-base">${stock}</span>
+              <span class="text-xs text-zinc-500 ml-1">(${data.currency})</span>
+            </div>
             <div class="text-right">
-              <p class="text-zinc-400">ถืออยู่: <span class="text-white font-bold">${netShares.toFixed(4)} หุ้น</span></p>
-              <p class="text-amber-400">ปันผลสะสม: <span>$${data.divReceived.toFixed(2)}</span></p>
+              <p class="text-zinc-400">ถืออยู่: <span class="text-white font-bold">${netShares.toFixed(2)} หุ้น</span></p>
+              <p class="text-amber-400">ปันผลสะสม: <span>${sign}${data.divReceived.toFixed(2)}</span></p>
             </div>
           </div>
         `;
       }
 
-      // 3. แสดงรายการประวัติพร้อมปุ่มลบ (ลบออกได้)
+      // แสดงประวัติรายการ
       const listContainer = document.getElementById('transaction-list');
       listContainer.innerHTML = '';
       
@@ -245,17 +272,20 @@
         if (t.type === 'SELL') { typeBadge = 'SELL'; typeColor = 'bg-rose-950 text-rose-400 border-rose-900'; }
         if (t.type === 'DIVIDEND') { typeBadge = 'DIV'; typeColor = 'bg-amber-950 text-amber-400 border-amber-900'; }
 
+        const curr = t.currency || 'USD';
+        const sign = curr === 'USD' ? '$' : '฿';
+
         listContainer.innerHTML += `
           <div class="flex justify-between items-center p-4 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
             <div class="flex items-center space-x-4">
               <div class="${typeColor} border px-2.5 py-1.5 rounded-lg font-black text-sm tracking-wider">${typeBadge}</div>
               <div>
-                <p class="text-xl font-black text-white leading-tight">${t.symbol}</p>
+                <p class="text-xl font-black text-white leading-tight">${t.symbol} <span class="text-xs text-zinc-500 font-normal">(${curr})</span></p>
                 <p class="text-sm text-zinc-500 mt-0.5">${t.date} • ${t.amount} หุ้น</p>
               </div>
             </div>
             <div class="flex items-center space-x-3">
-              <p class="text-2xl font-black text-zinc-200">${t.type === 'BUY' ? '-' : '+'}$${t.total.toFixed(2)}</p>
+              <p class="text-2xl font-black text-zinc-200">${t.type === 'BUY' ? '-' : '+'}${sign}${t.total.toFixed(2)}</p>
               <button onclick="deleteTransaction('${t.id}')" class="text-rose-500 hover:text-rose-400 font-bold p-1 text-lg">✕</button>
             </div>
           </div>
