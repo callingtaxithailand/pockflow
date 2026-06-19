@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PocketFlow - Expense Tracker</title>
+  <title>PocketFlow - All-in-One Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-black text-slate-100 font-sans antialiased">
@@ -11,20 +11,368 @@
   <div class="max-w-md mx-auto min-h-screen flex flex-col p-5 bg-zinc-950 border-x border-zinc-900 shadow-2xl">
     
     <header class="flex justify-between items-center py-5 border-b border-zinc-900">
-      <h1 class="text-4xl font-black tracking-tight text-rose-500">PocketFlow</h1>
-      <span class="bg-rose-950 text-rose-300 text-sm font-bold px-4 py-1.5 rounded-full border border-rose-900">บันทึกค่าใช้จ่าย</span>
+      <h1 class="text-4xl font-black tracking-tight text-indigo-400">PocketFlow</h1>
+      <span class="bg-zinc-900 text-zinc-400 text-xs font-bold px-3 py-1.5 rounded-full border border-zinc-800">พอร์ตหุ้น & ค่าใช้จ่าย</span>
     </header>
 
-    <section class="my-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
-      <p class="text-sm uppercase tracking-wider text-zinc-400 font-semibold">ยอดรวมค่าใช้จ่ายทั้งหมด</p>
-      <h2 id="total-expense" class="text-5xl font-black mt-2 text-rose-400 tracking-tight">฿0.00</h2>
+    <section class="my-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-xl space-y-4">
+      <div>
+        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">พอร์ตหุ้นสหรัฐฯ (Dime - USD)</p>
+        <h2 id="total-usd-portfolio" class="text-3xl font-black mt-0.5 text-white">$0.00</h2>
+        <div class="flex justify-between text-xs text-zinc-500 mt-0.5">
+          <span>ซื้อ: <span id="total-usd-buy" class="text-orange-400 font-bold">$0.00</span></span>
+          <span>ขาย: <span id="total-usd-sell" class="text-emerald-400 font-bold">$0.00</span></span>
+          <span>ปันผล: <span id="total-usd-div" class="text-amber-400 font-bold">$0.00</span></span>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-zinc-800/60">
+        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">พอร์ตหุ้นไทย (TISCO, SCB - THB)</p>
+        <h2 id="total-thb-portfolio" class="text-3xl font-black mt-0.5 text-teal-400">฿0.00</h2>
+        <div class="flex justify-between text-xs text-zinc-500 mt-0.5">
+          <span>ซื้อ: <span id="total-thb-buy" class="text-orange-400 font-bold">฿0.00</span></span>
+          <span>ขาย: <span id="total-thb-sell" class="text-emerald-400 font-bold">฿0.00</span></span>
+          <span>ปันผล: <span id="total-thb-div" class="text-amber-400 font-bold">฿0.00</span></span>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-zinc-800/60">
+        <p class="text-xs uppercase tracking-wider text-zinc-400 font-semibold">ยอดรวมค่าใช้จ่ายสะสมทั้งหมด (THB)</p>
+        <h2 id="total-expense-all" class="text-3xl font-black mt-0.5 text-rose-400">฿0.00</h2>
+      </div>
     </section>
 
     <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-      <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">ตัวกรองรายงานรายวัน/เดือน/ปี</h3>
+      <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">ตัวกรองรายงานในระบบ</h3>
       <div class="grid grid-cols-3 gap-2">
         <input type="date" id="filter-date" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
         <select id="filter-month" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
           <option value="">ทุกเดือน</option>
           <option value="01">มกราคม</option><option value="02">กุมภาพันธ์</option><option value="03">มีนาคม</option>
-          <option value="04">เมษายน</option><option value="05">พฤษภา
+          <option value="04">เมษายน</option><option value="05">พฤษภาคม</option><option value="06">มิถุนายน</option>
+          <option value="07">กรกฎาคม</option><option value="08">สิงหาคม</option><option value="09">กันยายน</option>
+          <option value="10">ตุลาคม</option><option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option>
+        </select>
+        <select id="filter-year" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+          <option value="">ทุกปี</option>
+          <option value="2026">2026</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="mb-6 bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-5">
+      
+      <div class="grid grid-cols-2 gap-2 mb-5 p-1 bg-zinc-950 rounded-xl border border-zinc-900">
+        <button type="button" onclick="switchFormMode('STOCK')" id="tab-STOCK" class="py-2.5 rounded-lg font-bold text-sm transition-all bg-indigo-600 text-white">📈 บันทึกรายการหุ้น</button>
+        <button type="button" onclick="switchFormMode('EXPENSE')" id="tab-EXPENSE" class="py-2.5 rounded-lg font-bold text-sm transition-all text-zinc-400">💸 บันทึกค่าใช้จ่าย</button>
+      </div>
+
+      <h3 id="form-title" class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">บันทึกรายการหุ้นใหม่</h3>
+
+      <div id="stock-type-container" class="grid grid-cols-3 gap-2.5 mb-4">
+        <button type="button" onclick="selectStockType('BUY')" id="btn-BUY" class="stock-type-btn bg-emerald-600 text-white font-black py-3 rounded-xl text-lg transition-all">ซื้อ</button>
+        <button type="button" onclick="selectStockType('SELL')" id="btn-SELL" class="stock-type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all">ขาย</button>
+        <button type="button" onclick="selectStockType('DIVIDEND')" id="btn-DIVIDEND" class="stock-type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all">ปันผล</button>
+      </div>
+
+      <div id="expense-type-container" class="mb-4 hidden">
+        <label class="text-xs text-zinc-400 mb-1 block">ประเภทค่าใช้จ่าย</label>
+        <select id="expense-category" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-lg font-bold text-white">
+          <option value="ซ่อมบำรุง รถยนต์">🔧 ซ่อมบำรุง รถยนต์</option>
+          <option value="ซ่อมบำรุง มอเตอร์ไซค์">🔧 ซ่อมบำรุง มอเตอร์ไซค์</option>
+          <option value="ค่าไฟฟ้า">⚡ ค่าไฟฟ้า</option>
+          <option value="ค่าน้ำประปา">💧 ค่าน้ำประปา</option>
+          <option value="ค่าส่วนกลาง">🏢 ค่าส่วนกลาง</option>
+          <option value="ค่าประกันภัย">🛡️ ค่าประกันภัย</option>
+          <option value="ภาษีรถยนต์">📄 ภาษีรถยนต์</option>
+          <option value="ภาษีมอเตอร์ไซค์">📄 ภาษีมอเตอร์ไซค์</option>
+        </select>
+      </div>
+
+      <div class="space-y-3.5">
+        <div id="field-stock-only" class="space-y-3.5">
+          <div class="grid grid-cols-2 gap-2 mb-1">
+            <button type="button" onclick="selectCurrency('USD')" id="currency-USD" class="currency-btn bg-indigo-600 text-white font-bold py-2 rounded-lg text-xs">USD ($) หุ้นนอก Dime</button>
+            <button type="button" onclick="selectCurrency('THB')" id="currency-THB" class="currency-btn bg-zinc-800 text-white font-bold py-2 rounded-lg text-xs">THB (฿) หุ้นไทย</button>
+          </div>
+          <div>
+            <label class="text-xs text-zinc-400 mb-1 block">ชื่อย่อหุ้น</label>
+            <input type="text" id="stock-symbol" placeholder="เช่น AAPL, TISCO, SCB" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black uppercase text-white focus:outline-none">
+          </div>
+        </div>
+
+        <div id="field-expense-only" class="hidden">
+          <label class="text-xs text-zinc-400 mb-1 block">รายละเอียดเพิ่มเติม</label>
+          <input type="text" id="expense-note" placeholder="เช่น เปลี่ยนน้ำมันเครื่องรอบปี" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-lg text-white placeholder-zinc-600 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label id="label-amount" class="text-xs text-zinc-400 mb-1 block">จำนวนหุ้น / ปันผลสุทธิ</label>
+            <input type="number" step="any" id="main-amount" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-black text-white">
+          </div>
+          <div id="field-price-container">
+            <label class="text-xs text-zinc-400 mb-1 block">ราคาต่อหุ้น (ปันผลใส่ 0)</label>
+            <input type="number" step="any" id="stock-price" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs text-zinc-400 mb-1 block">วันที่ทำรายการ</label>
+          <input type="date" id="main-date" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3.5 text-xl font-bold text-white">
+        </div>
+
+        <button type="button" id="btn-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg active:scale-98 mt-2">
+          บันทึกรายการเข้าสู่ระบบ
+        </button>
+      </div>
+    </section>
+
+    <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+      <h3 class="text-sm font-extrabold text-zinc-300 mb-3">สรุปย่อยแยกรายชื่อหุ้น & ประเภทรายจ่าย</h3>
+      <div id="summary-grouped-list" class="space-y-2 text-sm">
+        </div>
+    </section>
+
+    <section class="flex-1">
+      <h3 class="text-xl font-extrabold text-zinc-300 mb-4">ประวัติธุรกรรมเรียงตามวันที่</h3>
+      <div id="master-transaction-list" class="space-y-3">
+        </div>
+    </section>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
+      authDomain: "pocketflow-49763.firebaseapp.com",
+      projectId: "pocketflow-49763",
+      storageBucket: "pocketflow-49763.firebasestorage.app",
+      messagingSenderId: "213638502575",
+      appId: "1:213638502575:web:6028d33bead869f0405c5a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let currentFormMode = 'STOCK'; 
+    let selectedStockType = 'BUY';
+    let selectedCurrency = 'USD';
+
+    let allStocks = [];
+    let allExpenses = [];
+
+    document.getElementById('main-date').value = new Date().toISOString().split('T')[0];
+
+    // ฟังก์ชันทำงานเมื่อกดปุ่มสลับเลือก หุ้น หรือ ค่าใช้จ่าย
+    window.switchFormMode = function(mode) {
+      currentFormMode = mode;
+      document.getElementById('tab-STOCK').className = mode === 'STOCK' ? 'py-2.5 rounded-lg font-bold text-sm transition-all bg-indigo-600 text-white' : 'py-2.5 rounded-lg font-bold text-sm transition-all text-zinc-400';
+      document.getElementById('tab-EXPENSE').className = mode === 'EXPENSE' ? 'py-2.5 rounded-lg font-bold text-sm transition-all bg-rose-600 text-white' : 'py-2.5 rounded-lg font-bold text-sm transition-all text-zinc-400';
+      
+      if(mode === 'STOCK') {
+        document.getElementById('form-title').innerText = 'บันทึกรายการหุ้นใหม่';
+        document.getElementById('stock-type-container').classList.remove('hidden');
+        document.getElementById('expense-type-container').classList.add('hidden');
+        document.getElementById('field-stock-only').classList.remove('hidden');
+        document.getElementById('field-expense-only').classList.add('hidden');
+        document.getElementById('field-price-container').classList.remove('hidden');
+        document.getElementById('label-amount').innerText = 'จำนวนหุ้น / ปันผลสุทธิ';
+        document.getElementById('btn-submit').className = 'w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg active:scale-98 mt-2';
+      } else {
+        document.getElementById('form-title').innerText = 'บันทึกค่าใช้จ่ายในบ้านใหม่';
+        document.getElementById('stock-type-container').classList.add('hidden');
+        document.getElementById('expense-type-container').classList.remove('hidden');
+        document.getElementById('field-stock-only').classList.add('hidden');
+        document.getElementById('field-expense-only').classList.remove('hidden');
+        document.getElementById('field-price-container').classList.add('hidden');
+        document.getElementById('label-amount').innerText = 'จำนวนเงิน (บาท ฿)';
+        document.getElementById('btn-submit').className = 'w-full bg-rose-600 hover:bg-rose-500 text-white text-xl font-black py-4 rounded-xl transition-all shadow-lg active:scale-98 mt-2';
+      }
+    }
+
+    window.selectStockType = function(type) {
+      selectedStockType = type;
+      document.querySelectorAll('.stock-type-btn').forEach(btn => btn.className = 'stock-type-btn bg-zinc-800 text-white font-black py-3 rounded-xl text-lg transition-all');
+      const colors = { 'BUY': 'bg-emerald-600', 'SELL': 'bg-rose-600', 'DIVIDEND': 'bg-amber-500 text-black' };
+      document.getElementById(`btn-${type}`).className = `stock-type-btn ${colors[type]} font-black py-3 rounded-xl text-lg transition-all shadow-lg`;
+    }
+
+    window.selectCurrency = function(curr) {
+      selectedCurrency = curr;
+      document.querySelectorAll('.currency-btn').forEach(btn => btn.className = 'currency-btn bg-zinc-800 text-white font-bold py-2 rounded-lg text-xs');
+      document.getElementById(`currency-${curr}`).className = 'currency-btn bg-indigo-600 text-white font-bold py-2 rounded-lg text-xs shadow-md';
+    }
+
+    // บันทึกข้อมูล
+    document.getElementById('btn-submit').addEventListener('click', async () => {
+      const date = document.getElementById('main-date').value;
+      const mainAmount = parseFloat(document.getElementById('main-amount').value);
+
+      if (!mainAmount || !date) { alert('กรุณากรอกข้อมูลจำนวนเงิน/หุ้น และวันที่ด้วยครับ'); return; }
+
+      if (currentFormMode === 'STOCK') {
+        const symbol = document.getElementById('stock-symbol').value.trim().toUpperCase();
+        const price = parseFloat(document.getElementById('stock-price').value) || 0;
+        if(!symbol) { alert('กรุณากรอกชื่อหุ้นด้วยครับ'); return; }
+        
+        const total = selectedStockType === 'DIVIDEND' ? mainAmount : mainAmount * price;
+        await addDoc(collection(db, "transactions"), {
+          symbol, type: selectedStockType, currency: selectedCurrency, amount: mainAmount, price, total, date, isStock: true
+        });
+        document.getElementById('stock-symbol').value = '';
+        document.getElementById('stock-price').value = '';
+      } else {
+        const category = document.getElementById('expense-category').value;
+        const note = document.getElementById('expense-note').value.trim();
+        await addDoc(collection(db, "household_expenses"), {
+          category, note, amount: mainAmount, date, isStock: false
+        });
+        document.getElementById('expense-note').value = '';
+      }
+      document.getElementById('main-amount').value = '';
+    });
+
+    // ฟังข้อมูล Realtime ทั้งสองฝั่ง
+    onSnapshot(query(collection(db, "transactions"), orderBy("date", "desc")), (snap) => {
+      allStocks = []; snap.forEach(d => allStocks.push({id: d.id, ...d.data()}));
+      combineAndRender();
+    });
+    onSnapshot(query(collection(db, "household_expenses"), orderBy("date", "desc")), (snap) => {
+      allExpenses = []; snap.forEach(d => allExpenses.push({id: d.id, ...d.data()}));
+      combineAndRender();
+    });
+
+    window.deleteMasterItem = async function(id, isStock) {
+      if (confirm("ต้องการลบรายการนี้ใช่หรือไม่?")) {
+        const targetCollection = isStock ? "transactions" : "household_expenses";
+        await deleteDoc(doc(db, targetCollection, id));
+      }
+    }
+
+    document.getElementById('filter-date').addEventListener('change', combineAndRender);
+    document.getElementById('filter-month').addEventListener('change', combineAndRender);
+    document.getElementById('filter-year').addEventListener('change', combineAndRender);
+
+    function combineAndRender() {
+      const fDate = document.getElementById('filter-date').value;
+      const fMonth = document.getElementById('filter-month').value;
+      const fYear = document.getElementById('filter-year').value;
+
+      const filterLogic = (item) => {
+        if (fDate && item.date !== fDate) return false;
+        if (fMonth && item.date.split('-')[1] !== fMonth) return false;
+        if (fYear && item.date.split('-')[0] !== fYear) return false;
+        return true;
+      };
+
+      let filteredStocks = allStocks.filter(filterLogic);
+      let filteredExpenses = allExpenses.filter(filterLogic);
+
+      let usdBuy = 0, usdSell = 0, usdDiv = 0;
+      let thbBuy = 0, thbSell = 0, thbDiv = 0;
+      let stockSummary = {};
+
+      filteredStocks.forEach(t => {
+        const curr = t.currency || 'USD';
+        if (curr === 'USD') {
+          if (t.type === 'BUY') usdBuy += t.total;
+          if (t.type === 'SELL') usdSell += t.total;
+          if (t.type === 'DIVIDEND') usdDiv += t.total;
+        } else {
+          if (t.type === 'BUY') thbBuy += t.total;
+          if (t.type === 'SELL') thbSell += t.total;
+          if (t.type === 'DIVIDEND') thbDiv += t.total;
+        }
+
+        if (!stockSummary[t.symbol]) stockSummary[t.symbol] = { currency: curr, buyShares: 0, sellShares: 0, divReceived: 0 };
+        if (t.type === 'BUY') stockSummary[t.symbol].buyShares += t.amount;
+        if (t.type === 'SELL') stockSummary[t.symbol].sellShares += t.amount;
+        if (t.type === 'DIVIDEND') stockSummary[t.symbol].divReceived += t.amount;
+      });
+
+      document.getElementById('total-usd-buy').innerText = `$${usdBuy.toFixed(2)}`;
+      document.getElementById('total-usd-sell').innerText = `$${usdSell.toFixed(2)}`;
+      document.getElementById('total-usd-div').innerText = `$${usdDiv.toFixed(2)}`;
+      document.getElementById('total-usd-portfolio').innerText = `$${((usdBuy - usdSell) + usdDiv).toFixed(2)}`;
+
+      document.getElementById('total-thb-buy').innerText = `฿${thbBuy.toFixed(2)}`;
+      document.getElementById('total-thb-sell').innerText = `฿${thbSell.toFixed(2)}`;
+      document.getElementById('total-thb-div').innerText = `฿${thbDiv.toFixed(2)}`;
+      document.getElementById('total-thb-portfolio').innerText = `฿${((thbBuy - thbSell) + thbDiv).toFixed(2)}`;
+
+      let totalExpenseSum = 0;
+      let expenseSummary = {};
+
+      filteredExpenses.forEach(e => {
+        totalExpenseSum += e.amount;
+        if (!expenseSummary[e.category]) expenseSummary[e.category] = 0;
+        expenseSummary[e.category] += e.amount;
+      });
+      document.getElementById('total-expense-all').innerText = `฿${totalExpenseSum.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
+
+      const summaryContainer = document.getElementById('summary-grouped-list');
+      summaryContainer.innerHTML = '';
+      
+      for (const [stock, data] of Object.entries(stockSummary)) {
+        const netShares = data.buyShares - data.sellShares;
+        const sign = data.currency === 'USD' ? '$' : '฿';
+        summaryContainer.innerHTML += `
+          <div class="flex justify-between items-center bg-zinc-950 p-2 rounded-lg border border-zinc-900">
+            <div><span class="font-bold text-indigo-300">${stock}</span><span class="text-xs text-zinc-600 ml-1">(${data.currency})</span></div>
+            <div class="text-right text-xs"><p class="text-zinc-400">ถือ: <span class="text-white font-bold">${netShares.toFixed(2)}</span></p><p class="text-amber-400">ปันผล: ${sign}${data.divReceived.toFixed(2)}</p></div>
+          </div>`;
+      }
+      for (const [cat, sum] of Object.entries(expenseSummary)) {
+        summaryContainer.innerHTML += `
+          <div class="flex justify-between items-center bg-zinc-950 p-2 rounded-lg border border-zinc-900">
+            <span class="font-bold text-rose-300 text-xs">${cat}</span>
+            <span class="text-rose-400 font-bold text-sm">฿${sum.toLocaleString('th-TH', {minimumFractionDigits:2})}</span>
+          </div>`;
+      }
+
+      // ผสมข้อมูลและจัดเรียงตามวันที่ (ใหม่ไปเก่า)
+      let combinedList = [...filteredStocks, ...filteredExpenses];
+      combinedList.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      const listContainer = document.getElementById('master-transaction-list');
+      listContainer.innerHTML = '';
+
+      combinedList.forEach(item => {
+        if(item.isStock) {
+          let typeBadge = item.type === 'BUY' ? 'BUY' : item.type === 'SELL' ? 'SELL' : 'DIV';
+          let typeColor = item.type === 'BUY' ? 'bg-emerald-950 text-emerald-400 border-emerald-900' : item.type === 'SELL' ? 'bg-rose-950 text-rose-400 border-rose-900' : 'bg-amber-950 text-amber-400 border-amber-900';
+          const sign = item.currency === 'USD' ? '$' : '฿';
+          listContainer.innerHTML += `
+            <div class="flex justify-between items-center p-3.5 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
+              <div class="flex items-center space-x-3">
+                <div class="${typeColor} border px-2 py-1 rounded-lg font-black text-xs">${typeBadge}</div>
+                <div><p class="text-lg font-black text-white leading-tight">${item.symbol}</p><p class="text-xs text-zinc-500 mt-0.5">${item.date} • ${item.amount} หุ้น</p></div>
+              </div>
+              <div class="flex items-center space-x-3">
+                <p class="text-xl font-black text-zinc-200">${item.type === 'BUY' ? '-' : '+'}${sign}${item.total.toFixed(2)}</p>
+                <button onclick="deleteMasterItem('${item.id}', true)" class="text-zinc-600 hover:text-rose-500 font-bold p-1 text-base">✕</button>
+              </div>
+            </div>`;
+        } else {
+          listContainer.innerHTML += `
+            <div class="flex justify-between items-center p-3.5 bg-zinc-900 border border-zinc-850 rounded-xl shadow-md">
+              <div class="flex items-center space-x-3">
+                <div class="bg-rose-950 text-rose-400 border border-rose-900 px-2 py-1 rounded-lg font-black text-xs">จ่าย</div>
+                <div><p class="text-lg font-black text-zinc-300 leading-tight">${item.category}</p><p class="text-xs text-zinc-500 mt-0.5">${item.date} ${item.note ? '• ' + item.note : ''}</p></div>
+              </div>
+              <div class="flex items-center space-x-3">
+                <p class="text-xl font-black text-rose-400">-฿${item.amount.toLocaleString('th-TH', {minimumFractionDigits:2})}</p>
+                <button onclick="deleteMasterItem('${item.id}', false)" class="text-zinc-600 hover:text-rose-500 font-bold p-1 text-base">✕</button>
+              </div>
+            </div>`;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
