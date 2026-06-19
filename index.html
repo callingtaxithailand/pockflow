@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketFlow - Expense Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-black text-slate-100 font-sans antialiased">
+
+  <div class="max-w-md mx-auto min-h-screen flex flex-col p-5 bg-zinc-950 border-x border-zinc-900 shadow-2xl">
+    
+    <header class="flex justify-between items-center py-5 border-b border-zinc-900">
+      <h1 class="text-4xl font-black tracking-tight text-rose-500">PocketFlow</h1>
+      <span class="bg-rose-950 text-rose-300 text-sm font-bold px-4 py-1.5 rounded-full border border-rose-900">บันทึกค่าใช้จ่าย</span>
+    </header>
+
+    <section class="my-6 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl">
+      <p class="text-sm uppercase tracking-wider text-zinc-400 font-semibold">ยอดรวมค่าใช้จ่ายทั้งหมด</p>
+      <h2 id="total-expense" class="text-5xl font-black mt-2 text-rose-400 tracking-tight">฿0.00</h2>
+    </section>
+
+    <section class="mb-6 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+      <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-3">ตัวกรองรายงานรายวัน/เดือน/ปี</h3>
+      <div class="grid grid-cols-3 gap-2">
+        <input type="date" id="filter-date" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+        <select id="filter-month" class="bg-zinc-950 border border-zinc-800 text-sm rounded-lg p-2 text-white">
+          <option value="">ทุกเดือน</option>
+          <option value="01">มกราคม</option><option value="02">กุมภาพันธ์</option><option value="03">มีนาคม</option>
+          <option value="04">เมษายน</option><option value="05">พฤษภา
