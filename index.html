@@ -16,18 +16,14 @@
       max-height: 900px;
       opacity: 1;
     }
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-    }
   </style>
 </head>
-<body class="bg-black text-zinc-100 font-sans antialiased selection:bg-zinc-800">
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased">
 
-  <div class="max-w-md mx-auto min-h-screen flex flex-col bg-black shadow-2xl relative pb-26 border-x border-zinc-950">
+  <div class="max-w-md mx-auto min-h-screen flex flex-col bg-black shadow-2xl relative pb-24 border-x border-zinc-900">
     
     <main class="flex-1 p-5">
       
-      <!-- ================= LOGO DESIGN ================= -->
       <div class="flex flex-col items-center justify-center py-6 mb-4 select-none">
         <div class="flex items-center space-x-3">
           <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-400 rounded-xl flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20 font-black">
@@ -40,37 +36,27 @@
         </div>
       </div>
 
-      <!-- ================= หน้าหลัก 1: แดชบอร์ด (DASHBOARD) ================= -->
       <section id="view-dashboard" class="tab-view space-y-6">
-        <div class="bg-zinc-900/90 border border-zinc-800/60 rounded-2xl p-5 text-center py-9 shadow-xl">
+        <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-5 text-center py-9 shadow-xl">
           <p class="text-[14px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</p>
           <h2 id="total-pnl-display" class="text-[48px] font-black text-white tracking-tight">฿0.00</h2>
         </div>
 
-        <!-- กล่องแสดงสถิติย่อยแบบ Grid ปรับตามบรีฟ: ตัวหนังสือดำเข้ม + กรอบสีส้ม เหลือง แดง น้ำเงิน เขียว -->
         <div class="grid grid-cols-3 gap-2">
-          
-          <!-- กล่องที่ 1: เงินปันผลสะสม (กรอบเหลือง/ส้ม + ตัวหนังสือดำเข้ม) -->
-          <div class="bg-amber-400 p-3 rounded-xl border-2 border-amber-500 shadow-md text-center">
-            <p class="text-[11px] text-zinc-900 font-black uppercase tracking-wider">เงินปันผลสะสม</p>
-            <p id="total-div-display" class="text-[18px] font-black text-black mt-1">฿0.00</p>
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/60 shadow-md text-center">
+            <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">เงินปันผลสะสม</p>
+            <p id="total-div-display" class="text-[18px] font-black text-amber-400 mt-1">฿0.00</p>
           </div>
-          
-          <!-- กล่องที่ 2: ค่าใช้จ่ายในบ้าน (กรอบแดง/ส้มเข้ม + ตัวหนังสือดำเข้ม) -->
-          <div class="bg-rose-400 p-3 rounded-xl border-2 border-rose-500 shadow-md text-center">
-            <p class="text-[11px] text-zinc-900 font-black uppercase tracking-wider">ค่าใช้จ่ายในบ้าน</p>
-            <p id="total-exp-display" class="text-[18px] font-black text-black mt-1">฿0.00</p>
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/60 shadow-md text-center">
+            <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">ค่าใช้จ่ายในบ้าน</p>
+            <p id="total-exp-display" class="text-[18px] font-black text-rose-400 mt-1">฿0.00</p>
           </div>
-          
-          <!-- กล่องที่ 3: ภาษีที่โดนหักรวม (กรอบน้ำเงิน/ฟ้า/เขียวมิ้นต์ + ตัวหนังสือดำเข้ม) -->
-          <div class="bg-cyan-400 p-3 rounded-xl border-2 border-cyan-500 shadow-md text-center">
-            <p class="text-[11px] text-zinc-900 font-black uppercase tracking-wider">ภาษีที่โดนหักรวม</p>
-            <p id="total-tax-display" class="text-[18px] font-black text-black mt-1">฿0.00</p>
+          <div class="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/60 shadow-md text-center">
+            <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">ภาษีที่โดนหักรวม</p>
+            <p id="total-tax-display" class="text-[18px] font-black text-cyan-400 mt-1">฿0.00</p>
           </div>
-          
         </div>
 
-        <!-- รายงานหุ้นรายตัว -->
         <div class="pt-2">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-[14px] font-bold text-zinc-400 tracking-widest uppercase">รายงานแยกตามรายชื่อหุ้น</h3>
@@ -82,37 +68,33 @@
         </div>
       </section>
 
-      <!-- ================= หน้าหลัก 2: รายงานแยกหมวดหมู่ย่อย (REPORTS) ================= -->
       <section id="view-reports" class="tab-view hidden space-y-5">
         <div class="flex justify-between items-center">
           <h2 class="text-[24px] font-black text-white">รายงานแยกประเภท</h2>
           <span class="text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 px-2.5 py-1 rounded-md font-bold">ยึดหมวดหมู่ย่อย</span>
         </div>
 
-        <!-- รายงานฝั่งหุ้น -->
         <div class="space-y-3">
           <h3 class="text-sm font-black text-emerald-400 tracking-widest uppercase flex items-center space-x-1">
             <span>📈 กลุ่มย่อยสินทรัพย์ & หุ้น</span>
           </h3>
           <div id="report-stock-sub-group" class="space-y-4">
-            <p class="text-sm text-zinc-700 italic">ไม่มีข้อมูลสินทรัพย์</p>
+            <p class="text-sm text-zinc-600 italic">ไม่มีข้อมูลสินทรัพย์</p>
           </div>
         </div>
 
         <hr class="border-zinc-900 my-2">
 
-        <!-- รายงานฝั่งรายจ่าย -->
         <div class="space-y-3">
           <h3 class="text-sm font-black text-rose-400 tracking-widest uppercase flex items-center space-x-1">
             <span>💸 กลุ่มย่อยค่าใช้จ่ายในบ้าน</span>
           </h3>
           <div id="report-expense-sub-group" class="space-y-4">
-            <p class="text-sm text-zinc-700 italic">ไม่มีข้อมูลรายจ่าย</p>
+            <p class="text-sm text-zinc-600 italic">ไม่มีข้อมูลรายจ่าย</p>
           </div>
         </div>
       </section>
 
-      <!-- ================= หน้าหลักพิเศษ: โปรไฟล์ผู้ใช้ (USER PROFILE) ================= -->
       <section id="view-profile" class="tab-view hidden space-y-6">
         <h2 class="text-[24px] font-black text-white">โปรไฟล์ผู้ใช้</h2>
         
@@ -137,13 +119,11 @@
         </div>
       </section>
 
-      <!-- ================= หน้าหลัก 3: รายการธุรกรรมทั้งหมด (TRADES) ================= -->
       <section id="view-trades" class="tab-view hidden space-y-4">
         <h2 class="text-[24px] font-black text-white">ประวัติธุรกรรมทั้งหมด</h2>
         <div id="all-trades-log-list" class="space-y-2.5"></div>
       </section>
 
-      <!-- ================= หน้าหลัก 4: ตั้งค่า (SETTINGS) ================= -->
       <section id="view-settings" class="tab-view hidden space-y-4">
         <h2 class="text-[24px] font-black text-white">ตั้งค่าระบบ</h2>
         <div class="bg-zinc-900 border border-zinc-800 rounded-xl divide-y divide-zinc-800 overflow-hidden">
@@ -158,7 +138,6 @@
         </div>
       </section>
 
-      <!-- ================= หน้าจอย่อย: จัดการหมวดหมู่ (CATEGORY MANAGER) ================= -->
       <section id="view-category-manager" class="hidden space-y-5">
         <div class="flex items-center space-x-3 pb-2.5 border-b border-zinc-900">
           <button type="button" onclick="hideCategoryManager()" class="text-zinc-400 text-3xl font-bold p-1 hover:text-white transition-colors cursor-pointer">←</button>
@@ -173,7 +152,7 @@
         <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
           <h3 class="text-[15px] font-bold text-amber-400 font-black">＋ เพิ่มหมวดหมู่หลักใหม่</h3>
           <div class="flex space-x-2">
-            <input type="text" id="mgmt-new-main" placeholder="กรอกชื่อหมวดหมู่หลัก" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-zinc-700">
+            <input type="text" id="mgmt-new-main" placeholder="กรอกชื่อหมวดหมู่หลัก" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-[15px] font-bold text-white focus:outline-none">
             <button type="button" onclick="addMainCategoryClick()" class="bg-amber-500 text-black px-4 rounded-lg font-black text-[14px] hover:bg-amber-400 cursor-pointer">เพิ่ม</button>
           </div>
         </div>
@@ -183,7 +162,7 @@
           <div class="space-y-2.5">
             <select id="mgmt-select-main" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-[15px] font-bold text-white"></select>
             <div class="flex space-x-2">
-              <input type="text" id="mgmt-new-sub" placeholder="กรอกชื่อหมวดหมู่ย่อย" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-[15px] font-bold text-white focus:outline-none focus:border-zinc-700">
+              <input type="text" id="mgmt-new-sub" placeholder="กรอกชื่อหมวดหมู่ย่อย" class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-[15px] font-bold text-white focus:outline-none">
               <button type="button" onclick="addSubCategoryClick()" class="bg-amber-500 text-black px-4 rounded-lg font-black text-[14px] hover:bg-amber-400 cursor-pointer">เพิ่มย่อย</button>
             </div>
           </div>
@@ -196,7 +175,6 @@
         </div>
       </section>
 
-      <!-- ================= ฟอร์มหน้าจอ: เพิ่มรายการ (ADD TRADE FORM) ================= -->
       <section id="view-add-trade" class="hidden space-y-6">
         <div class="flex items-center space-x-3 pb-2.5 border-b border-zinc-900">
           <button type="button" onclick="hideAddTradeForm()" class="text-zinc-400 text-3xl font-bold p-1 hover:text-white cursor-pointer">←</button>
@@ -225,27 +203,27 @@
             <div class="grid grid-cols-2 gap-2.5">
               <div>
                 <label class="text-[14px] font-bold text-zinc-300 block mb-2">กลุ่มสินทรัพย์หลัก</label>
-                <select id="stock-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-zinc-700"></select>
+                <select id="stock-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-indigo-500"></select>
               </div>
               <div>
                 <label class="text-[14px] font-bold text-zinc-300 block mb-2">กลุ่มย่อย</label>
-                <select id="stock-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-zinc-700"></select>
+                <select id="stock-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-indigo-500"></select>
               </div>
             </div>
             <div>
               <label class="text-[14px] font-bold text-zinc-300 block mb-2">ชื่อย่อหุ้น / สินทรัพย์</label>
-              <input type="text" id="trade-symbol" placeholder="เช่น AAPL, TISCO, NVDA" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[20px] font-black uppercase text-white focus:outline-none focus:border-zinc-700">
+              <input type="text" id="trade-symbol" placeholder="เช่น AAPL, TISCO, NVDA" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[20px] font-black uppercase text-white focus:outline-none focus:border-indigo-500">
             </div>
           </div>
 
           <div id="box-categories" class="hidden grid grid-cols-2 gap-2.5">
             <div>
               <label class="text-[14px] font-bold text-zinc-300 block mb-2">หมวดหมู่รายจ่ายหลัก</label>
-              <select id="exp-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-zinc-700"></select>
+              <select id="exp-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-indigo-500"></select>
             </div>
             <div>
               <label class="text-[14px] font-bold text-zinc-300 block mb-2">หมวดหมู่ย่อย</label>
-              <select id="exp-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-zinc-700"></select>
+              <select id="exp-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white focus:outline-none focus:border-indigo-500"></select>
             </div>
           </div>
 
@@ -253,7 +231,7 @@
             <label id="lbl-main-amount" class="text-[14px] font-bold text-zinc-300 block mb-2">จำนวนเงินตั้งต้น</label>
             <div class="relative">
               <span class="absolute left-4 top-3 text-[22px] font-black text-amber-400">฿</span>
-              <input type="number" step="any" id="trade-amount" oninput="calculateTaxLogic()" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 pl-9 text-[22px] font-black text-white focus:outline-none focus:border-zinc-700">
+              <input type="number" step="any" id="trade-amount" oninput="calculateTaxLogic()" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 pl-9 text-[22px] font-black text-white focus:outline-none focus:border-indigo-500">
             </div>
           </div>
 
@@ -283,7 +261,7 @@
 
           <div>
             <label class="text-[14px] font-bold text-zinc-300 block mb-2">วันที่บันทึกรายการ</label>
-            <input type="date" id="trade-date" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[20px] font-bold text-white focus:outline-none focus:border-zinc-700">
+            <input type="date" id="trade-date" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[20px] font-bold text-white focus:outline-none">
           </div>
 
           <div id="box-optional-wrapper" class="border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-950">
@@ -329,54 +307,35 @@
 
     </main>
 
-    <!-- ================= แถบเมนูด้านล่าง ปรับปรุงใหม่ 5 ปุ่ม โดยใช้ระบบ SVG โปร่งใส ไม่มีพื้นหลังขาว ================= -->
-    <nav id="bottom-nav-bar" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-22 bg-black/95 backdrop-blur-md border-t border-zinc-900 flex justify-around items-center px-1 z-50">
-      
-      <!-- ปุ่ม 1: แดชบอร์ด -->
-      <button type="button" onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center space-y-1 text-amber-400 transition-colors cursor-pointer">
-        <svg class="w-6 h-6 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 13h4v8H3v-8zm6-7h4v15H9V6zm6 9h4v6h-4v-6z"/>
-        </svg>
+    <nav id="bottom-nav-bar" class="absolute bottom-0 left-0 right-0 h-22 bg-black border-t border-zinc-900 flex justify-around items-center px-1 z-50">
+      <button type="button" onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center space-y-1 text-zinc-600 cursor-pointer">
+        <span class="text-xl">📊</span>
         <span class="text-[11px] font-bold tracking-tight">แดชบอร์ด</span>
       </button>
-      
-      <!-- ปุ่ม 2: รายงาน -->
-      <button type="button" onclick="changeMenuTab('reports')" id="nav-reports" class="flex-1 flex flex-col items-center space-y-1 text-zinc-500 transition-colors cursor-pointer">
-        <svg class="w-6 h-6 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-        </svg>
+      <button type="button" onclick="changeMenuTab('reports')" id="nav-reports" class="flex-1 flex flex-col items-center space-y-1 text-zinc-600 cursor-pointer">
+        <span class="text-xl">📈</span>
         <span class="text-[11px] font-bold tracking-tight">รายงาน</span>
       </button>
       
-      <!-- ปุ่ม 3: โปรไฟล์ผู้ใช้ (ตรงกลาง) -->
-      <button type="button" onclick="changeMenuTab('profile')" id="nav-profile" class="flex-1 flex flex-col items-center justify-center -mt-4 cursor-pointer relative group">
-        <div class="w-13 h-13 rounded-full p-0.5 bg-zinc-900 border-2 border-zinc-800 active:border-amber-400 group-hover:border-zinc-700 transition-all overflow-hidden shadow-lg">
+      <button type="button" onclick="changeMenuTab('profile')" id="nav-profile" class="flex-1 flex flex-col items-center justify-center -mt-3 cursor-pointer relative">
+        <div class="w-12 h-12 rounded-full p-0.5 bg-zinc-800 border-2 border-zinc-700 active:border-amber-400 transition-all overflow-hidden shadow-md">
           <img id="nav-profile-img" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80" alt="User" class="w-full h-full rounded-full object-cover">
         </div>
-        <span class="text-[11px] font-bold tracking-tight text-zinc-500 mt-1" id="nav-profile-text">โปรไฟล์</span>
+        <span class="text-[11px] font-bold tracking-tight text-zinc-600 mt-1" id="nav-profile-text">โปรไฟล์</span>
       </button>
 
-      <!-- ปุ่ม 4: ธุรกรรม -->
-      <button type="button" onclick="changeMenuTab('trades')" id="nav-trades" class="flex-1 flex flex-col items-center space-y-1 text-zinc-500 transition-colors cursor-pointer">
-        <svg class="w-6 h-6 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 002-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-        </svg>
+      <button type="button" onclick="changeMenuTab('trades')" id="nav-trades" class="flex-1 flex flex-col items-center space-y-1 text-zinc-600 cursor-pointer">
+        <span class="text-xl">📋</span>
         <span class="text-[11px] font-bold tracking-tight">ธุรกรรม</span>
       </button>
-      
-      <!-- ปุ่ม 5: ตั้งค่า -->
-      <button type="button" onclick="changeMenuTab('settings')" id="nav-settings" class="flex-1 flex flex-col items-center space-y-1 text-zinc-500 transition-colors cursor-pointer">
-        <svg class="w-6 h-6 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-        </svg>
+      <button type="button" onclick="changeMenuTab('settings')" id="nav-settings" class="flex-1 flex flex-col items-center space-y-1 text-zinc-600 cursor-pointer">
+        <span class="text-xl">⚙️</span>
         <span class="text-[11px] font-bold tracking-tight">ตั้งค่า</span>
       </button>
     </nav>
 
   </div>
 
-  <!-- ================= CORE DATABASE & APPLICATION LOGIC ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -412,6 +371,7 @@
     let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats')) || defExpenseCats;
     let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats')) || defStockCats;
 
+    // --- ระบบดึงและบันทึกรูปภาพโปรไฟล์ผ่าน LocalStorage ---
     const defaultImg = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80";
     let storedProfileImg = localStorage.getItem('pflow_user_avatar') || defaultImg;
     
@@ -423,6 +383,7 @@
     }
     updateAvatarUI(storedProfileImg);
 
+    // จัดการ Event เมื่อมีการอัปโหลด/ถ่ายรูปโปรไฟล์ใหม่
     document.getElementById('profile-file-input').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -455,23 +416,26 @@
       document.getElementById('view-category-manager').classList.add('hidden');
       
       document.querySelectorAll('#bottom-nav-bar button').forEach(btn => {
+        // ถอนสีปุ่มทั่วไป
         btn.classList.remove('text-amber-400');
-        btn.classList.add('text-zinc-500');
+        btn.classList.add('text-zinc-600');
       });
-      document.getElementById('nav-profile-text').className = "text-[11px] font-bold tracking-tight text-zinc-500 mt-1";
-      document.getElementById('nav-profile').querySelector('div').className = "w-13 h-13 rounded-full p-0.5 bg-zinc-900 border-2 border-zinc-800 active:border-amber-400 transition-all overflow-hidden shadow-lg";
+      // เคลียร์สีพิเศษของข้อความปุ่มโปรไฟล์ด้วย
+      document.getElementById('nav-profile-text').className = "text-[11px] font-bold tracking-tight text-zinc-600 mt-1";
+      document.getElementById('nav-profile').querySelector('div').className = "w-12 h-12 rounded-full p-0.5 bg-zinc-800 border-2 border-zinc-700 active:border-amber-400 transition-all overflow-hidden shadow-md";
 
       const targetView = document.getElementById(`view-${tabName}`);
       const targetNav = document.getElementById(`nav-${tabName}`);
       if(targetView) targetView.classList.remove('hidden');
       
       if(targetNav) {
-        targetNav.classList.remove('text-zinc-500');
+        targetNav.classList.remove('text-zinc-600');
         targetNav.classList.add('text-amber-400');
         
+        // ถ้าเป็นปุ่มโปรไฟล์ ไฮไลต์ขอบรูปคู่ไปด้วยเพื่อความสวยงาม
         if(tabName === 'profile') {
           document.getElementById('nav-profile-text').className = "text-[11px] font-bold tracking-tight text-amber-400 mt-1";
-          document.getElementById('nav-profile').querySelector('div').className = "w-13 h-13 rounded-full p-0.5 bg-black border-2 border-amber-400 transition-all overflow-hidden shadow-lg";
+          document.getElementById('nav-profile').querySelector('div').className = "w-12 h-12 rounded-full p-0.5 bg-zinc-900 border-2 border-amber-400 transition-all overflow-hidden shadow-md";
         }
       }
     }
@@ -488,7 +452,7 @@
       localStorage.setItem('pflow_active_tab', 'add-trade');
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       document.getElementById('view-category-manager').classList.add('hidden');
-      document.getElementById('view-add-trade').remove('hidden');
+      document.getElementById('view-add-trade').classList.remove('hidden');
       switchDataType(currentDataType);
     }
     window.hideAddTradeForm = function() { changeMenuTab('dashboard'); }
@@ -517,8 +481,6 @@
     function renderMgmtTree() {
       const treeDisplay = document.getElementById('mgmt-tree-display');
       const selectMain = document.getElementById('mgmt-select-main');
-      if (!treeDisplay || !selectMain) return;
-      
       treeDisplay.innerHTML = '';
       selectMain.innerHTML = '';
 
@@ -827,7 +789,7 @@
           if(tLogList) {
             let taxNote = currentTax > 0 ? `<span class="text-xs text-cyan-400 block">โดนหักภาษี ฿${currentTax.toFixed(2)}</span>` : '';
             tLogList.innerHTML += `
-              <div class="bg-zinc-900 border border-zinc-800/80 p-4 rounded-xl flex justify-between items-center group relative overflow-hidden">
+              <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center group relative overflow-hidden">
                 <div class="flex-1 pr-4">
                   <div class="flex items-center space-x-2">
                     <span class="text-[16px] font-black text-white">${item.symbol}</span>
@@ -855,7 +817,7 @@
           if(tLogList) {
             let taxNote = currentTax > 0 ? `<span class="text-xs text-cyan-400 block">หัก ณ ที่จ่าย ฿${currentTax.toFixed(2)}</span>` : '';
             tLogList.innerHTML += `
-              <div class="bg-zinc-900 border border-zinc-800/80 p-4 rounded-xl flex justify-between items-center group relative overflow-hidden">
+              <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center group relative overflow-hidden">
                 <div class="flex-1 pr-4">
                   <div class="flex items-center space-x-2">
                     <span class="text-[16px] font-bold text-zinc-300">${item.category}</span>
@@ -913,7 +875,7 @@
       const sortedSubKeys = Object.keys(groupsData).sort((a, b) => a.localeCompare(b, 'th'));
 
       if(sortedSubKeys.length === 0) {
-        container.innerHTML = `<p class="text-sm text-zinc-700 italic pl-2">ยังไม่มีข้อมูลธุรกรรมในกลุ่มนี้</p>`;
+        container.innerHTML = `<p class="text-sm text-zinc-600 italic pl-2">ยังไม่มีข้อมูลธุรกรรมในกลุ่มนี้</p>`;
         return;
       }
 
@@ -938,7 +900,7 @@
           let formattedDate = dateObj.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
 
           itemsHtml += `
-            <div class="flex justify-between items-center py-1.5 text-sm border-b border-zinc-950 last:border-0 pl-1">
+            <div class="flex justify-between items-center py-1.5 text-sm border-b border-zinc-900/60 last:border-0 pl-1">
               <span class="text-zinc-400 font-mono">${formattedDate} <span class="text-zinc-300 font-sans ml-1">${isStock ? item.symbol : item.mainCat}</span></span>
               <div>${priceLabel}</div>
             </div>`;
