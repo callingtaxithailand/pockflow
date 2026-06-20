@@ -3,91 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PocketFlow - Dime Edition</title>
+  <title>PocketFlow - Fixed Version</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <!-- [ใส่ Style เดิมของคุณตรงนี้] -->
 </head>
 <body class="bg-black text-zinc-100 font-sans">
-
-  <!-- โครงสร้างหลัก (Main Container) -->
-  <div class="max-w-md mx-auto min-h-screen flex flex-col bg-black shadow-2xl pb-26 border-x border-zinc-950">
-    <main class="flex-1 p-5">
-      
-      <!-- ส่วนของ Dashboard, Reports, Profile, Settings (ใส่เหมือนเดิมของคุณ) -->
-      <!-- ... (จุดนี้ใส่ Code เดิมของคุณที่แสดงผลหน้า Dashboard, Reports, Profile ตามปกติ) ... -->
-
-      <!-- ส่วนหน้าประวัติธุรกรรมที่แก้ไขใหม่ (หน้า Trades) -->
-      <section id="view-trades" class="tab-view hidden space-y-4">
-        <h2 class="text-[24px] font-black text-white px-2">ประวัติธุรกรรมทั้งหมด</h2>
-        
-        <!-- แถบค้นหาและกรอง (ใหม่) -->
-        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-          <input type="text" id="trade-search" oninput="renderFilteredTrades()" placeholder="🔍 ค้นหาชื่อหุ้น หรือ รายการ..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-sm text-white">
-          <div class="grid grid-cols-2 gap-2">
-            <input type="date" id="trade-filter-date" onchange="renderFilteredTrades()" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400">
-            <select id="trade-filter-type" onchange="renderFilteredTrades()" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400">
-              <option value="ALL">ทุกประเภท</option>
-              <option value="STOCK">หุ้น / สินทรัพย์</option>
-              <option value="EXPENSE">รายจ่ายในบ้าน</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- รายการที่แสดง วัน/เดือน/ปี นำหน้า -->
-        <div id="filtered-trades-list" class="space-y-4"></div>
-      </section>
-
-      <!-- ส่วนหน้าอื่นๆ (เพิ่มตามปกติ) -->
+  <div class="max-w-md mx-auto min-h-screen bg-black border-x border-zinc-900 pb-26">
+    <main id="main-content" class="p-5">
+      <section id="view-dashboard" class="tab-view"> </section>
+      <section id="view-reports" class="tab-view hidden"> </section>
+      <section id="view-profile" class="tab-view hidden"> </section>
+      <section id="view-trades" class="tab-view hidden"> </section>
+      <section id="view-settings" class="tab-view hidden"> </section>
     </main>
-
-    <!-- Bottom Nav (ต้องมีครบทุกปุ่ม) -->
-    <nav id="bottom-nav-bar" class="fixed bottom-0 ...">
-        <!-- ปุ่ม Dashboard, Reports, Profile, Trades, Settings ตามเดิมของคุณ -->
-    </nav>
   </div>
 
-  <script type="module">
-    // ... (Firebase Initialization ของคุณ) ...
-
-    // [ฟังก์ชัน Render ที่ปรับปรุงใหม่]
-    window.renderFilteredTrades = function() {
-      const searchTerm = document.getElementById('trade-search').value.toLowerCase();
-      const filterDate = document.getElementById('trade-filter-date').value;
-      const filterType = document.getElementById('trade-filter-type').value;
-      const container = document.getElementById('filtered-trades-list');
-      container.innerHTML = '';
-
-      // กรองข้อมูลจาก allTransactions (ตัวแปรเดียวกับที่คุณมีอยู่แล้ว)
-      let filtered = allTransactions.filter(t => {
-        const title = (t.symbol || t.category || '').toLowerCase();
-        const matchesSearch = title.includes(searchTerm);
-        const matchesDate = filterDate ? t.date === filterDate : true;
-        const matchesType = filterType === 'ALL' ? true : (filterType === 'STOCK' ? t.isStock : !t.isStock);
-        return matchesSearch && matchesDate && matchesType;
-      });
-
-      // จัดกลุ่มตามวันที่
-      const grouped = filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).reduce((acc, curr) => {
-        (acc[curr.date] = acc[curr.date] || []).push(curr);
-        return acc;
-      }, {});
-
-      Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a)).forEach(date => {
-        const d = new Date(date);
-        const dateLabel = d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
-        
-        container.innerHTML += `<h3 class="text-amber-400 font-black text-xs uppercase tracking-widest pl-1">${dateLabel}</h3>`;
-        grouped[date].forEach(t => {
-          container.innerHTML += `
-            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between">
-              <span class="font-bold">${t.symbol || t.category}</span>
-              <span class="font-black text-rose-400">฿${(t.total || t.amount).toLocaleString()}</span>
-            </div>`;
-        });
-      });
+  <script>
+    // แก้ไข: เพิ่มคำสั่งให้หน้าจอเริ่มต้น (Dashboard) แสดงผลทันทีเมื่อเปิดไฟล์
+    window.onload = function() {
+      document.getElementById('view-dashboard').classList.remove('hidden');
     };
-    
-    // เรียกใช้ใน processAndRender ของคุณเดิม
+
+    // ฟังก์ชันเปลี่ยนหน้าให้ทำงานถูกต้อง
+    window.changeMenuTab = function(tabName) {
+      document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+      const target = document.getElementById(`view-${tabName}`);
+      if (target) target.classList.remove('hidden');
+    };
   </script>
 </body>
 </html>
