@@ -116,7 +116,7 @@
               <span class="text-xs font-bold text-amber-400">เปลี่ยนรูป 📷</span>
             </div>
           </div>
-          <input type="file" id="profile-file-input" accept="image/*" class="hidden">
+          <input type="file" id="profile-file-input" accept="image/*" onchange="handleProfileImageChange(event)" class="hidden">
           <div>
             <h3 class="text-xl font-black text-white">ผู้ใช้งาน PocketFlow</h3>
             <p class="text-xs text-zinc-500 mt-1">Dime Edition Account</p>
@@ -301,6 +301,39 @@
     let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats')) || defExpenseCats;
     let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats')) || defStockCats;
 
+    // ฟังก์ชันจัดการอัปโหลดและอัปเดตรูปภาพโปรไฟล์ (Real-time อัปเดต + เซฟลง LocalStorage เพื่อให้จำรูปได้)
+    window.handleProfileImageChange = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Image = e.target.result;
+        
+        // เซฟลงเครื่องมือถือของผู้ใช้
+        localStorage.setItem('pflow_profile_avatar', base64Image);
+        
+        // อัปเดตรูปภาพในหน้าแสดงผลทันทีทั้ง 2 จุดหลัก
+        const detailImg = document.getElementById('profile-detail-img');
+        const navImg = document.getElementById('nav-profile-img');
+        
+        if (detailImg) detailImg.src = base64Image;
+        if (navImg) navImg.src = base64Image;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ฟังก์ชันโหลดรูปภาพโปรไฟล์เริ่มต้นขึ้นมาแสดงผลตอนเปิดหน้าเว็บใหม่
+    function loadSavedProfileImage() {
+      const savedAvatar = localStorage.getItem('pflow_profile_avatar');
+      if (savedAvatar) {
+        const detailImg = document.getElementById('profile-detail-img');
+        const navImg = document.getElementById('nav-profile-img');
+        if (detailImg) detailImg.src = savedAvatar;
+        if (navImg) navImg.src = savedAvatar;
+      }
+    }
+
     window.deleteItemClick = async function(id, isStock) {
       if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้ถาวร?")) return;
       try {
@@ -324,13 +357,14 @@
     window.addEventListener('DOMContentLoaded', () => {
       const savedTab = localStorage.getItem('pflow_active_tab') || 'dashboard';
       changeMenuTab(savedTab === 'add-trade' || savedTab === 'category-manager' ? 'dashboard' : savedTab);
-      setupDropdowns(); // รันเพื่อเตรียมข้อมูลหมวดหมู่เริ่มต้นลงใน Select Elements
+      setupDropdowns();
+      loadSavedProfileImage(); // เรียกใช้งานระบบรูปภาพโปรไฟล์ที่จัดเก็บไว้
     });
 
     window.showAddTradeForm = function() {
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       document.getElementById('view-add-trade').classList.remove('hidden');
-      switchDataType('STOCK'); // รีเซ็ตมาที่หน้าเลือกประเภทหุ้นเป็นค่าเริ่มต้นพร้อมผูก Dropdown
+      switchDataType('STOCK');
     }
     window.hideAddTradeForm = function() { changeMenuTab('dashboard'); }
     window.showCategoryManager = function() {
@@ -339,7 +373,6 @@
     }
     window.hideCategoryManager = function() { changeMenuTab('settings'); }
 
-    // ฟังก์ชันแก้ไขบั๊กสลับแท็บข้อมูลแล้ว Dropdown ค้าง/กดไม่ได้
     window.switchDataType = function(type) {
       currentDataType = type;
       if(type === 'STOCK') {
@@ -355,7 +388,7 @@
         document.getElementById('box-categories').classList.remove('hidden');
         document.getElementById('box-trade-type').classList.add('hidden');
       }
-      setupDropdowns(); // บังคับให้เขียนตัวเลือกย่อยลงใน Select HTML ใหม่ทุกครั้งที่เปลี่ยนกลุ่มหลัก เพื่อแก้ปัญหากดเลือกไม่ได้บนสมาร์ตโฟน
+      setupDropdowns();
     }
 
     window.setTradeType = function(type) {
@@ -364,7 +397,6 @@
       document.getElementById(`ttype-${type}`).className = `py-3 rounded-xl text-[17px] font-black bg-zinc-800 text-white`;
     }
 
-    // ฟังก์ชันแมปข้อมูลแบบไดนามิกเข้าสู่แท็ก <select> ทั้งสองฝั่ง
     function setupDropdowns() {
       const eMain = document.getElementById('exp-main-cat'); const eSub = document.getElementById('exp-sub-cat');
       const sMain = document.getElementById('stock-main-cat'); const sSub = document.getElementById('stock-sub-cat');
@@ -373,7 +405,6 @@
         eMain.innerHTML = ''; 
         Object.keys(expenseCategories).forEach(m => eMain.innerHTML += `<option value="${m}">${m}</option>`);
         
-        // ฟังก์ชันล้างและเติมค่าหมวดหมู่ย่อยของรายจ่ายเมื่อหมวดหมู่หลักเปลี่ยน
         eMain.onchange = () => { 
           eSub.innerHTML = ''; 
           if(expenseCategories[eMain.value]) {
@@ -386,7 +417,6 @@
         sMain.innerHTML = ''; 
         Object.keys(stockCategories).forEach(m => sMain.innerHTML += `<option value="${m}">${m}</option>`);
         
-        // ฟังก์ชันล้างและเติมค่าหมวดหมู่ย่อยของหุ้นเมื่อหมวดหมู่หลักเปลี่ยน
         sMain.onchange = () => { 
           sSub.innerHTML = ''; 
           if(stockCategories[sMain.value]) {
@@ -395,12 +425,10 @@
         };
       }
 
-      // สั่งทำงานครั้งแรกสุดเพื่อเรียกหมวดหมู่ย่อยขึ้นมาเตรียมรอไว้ในฟิลด์
       if(currentDataType === 'STOCK' && sMain.value) sMain.onchange();
       if(currentDataType === 'EXPENSE' && eMain.value) eMain.onchange();
     }
 
-    // ฟังก์ชันคำนวณหักภาษี ณ ที่จ่ายเบื้องต้นในหน้า UI
     window.calculateTaxLogic = function() {
       const amt = parseFloat(document.getElementById('trade-amount').value) || 0;
       const pct = parseFloat(document.getElementById('trade-tax-percent').value) || 0;
@@ -432,7 +460,6 @@
         });
       }
       
-      // ล้างข้อมูลฟอร์มหลังจากกดเซฟเสร็จ
       document.getElementById('trade-amount').value = '';
       document.getElementById('trade-symbol').value = '';
       changeMenuTab('dashboard');
