@@ -306,7 +306,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
@@ -339,7 +339,18 @@
     let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats')) || defExpenseCats;
     let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats')) || defStockCats;
 
-    // --- ระบบรักษาสถานะแท็บหน้าเดิมเมื่อเปิดแอปหรือรีเฟรชหน้าเว็บ ---
+    // --- ฟังก์ชันสำหรับการลบรายการออกจาก Firebase ---
+    window.deleteItemClick = async function(id, isStock) {
+      if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้ถาวร?")) return;
+      try {
+        const collectionName = isStock ? "transactions" : "household_expenses";
+        await deleteDoc(doc(db, collectionName, id));
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+        alert("เกิดข้อผิดพลาด ไม่สามารถลบรายการได้");
+      }
+    }
+
     window.changeMenuTab = function(tabName) {
       localStorage.setItem('pflow_active_tab', tabName);
 
@@ -378,7 +389,6 @@
     }
     window.hideAddTradeForm = function() { changeMenuTab('dashboard'); }
 
-    // --- ส่วนบริการหน้าตั้งค่าจัดการหมวดหมู่ ---
     window.showCategoryManager = function() {
       localStorage.setItem('pflow_active_tab', 'category-manager');
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
@@ -613,7 +623,6 @@
       arrow.style.transform = el.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
     }
 
-    // --- บันทึกข้อมูลลงฐานข้อมูล Firebase ---
     document.getElementById('btn-save-trade').addEventListener('click', async () => {
       const amount = parseFloat(document.getElementById('trade-amount').value);
       const date = document.getElementById('trade-date').value;
@@ -658,7 +667,6 @@
       changeMenuTab('dashboard');
     });
 
-    // --- ส่วนดึงข้อมูล Realtime และประมวลผลขึ้นหน้าจอแอป ---
     onSnapshot(collection(db, "transactions"), (snap) => {
       allTransactions = allTransactions.filter(t => !t.isStock);
       snap.forEach(d => allTransactions.push({id: d.id, ...d.data()}));
@@ -674,7 +682,6 @@
       let netPnL = 0, totalDiv = 0, totalExp = 0, totalTax = 0;
       let stockMap = {};
 
-      // เตรียมโครงสร้างจัดกลุ่มตามหมวดหมู่ย่อยสำหรับหน้า "รายงาน"
       let reportStockGroups = {};
       let reportExpenseGroups = {};
 
@@ -691,7 +698,6 @@
         if(item.isStock) {
           if(!stockMap[item.symbol]) stockMap[item.symbol] = { pnl: 0, div: 0, count: 0 };
           
-          // จัดกลุ่มข้อมูลลงในหน้า รายงานแยกประเภทหุ้น (ยึดหมวดหมู่ย่อย)
           if(!reportStockGroups[subKey]) reportStockGroups[subKey] = [];
           reportStockGroups[subKey].push(item);
 
@@ -715,54 +721,61 @@
           if(tLogList) {
             let taxNote = currentTax > 0 ? `<span class="text-xs text-cyan-400 block">โดนหักภาษี ฿${currentTax.toFixed(2)}</span>` : '';
             tLogList.innerHTML += `
-              <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center">
-                <div>
+              <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center group relative overflow-hidden">
+                <div class="flex-1 pr-4">
                   <div class="flex items-center space-x-2">
                     <span class="text-[16px] font-black text-white">${item.symbol}</span>
                     <span class="text-xs px-2 py-0.5 rounded-md font-bold ${logBadgeColor}">${item.type}</span>
                   </div>
                   <p class="text-xs text-zinc-500 mt-0.5">${item.date} • ย่อย: ${subKey}</p>
                 </div>
-                <div class="text-right">
-                  <p class="text-[17px] font-black text-white">฿${item.total.toLocaleString()}</p>
-                  ${taxNote}
+                <div class="flex items-center space-x-3">
+                  <div class="text-right">
+                    <p class="text-[17px] font-black text-white">฿${item.total.toLocaleString()}</p>
+                    ${taxNote}
+                  </div>
+                  <button onclick="deleteItemClick('${item.id}', true)" class="text-rose-500 hover:text-rose-400 p-2 text-lg cursor-pointer select-none transition-colors" title="ลบรายการ">
+                    🗑️
+                  </button>
                 </div>
               </div>`;
           }
         } else {
           totalExp += item.amount;
           
-          // จัดกลุ่มข้อมูลลงในหน้า รายงานแยกประเภทรายจ่าย (ยึดหมวดหมู่ย่อย)
           if(!reportExpenseGroups[subKey]) reportExpenseGroups[subKey] = [];
           reportExpenseGroups[subKey].push(item);
 
           if(tLogList) {
             let taxNote = currentTax > 0 ? `<span class="text-xs text-cyan-400 block">หัก ณ ที่จ่าย ฿${currentTax.toFixed(2)}</span>` : '';
             tLogList.innerHTML += `
-              <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center">
-                <div>
+              <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center group relative overflow-hidden">
+                <div class="flex-1 pr-4">
                   <div class="flex items-center space-x-2">
                     <span class="text-[16px] font-bold text-zinc-300">${item.category}</span>
                     <span class="text-xs px-2 py-0.5 rounded-md font-bold bg-zinc-800 text-rose-400">รายจ่าย</span>
                   </div>
                   <p class="text-xs text-zinc-500 mt-0.5">${item.date}</p>
                 </div>
-                <div class="text-right">
-                  <p class="text-[17px] font-black text-rose-400">฿${item.amount.toLocaleString()}</p>
-                  ${taxNote}
+                <div class="flex items-center space-x-3">
+                  <div class="text-right">
+                    <p class="text-[17px] font-black text-rose-400">฿${item.amount.toLocaleString()}</p>
+                    ${taxNote}
+                  </div>
+                  <button onclick="deleteItemClick('${item.id}', false)" class="text-rose-500 hover:text-rose-400 p-2 text-lg cursor-pointer select-none transition-colors" title="ลบรายการ">
+                    🗑️
+                  </button>
                 </div>
               </div>`;
           }
         }
       });
 
-      // อัปเดตตัวเลขหน้าแดชบอร์ดหลัก
       if(document.getElementById('total-pnl-display')) document.getElementById('total-pnl-display').innerText = `฿${netPnL.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
       if(document.getElementById('total-div-display')) document.getElementById('total-div-display').innerText = `฿${totalDiv.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
       if(document.getElementById('total-exp-display')) document.getElementById('total-exp-display').innerText = `฿${totalExp.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
       if(document.getElementById('total-tax-display')) document.getElementById('total-tax-display').innerText = `฿${totalTax.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
 
-      // อัปเดตรายงานสรุปของหุ้นหน้า Dashboard
       const rList = document.getElementById('stock-report-list');
       if(rList) {
         rList.innerHTML = '';
@@ -782,18 +795,15 @@
         }
       }
 
-      // ================= ประมวลผลสร้างหน้า "รายงานแยกประเภท" ยึดตามหมวดหมู่ย่อย =================
       renderSubGroupReport('report-stock-sub-group', reportStockGroups, true);
       renderSubGroupReport('report-expense-sub-group', reportExpenseGroups, false);
     }
 
-    // ฟังก์ชันช่วยจัดแจงหน้าตาของกลุ่มย่อย เรียงตัวอักษร และเรียงวันที่ เดือน ปี
     function renderSubGroupReport(elementId, groupsData, isStock) {
       const container = document.getElementById(elementId);
       if(!container) return;
       container.innerHTML = '';
 
-      // 1. เรียงลำดับคีย์ (หมวดหมู่ย่อย) ตามตัวอักษร ก-ฮ , a-z
       const sortedSubKeys = Object.keys(groupsData).sort((a, b) => a.localeCompare(b, 'th'));
 
       if(sortedSubKeys.length === 0) {
@@ -802,11 +812,9 @@
       }
 
       sortedSubKeys.forEach(subKey => {
-        // 2. ดึงรายการธุรกรรมที่อยู่ในหมวดหมู่ย่อยนี้ออกมา แล้วเรียง วันที่ เดือน ปี (จาก วันที่เก่า ไป วันที่ใหม่)
         let items = groupsData[subKey];
         items.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        // คำนวณยอดรวมของกลุ่มย่อยนี้
         let subGroupTotal = 0;
         let itemsHtml = '';
 
@@ -820,7 +828,6 @@
             priceLabel = `<span class="font-bold text-rose-400">฿${item.amount.toLocaleString()}</span>`;
           }
 
-          // จัดรูปแบบแสดง วันที่-เดือน-ปี เป็น text สวยๆ
           let dateObj = new Date(item.date);
           let formattedDate = dateObj.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
 
@@ -831,7 +838,6 @@
             </div>`;
         });
 
-        // ยัดโครงสร้างการ์ดกลุ่มย่อยเข้าไปในหน้าจอ
         container.innerHTML += `
           <div class="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 shadow-sm">
             <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-zinc-800">
