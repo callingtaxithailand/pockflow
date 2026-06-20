@@ -1,84 +1,94 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow - ประวัติธุรกรรม</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketFlow - Restored & Optimized</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-black text-white p-4">
-
-    <div class="max-w-md mx-auto">
-        <h1 class="text-2xl font-black mb-6">ประวัติธุรกรรม</h1>
-
-        <!-- ส่วนค้นหาและกรองข้อมูล -->
-        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3 mb-6">
-            <input type="text" id="searchBar" placeholder="ค้นหารายการ..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-sm">
-            <div class="grid grid-cols-2 gap-2">
-                <input type="date" id="dateFilter" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-sm">
-                <select id="categoryFilter" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-sm">
-                    <option value="">ทุกหมวดหมู่</option>
-                    <option value="EXPENSE">รายจ่ายในบ้าน</option>
-                    <option value="STOCK">หุ้น & สินทรัพย์</option>
-                </select>
-            </div>
+<body class="bg-black text-white font-sans">
+  <div class="max-w-md mx-auto min-h-screen bg-black border-x border-zinc-900 pb-26">
+    <main class="p-5">
+      <section id="view-trades" class="space-y-4">
+        <h2 class="text-2xl font-black mb-4">ประวัติธุรกรรมทั้งหมด</h2>
+        
+        <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
+          <input type="text" id="trade-search" oninput="renderFilteredTrades()" placeholder="🔍 ค้นหาชื่อหุ้น หรือ รายการ..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-sm text-white">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="date" id="trade-filter-date" onchange="renderFilteredTrades()" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400">
+            <select id="trade-filter-type" onchange="renderFilteredTrades()" class="bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-sm text-zinc-400">
+              <option value="ALL">ทุกประเภท</option>
+              <option value="STOCK">หุ้น / สินทรัพย์</option>
+              <option value="EXPENSE">รายจ่ายในบ้าน</option>
+            </select>
+          </div>
         </div>
 
-        <!-- รายการธุรกรรม -->
-        <div id="transactionContainer" class="space-y-6">
-            <!-- ข้อมูลจะถูกโหลดที่นี่ด้วย JS -->
-        </div>
-    </div>
+        <div id="filtered-trades-list" class="space-y-4">
+          </div>
+      </section>
+    </main>
+  </div>
 
-    <script>
-        // ข้อมูลจำลอง (แทนที่ด้วยข้อมูลจากฐานข้อมูลของคุณ)
-        const transactions = [
-            { id: 1, date: '2026-06-15', title: 'แชร์ (ชมพู่)', category: 'EXPENSE', amount: 1000 },
-            { id: 2, date: '2026-06-07', title: 'สาธารณูปโภค (COWAY)', category: 'EXPENSE', amount: 790 },
-            { id: 3, date: '2026-06-04', title: 'NVDY (หุ้น)', category: 'STOCK', amount: 499.77 }
-        ];
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        function renderTransactions(data) {
-            const container = document.getElementById('transactionContainer');
-            container.innerHTML = '';
-            
-            // จัดกลุ่มข้อมูลตามวันที่
-            const grouped = data.reduce((acc, curr) => {
-                (acc[curr.date] = acc[curr.date] || []).push(curr);
-                return acc;
-            }, {});
+    const firebaseConfig = {
+      apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
+      projectId: "pocketflow-49763",
+      // ... (ใส่ค่า Config เดิมของคุณให้ครบ)
+    };
 
-            Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a)).forEach(date => {
-                const dateHeader = new Date(date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
-                
-                let html = `<div class="space-y-2">
-                    <h2 class="text-amber-400 font-bold text-sm uppercase">${dateHeader}</h2>`;
-                
-                grouped[date].forEach(t => {
-                    html += `
-                    <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex justify-between items-center">
-                        <div>
-                            <p class="font-bold">${t.title}</p>
-                            <p class="text-xs text-zinc-500">${t.category}</p>
-                        </div>
-                        <span class="font-black text-rose-400">฿${t.amount.toLocaleString()}</span>
-                    </div>`;
-                });
-                
-                html += `</div>`;
-                container.innerHTML += html;
-            });
-        }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let allTransactions = [];
 
-        // ระบบค้นหา
-        document.getElementById('searchBar').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
-            const filtered = transactions.filter(t => t.title.toLowerCase().includes(val));
-            renderTransactions(filtered);
+    // ดึงข้อมูลจากฐานข้อมูล Firebase
+    function loadData() {
+      onSnapshot(collection(db, "transactions"), (snap) => {
+        snap.forEach(d => allTransactions.push({id: d.id, ...d.data(), isStock: true}));
+        renderFilteredTrades();
+      });
+      onSnapshot(collection(db, "household_expenses"), (snap) => {
+        snap.forEach(d => allTransactions.push({id: d.id, ...d.data(), isStock: false}));
+        renderFilteredTrades();
+      });
+    }
+
+    window.renderFilteredTrades = function() {
+      const searchTerm = document.getElementById('trade-search').value.toLowerCase();
+      const filterDate = document.getElementById('trade-filter-date').value;
+      const filterType = document.getElementById('trade-filter-type').value;
+      const container = document.getElementById('filtered-trades-list');
+      
+      let filtered = allTransactions.filter(t => {
+        const title = (t.symbol || t.category || '').toLowerCase();
+        return title.includes(searchTerm) && 
+               (filterDate ? t.date === filterDate : true) &&
+               (filterType === 'ALL' ? true : (filterType === 'STOCK' ? t.isStock : !t.isStock));
+      });
+
+      container.innerHTML = '';
+      const grouped = filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).reduce((acc, curr) => {
+        (acc[curr.date] = acc[curr.date] || []).push(curr);
+        return acc;
+      }, {});
+
+      Object.keys(grouped).sort((a,b) => new Date(b) - new Date(a)).forEach(date => {
+        const dateLabel = new Date(date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+        container.innerHTML += `<h3 class="text-amber-400 font-black text-xs uppercase tracking-widest pl-1 pt-4">${dateLabel}</h3>`;
+        grouped[date].forEach(t => {
+          container.innerHTML += `
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between">
+              <span class="font-bold">${t.symbol || t.category}</span>
+              <span class="font-black text-rose-400">฿${(t.total || t.amount).toLocaleString()}</span>
+            </div>`;
         });
+      });
+    };
 
-        // เริ่มต้นแสดงผล
-        renderTransactions(transactions);
-    </script>
+    loadData();
+  </script>
 </body>
 </html>
