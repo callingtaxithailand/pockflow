@@ -19,6 +19,15 @@
     input[type="date"]::-webkit-calendar-picker-indicator {
       filter: invert(1);
     }
+    /* ปรับแต่ง Dropdown ให้แสดงผลสวยงามบนมือถือและมองเห็นลูกศรชัดเจน */
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 36px !important;
+    }
   </style>
 </head>
 <body class="bg-black text-zinc-100 font-sans antialiased selection:bg-zinc-800">
@@ -27,7 +36,6 @@
     
     <main class="flex-1 p-5">
       
-      <!-- ================= LOGO DESIGN ================= -->
       <div class="flex flex-col items-center justify-center py-6 mb-4 select-none">
         <div class="flex items-center space-x-3">
           <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-400 rounded-xl flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20 font-black">
@@ -40,14 +48,12 @@
         </div>
       </div>
 
-      <!-- ================= หน้าหลัก 1: แดชบอร์ด (DASHBOARD) ================= -->
       <section id="view-dashboard" class="tab-view space-y-6">
         <div class="bg-zinc-900/90 border border-zinc-800/60 rounded-2xl p-5 text-center py-9 shadow-xl">
           <p class="text-[14px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</p>
           <h2 id="total-pnl-display" class="text-[48px] font-black text-white tracking-tight">฿0.00</h2>
         </div>
 
-        <!-- กล่องแสดงสถิติย่อยแบบ Grid -->
         <div class="grid grid-cols-3 gap-2">
           <div class="bg-amber-400 p-3 rounded-xl border-2 border-amber-500 shadow-md text-center">
             <p class="text-[11px] text-zinc-900 font-black uppercase tracking-wider">เงินปันผลสะสม</p>
@@ -63,7 +69,6 @@
           </div>
         </div>
 
-        <!-- รายงานหุ้นรายตัว -->
         <div class="pt-2">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-[14px] font-bold text-zinc-400 tracking-widest uppercase">รายงานแยกตามรายชื่อหุ้น</h3>
@@ -75,7 +80,6 @@
         </div>
       </section>
 
-      <!-- ================= หน้าหลัก 2: รายงานแยกหมวดหมู่ย่อย (REPORTS) ================= -->
       <section id="view-reports" class="tab-view hidden space-y-5">
         <div class="flex justify-between items-center">
           <h2 class="text-[24px] font-black text-white">รายงานแยกประเภท</h2>
@@ -103,7 +107,6 @@
         </div>
       </section>
 
-      <!-- ================= หน้าหลักพิเศษ: โปรไฟล์ผู้ใช้ (USER PROFILE) ================= -->
       <section id="view-profile" class="tab-view hidden space-y-6">
         <h2 class="text-[24px] font-black text-white">โปรไฟล์ผู้ใช้</h2>
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-center space-y-4 flex flex-col items-center">
@@ -121,11 +124,9 @@
         </div>
       </section>
 
-      <!-- ================= หน้าหลัก 3: รายรายการธุรกรรมทั้งหมด (TRADES) ปรับปรุงแยกกรอบรายจ่าย-หุ้นเด่นชัด ================= -->
       <section id="view-trades" class="tab-view hidden space-y-6">
         <h2 class="text-[24px] font-black text-white tracking-tight">ประวัติธุรกรรมทั้งหมด</h2>
         
-        <!-- ส่วนที่ 1: กรอบประวัติรายจ่ายในบ้าน (Border แดงเข้ม) -->
         <div class="border-2 border-rose-950/70 bg-zinc-950/50 rounded-2xl p-3.5 space-y-3">
           <div class="flex justify-between items-center px-1">
             <h3 class="text-[14px] font-black text-rose-400 tracking-widest uppercase flex items-center space-x-1.5">
@@ -138,7 +139,6 @@
           </div>
         </div>
 
-        <!-- ส่วนที่ 2: กรอบประวัติหุ้น / สินทรัพย์ (Border ทอง/เขียวเข้ม) -->
         <div class="border-2 border-emerald-950/70 bg-zinc-950/50 rounded-2xl p-3.5 space-y-3">
           <div class="flex justify-between items-center px-1">
             <h3 class="text-[14px] font-black text-emerald-400 tracking-widest uppercase flex items-center space-x-1.5">
@@ -152,7 +152,6 @@
         </div>
       </section>
 
-      <!-- ================= หน้าหลัก 4: ตั้งค่า (SETTINGS) ================= -->
       <section id="view-settings" class="tab-view hidden space-y-4">
         <h2 class="text-[24px] font-black text-white">ตั้งค่าระบบ</h2>
         <div class="bg-zinc-900 border border-zinc-800 rounded-xl divide-y divide-zinc-800 overflow-hidden">
@@ -163,7 +162,6 @@
         </div>
       </section>
 
-      <!-- ================= หน้าจอย่อย: จัดการหมวดหมู่ (CATEGORY MANAGER) ================= -->
       <section id="view-category-manager" class="hidden space-y-5">
         <div class="flex items-center space-x-3 pb-2.5 border-b border-zinc-900">
           <button type="button" onclick="hideCategoryManager()" class="text-zinc-400 text-3xl font-bold p-1 hover:text-white cursor-pointer">←</button>
@@ -189,12 +187,12 @@
         <div id="mgmt-tree-display" class="bg-zinc-900 rounded-xl p-4 border border-zinc-800 divide-y divide-zinc-800 max-h-64 overflow-y-auto"></div>
       </section>
 
-      <!-- ================= ฟอร์มหน้าจอ: เพิ่มรายการ (ADD TRADE FORM) ================= -->
       <section id="view-add-trade" class="hidden space-y-6">
         <div class="flex items-center space-x-3 pb-2.5 border-b border-zinc-900">
           <button type="button" onclick="hideAddTradeForm()" class="text-zinc-400 text-3xl font-bold p-1 hover:text-white cursor-pointer">←</button>
           <h2 class="text-[24px] font-black text-white">เพิ่มธุรกรรม</h2>
         </div>
+        
         <div class="space-y-4.5">
           <div>
             <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
@@ -202,6 +200,7 @@
               <button type="button" onclick="switchDataType('EXPENSE')" id="dtype-EXPENSE" class="py-2.5 rounded-lg font-bold text-[14px] text-zinc-500 cursor-pointer">💸 ค่าใช้จ่ายในบ้าน</button>
             </div>
           </div>
+          
           <div id="box-trade-type">
             <div class="grid grid-cols-3 gap-2.5">
               <button type="button" onclick="setTradeType('BUY')" id="ttype-BUY" class="py-3 rounded-xl font-black text-[17px] bg-emerald-600 text-white cursor-pointer">ซื้อ (BUY)</button>
@@ -209,23 +208,27 @@
               <button type="button" onclick="setTradeType('DIVIDEND')" id="ttype-DIVIDEND" class="py-3 rounded-xl font-bold text-[17px] bg-zinc-900 border border-zinc-800 text-zinc-400 cursor-pointer">ปันผล</button>
             </div>
           </div>
+
           <div id="box-stock-fields" class="space-y-4.5">
             <div class="grid grid-cols-2 gap-2.5">
-              <select id="stock-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white"></select>
-              <select id="stock-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white"></select>
+              <select id="stock-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[16px] font-bold text-white z-10"></select>
+              <select id="stock-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[16px] font-bold text-white z-10"></select>
             </div>
             <input type="text" id="trade-symbol" placeholder="ชื่อย่อหุ้น เช่น AAPL, NVDA" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[20px] font-black uppercase text-white">
           </div>
+
           <div id="box-categories" class="hidden grid grid-cols-2 gap-2.5">
-            <select id="exp-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white"></select>
-            <select id="exp-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[17px] font-bold text-white"></select>
+            <select id="exp-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[16px] font-bold text-white z-10"></select>
+            <select id="exp-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[16px] font-bold text-white z-10"></select>
           </div>
+
           <div>
             <div class="relative">
               <span class="absolute left-4 top-3 text-[22px] font-black text-amber-400">฿</span>
               <input type="number" step="any" id="trade-amount" oninput="calculateTaxLogic()" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 pl-9 text-[22px] font-black text-white">
             </div>
           </div>
+
           <div id="box-tax-section" class="bg-zinc-950 p-4 rounded-xl border border-dashed border-zinc-800 space-y-2">
             <select id="trade-tax-percent" onchange="calculateTaxLogic()" class="bg-zinc-900 border border-zinc-800 rounded-lg p-1.5 text-sm text-white">
               <option value="0">ไม่หักภาษี (0%)</option>
@@ -236,14 +239,14 @@
               <span id="lbl-net-result">สุทธิ: <span id="txt-net-amount" class="text-emerald-400">฿0.00</span></span>
             </div>
           </div>
+
           <input type="date" id="trade-date" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[20px] font-bold text-white">
-          <button type="button" id="btn-save-trade" class="w-full bg-amber-500 text-black text-[20px] font-black py-4 rounded-xl shadow-lg">บันทึกข้อมูลธุรกรรม</button>
+          <button type="button" id="btn-save-trade" class="w-full bg-amber-500 text-black text-[20px] font-black py-4 rounded-xl shadow-lg cursor-pointer">บันทึกข้อมูลธุรกรรม</button>
         </div>
       </section>
 
     </main>
 
-    <!-- ================= แถบเมนูด้านล่าง 5 ปุ่ม ================= -->
     <nav id="bottom-nav-bar" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-22 bg-black/95 backdrop-blur-md border-t border-zinc-900 flex justify-around items-center px-1 z-50">
       <button type="button" onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center space-y-1 text-amber-400 transition-colors">
         <svg class="w-6 h-6 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13h4v8H3v-8zm6-7h4v15H9V6zm6 9h4v6h-4v-6z"/></svg>
@@ -269,7 +272,6 @@
 
   </div>
 
-  <!-- ================= CORE DATABASE & APPLICATION LOGIC ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -293,8 +295,8 @@
 
     document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
 
-    const defExpenseCats = { "🔧 ซ่อมบำรุง": ["รถยนต์", "มอเตอร์ไซค์"], "⚡ สาธารณูปโภค": ["ค่าไฟฟ้า", "ค่าน้ำประปา"] };
-    const defStockCats = { "🇹🇭 หุ้นไทย (SET)": ["กลุ่มแบงก์"], "🇺🇸 หุ้นอเมริกา (US)": ["กลุ่ม AI"] };
+    const defExpenseCats = { "🔧 ซ่อมบำรุง": ["รถยนต์", "มอเตอร์ไซค์"], "⚡ สาธารณูปโภค": ["ค่าไฟฟ้า", "ค่าน้ำประปา", "ค่าส่วนกลาง"] };
+    const defStockCats = { "🇹🇭 หุ้นไทย (SET)": ["กลุ่มแบงก์", "กลุ่มพลังงาน"], "🇺🇸 หุ้นอเมริกา (US)": ["กลุ่ม AI", "กลุ่มเทคโนโลยี"] };
 
     let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats')) || defExpenseCats;
     let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats')) || defStockCats;
@@ -322,11 +324,13 @@
     window.addEventListener('DOMContentLoaded', () => {
       const savedTab = localStorage.getItem('pflow_active_tab') || 'dashboard';
       changeMenuTab(savedTab === 'add-trade' || savedTab === 'category-manager' ? 'dashboard' : savedTab);
+      setupDropdowns(); // รันเพื่อเตรียมข้อมูลหมวดหมู่เริ่มต้นลงใน Select Elements
     });
 
     window.showAddTradeForm = function() {
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       document.getElementById('view-add-trade').classList.remove('hidden');
+      switchDataType('STOCK'); // รีเซ็ตมาที่หน้าเลือกประเภทหุ้นเป็นค่าเริ่มต้นพร้อมผูก Dropdown
     }
     window.hideAddTradeForm = function() { changeMenuTab('dashboard'); }
     window.showCategoryManager = function() {
@@ -335,6 +339,7 @@
     }
     window.hideCategoryManager = function() { changeMenuTab('settings'); }
 
+    // ฟังก์ชันแก้ไขบั๊กสลับแท็บข้อมูลแล้ว Dropdown ค้าง/กดไม่ได้
     window.switchDataType = function(type) {
       currentDataType = type;
       if(type === 'STOCK') {
@@ -350,7 +355,7 @@
         document.getElementById('box-categories').classList.remove('hidden');
         document.getElementById('box-trade-type').classList.add('hidden');
       }
-      setupDropdowns();
+      setupDropdowns(); // บังคับให้เขียนตัวเลือกย่อยลงใน Select HTML ใหม่ทุกครั้งที่เปลี่ยนกลุ่มหลัก เพื่อแก้ปัญหากดเลือกไม่ได้บนสมาร์ตโฟน
     }
 
     window.setTradeType = function(type) {
@@ -359,19 +364,51 @@
       document.getElementById(`ttype-${type}`).className = `py-3 rounded-xl text-[17px] font-black bg-zinc-800 text-white`;
     }
 
+    // ฟังก์ชันแมปข้อมูลแบบไดนามิกเข้าสู่แท็ก <select> ทั้งสองฝั่ง
     function setupDropdowns() {
       const eMain = document.getElementById('exp-main-cat'); const eSub = document.getElementById('exp-sub-cat');
       const sMain = document.getElementById('stock-main-cat'); const sSub = document.getElementById('stock-sub-cat');
+      
       if(eMain && eSub) {
-        eMain.innerHTML = ''; Object.keys(expenseCategories).forEach(m => eMain.innerHTML += `<option value="${m}">${m}</option>`);
-        eMain.onchange = () => { eSub.innerHTML = ''; expenseCategories[eMain.value].forEach(s => eSub.innerHTML += `<option value="${s}">${s}</option>`); };
-        eMain.onchange();
+        eMain.innerHTML = ''; 
+        Object.keys(expenseCategories).forEach(m => eMain.innerHTML += `<option value="${m}">${m}</option>`);
+        
+        // ฟังก์ชันล้างและเติมค่าหมวดหมู่ย่อยของรายจ่ายเมื่อหมวดหมู่หลักเปลี่ยน
+        eMain.onchange = () => { 
+          eSub.innerHTML = ''; 
+          if(expenseCategories[eMain.value]) {
+            expenseCategories[eMain.value].forEach(s => eSub.innerHTML += `<option value="${s}">${s}</option>`);
+          }
+        };
       }
+      
       if(sMain && sSub) {
-        sMain.innerHTML = ''; Object.keys(stockCategories).forEach(m => sMain.innerHTML += `<option value="${m}">${m}</option>`);
-        sMain.onchange = () => { sSub.innerHTML = ''; stockCategories[sMain.value].forEach(s => sSub.innerHTML += `<option value="${s}">${s}</option>`); };
-        sMain.onchange();
+        sMain.innerHTML = ''; 
+        Object.keys(stockCategories).forEach(m => sMain.innerHTML += `<option value="${m}">${m}</option>`);
+        
+        // ฟังก์ชันล้างและเติมค่าหมวดหมู่ย่อยของหุ้นเมื่อหมวดหมู่หลักเปลี่ยน
+        sMain.onchange = () => { 
+          sSub.innerHTML = ''; 
+          if(stockCategories[sMain.value]) {
+            stockCategories[sMain.value].forEach(s => sSub.innerHTML += `<option value="${s}">${s}</option>`);
+          }
+        };
       }
+
+      // สั่งทำงานครั้งแรกสุดเพื่อเรียกหมวดหมู่ย่อยขึ้นมาเตรียมรอไว้ในฟิลด์
+      if(currentDataType === 'STOCK' && sMain.value) sMain.onchange();
+      if(currentDataType === 'EXPENSE' && eMain.value) eMain.onchange();
+    }
+
+    // ฟังก์ชันคำนวณหักภาษี ณ ที่จ่ายเบื้องต้นในหน้า UI
+    window.calculateTaxLogic = function() {
+      const amt = parseFloat(document.getElementById('trade-amount').value) || 0;
+      const pct = parseFloat(document.getElementById('trade-tax-percent').value) || 0;
+      const tax = amt * (pct / 100);
+      const net = amt - tax;
+      
+      document.getElementById('txt-tax-amount').innerText = `฿${tax.toFixed(2)}`;
+      document.getElementById('txt-net-amount').innerText = `฿${net.toFixed(2)}`;
     }
 
     document.getElementById('btn-save-trade').addEventListener('click', async () => {
@@ -380,17 +417,24 @@
       if(!amount || !date) return;
 
       if(currentDataType === 'STOCK') {
-        const symbol = document.getElementById('trade-symbol').value.trim().toUpperCase();
+        const symbol = document.getElementById('trade-symbol').value.trim().toUpperCase() || "UNKNOWN";
+        const mCat = document.getElementById('stock-main-cat').value;
+        const sCat = document.getElementById('stock-sub-cat').value;
         await addDoc(collection(db, "transactions"), {
           symbol, type: currentTradeType, total: amount, date, isStock: true,
-          mainCat: document.getElementById('stock-main-cat').value, subCat: document.getElementById('stock-sub-cat').value || 'ทั่วไป'
+          mainCat: mCat, subCat: sCat || 'ทั่วไป'
         });
       } else {
-        const mCat = document.getElementById('exp-main-cat').value; const sCat = document.getElementById('exp-sub-cat').value;
+        const mCat = document.getElementById('exp-main-cat').value; 
+        const sCat = document.getElementById('exp-sub-cat').value;
         await addDoc(collection(db, "household_expenses"), {
           category: `${mCat} (${sCat || 'ทั่วไป'})`, mainCat: mCat, subCat: sCat || 'ทั่วไป', amount, date, isStock: false
         });
       }
+      
+      // ล้างข้อมูลฟอร์มหลังจากกดเซฟเสร็จ
+      document.getElementById('trade-amount').value = '';
+      document.getElementById('trade-symbol').value = '';
       changeMenuTab('dashboard');
     });
 
@@ -406,11 +450,10 @@
     });
 
     function processAndRender() {
-      let netPnL = 0, totalDiv = 0, totalExp = 0, totalTax = 0;
+      let netPnL = 0, totalDiv = 0, totalExp = 0;
       let stockMap = {};
       let reportStockGroups = {}; let reportExpenseGroups = {};
 
-      // ดึง Element บันทึกรายการฝั่งแยกกรอบรายจ่าย และฝั่งกรอบหุ้นตามบรีฟ
       const expLogContainer = document.getElementById('expense-trades-log-list');
       const stkLogContainer = document.getElementById('stock-trades-log-list');
       
@@ -437,7 +480,6 @@
           else if(item.type === 'DIVIDEND') { stockMap[item.symbol].div += item.total; totalDiv += item.total; logBadgeColor = 'bg-amber-950 text-amber-400'; }
           stockMap[item.symbol].count++;
 
-          // บันทึกลงในกรอบ "ประวัติหุ้นและสินทรัพย์" แยกเฉพาะก้อน
           if(stkLogContainer) {
             stkLogContainer.innerHTML += `
               <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center">
@@ -460,7 +502,6 @@
           if(!reportExpenseGroups[subKey]) reportExpenseGroups[subKey] = [];
           reportExpenseGroups[subKey].push(item);
 
-          // บันทึกลงในกรอบ "ประวัติรายจ่ายในบ้าน" แยกเฉพาะก้อน
           if(expLogContainer) {
             expLogContainer.innerHTML += `
               <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center">
@@ -480,11 +521,9 @@
         }
       });
 
-      // จัดการกรณีว่าง (Empty States) ภายในแต่ละกรอบแยกชิ้น
       if(expCount === 0 && expLogContainer) expLogContainer.innerHTML = `<p class="text-sm text-zinc-700 italic p-3 text-center">ไม่มีประวัติการบันทึกรายจ่าย</p>`;
       if(stkCount === 0 && stkLogContainer) stkLogContainer.innerHTML = `<p class="text-sm text-zinc-700 italic p-3 text-center">ไม่มีประวัติการทำธุรกรรมหุ้น</p>`;
       
-      // อัปเดตตัวเลขนับจำนวน (Badges) ด้านหลังหัวข้อกรอบแต่ละหมวดหมู่
       if(document.getElementById('badge-count-expense')) document.getElementById('badge-count-expense').innerText = `${expCount} รายการ`;
       if(document.getElementById('badge-count-stock')) document.getElementById('badge-count-stock').innerText = `${stkCount} รายการ`;
 
