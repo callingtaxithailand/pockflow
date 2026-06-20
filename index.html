@@ -21,16 +21,12 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 font-sans antialiased">
 
-  <!-- กรอบจำลองหน้าต่างแอปพลิเคชันมือถือ (Mobile View Container) บนพื้นหลังดำ -->
   <div class="max-w-md mx-auto min-h-screen flex flex-col bg-black shadow-2xl relative pb-24 border-x border-zinc-900">
     
-    <!-- ส่วนเนื้อหาหลักภายในแอป -->
     <main class="flex-1 p-5">
       
-      <!-- ================= LOGO DESIGN (โฉมใหม่ธีมพื้นดำ) ================= -->
       <div class="flex flex-col items-center justify-center py-6 mb-4 select-none">
         <div class="flex items-center space-x-3">
-          <!-- โลโก้ใหม่: สัญลักษณ์เหรียญทองติดปีกโคจรรอบดวงดาวสไตล์อวกาศลึกลับ เข้ากับพื้นหลังดำ -->
           <div class="w-11 h-11 bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-400 rounded-xl flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20 font-black">
             🪙
           </div>
@@ -41,14 +37,12 @@
         </div>
       </div>
 
-      <!-- ================= หน้าหลัก (DASHBOARD) สรุปยอดเงินรวม ================= -->
-      <section id="view-dashboard" class="space-y-6">
+      <section id="view-dashboard" class="tab-view space-y-6">
         <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-5 text-center py-9 shadow-xl">
           <p class="text-[13px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</p>
           <h2 id="total-pnl-display" class="text-[44px] font-black text-white tracking-tight">฿0.00</h2>
         </div>
 
-        <!-- กล่องแสดงสถิติย่อยแบบ Grid -->
         <div class="grid grid-cols-2 gap-3.5">
           <div class="bg-zinc-900/60 p-4.5 rounded-xl border border-zinc-800/60 shadow-md">
             <p class="text-[12px] text-zinc-500 font-bold uppercase tracking-wider">เงินปันผลสะสม</p>
@@ -60,7 +54,6 @@
           </div>
         </div>
 
-        <!-- ส่วนของรายงานข้อมูลหุ้นรายตัวเชิงลึก -->
         <div class="pt-2">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-[13px] font-bold text-zinc-400 tracking-widest uppercase">รายงานแยกตามรายชื่อหุ้น</h3>
@@ -70,21 +63,52 @@
           </div>
           
           <div id="stock-report-list" class="space-y-3">
-            <!-- รายชื่อหุ้นและสถิติจะถูกโหลดเข้ามาแสดงผลที่นี่ผ่าน Firebase -->
+            </div>
+        </div>
+      </section>
+
+      <section id="view-calendar" class="tab-view hidden space-y-4">
+        <h2 class="text-[22px] font-black text-white">ปฏิทินธุรกรรม</h2>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 text-center py-10">
+          <span class="text-4xl block mb-3">📅</span>
+          <p class="text-zinc-400 font-bold text-[16px]">ระบบปฏิทินแสดงรายการรายวัน</p>
+          <p class="text-[13px] text-zinc-650 mt-1">จะแสดงประวัติแบ่งตามวันที่เลือกในเวอร์ชันถัดไป</p>
+        </div>
+      </section>
+
+      <section id="view-trades" class="tab-view hidden space-y-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-[22px] font-black text-white">ประวัติธุรกรรมทั้งหมด</h2>
+        </div>
+        <div id="all-trades-log-list" class="space-y-2.5">
+          </div>
+      </section>
+
+      <section id="view-settings" class="tab-view hidden space-y-4">
+        <h2 class="text-[22px] font-black text-white">ตั้งค่าระบบ</h2>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl divide-y divide-zinc-800 overflow-hidden">
+          <div class="p-4 flex justify-between items-center hover:bg-zinc-800/40 cursor-pointer">
+            <span class="text-[15px] font-bold">👤 ข้อมูลผู้ใช้งาน</span>
+            <span class="text-zinc-600 text-xs">▶</span>
+          </div>
+          <div class="p-4 flex justify-between items-center hover:bg-zinc-800/40 cursor-pointer">
+            <span class="text-[15px] font-bold">🎨 ปรับแต่งธีมแอปพลิเคชัน (สีดำดาร์กโหมด)</span>
+            <span class="text-amber-400 text-xs font-bold">เปิดใช้งานอยู่</span>
+          </div>
+          <div class="p-4 flex justify-between items-center hover:bg-zinc-800/40 cursor-pointer">
+            <span class="text-[15px] font-bold">📊 เชื่อมต่อฐานข้อมูลคลาวด์ (Firebase)</span>
+            <span class="text-emerald-400 text-xs font-bold">เสถียร</span>
           </div>
         </div>
       </section>
 
-      <!-- ================= หน้าเพิ่มรายการ (ADD TRADE) ================= -->
       <section id="view-add-trade" class="hidden space-y-6">
-        <!-- แถบหัวฟอร์มด้านบน -->
         <div class="flex items-center space-x-3 pb-2.5 border-b border-zinc-900">
-          <button onclick="hideAddTradeForm()" class="text-zinc-400 text-2xl font-bold p-1 hover:text-white transition-colors">←</button>
+          <button type="button" onclick="hideAddTradeForm()" class="text-zinc-400 text-2xl font-bold p-1 hover:text-white transition-colors">←</button>
           <h2 class="text-[22px] font-black text-white">เพิ่มธุรกรรม</h2>
         </div>
 
         <div class="space-y-4.5">
-          <!-- เมนูสลับประเภทข้อมูล (Data Type Toggle) -->
           <div>
             <label class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest block mb-2">ประเภทข้อมูล</label>
             <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
@@ -93,13 +117,11 @@
             </div>
           </div>
 
-          <!-- ฟิลด์รับค่าชื่อย่อหุ้น (Symbol) -->
           <div id="box-symbol">
             <label class="text-[13px] font-bold text-zinc-300 block mb-2">ชื่อย่อหุ้น</label>
             <input type="text" id="trade-symbol" placeholder="เช่น AAPL, TISCO, NVDA" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[18px] font-black uppercase text-white placeholder-zinc-700 focus:outline-none focus:border-indigo-500 transition-colors">
           </div>
 
-          <!-- เมนูดรอปดาวน์หมวดหมู่ค่าใช้จ่ายในบ้าน -->
           <div id="box-categories" class="hidden space-y-3.5">
             <div class="grid grid-cols-2 gap-2.5">
               <div>
@@ -113,7 +135,6 @@
             </div>
           </div>
 
-          <!-- ปุ่มเลือกประเภทธุรกรรมหุ้น (Trade Type) -->
           <div id="box-trade-type">
             <label class="text-[13px] font-bold text-zinc-300 block mb-2">ประเภทธุรกรรม</label>
             <div class="grid grid-cols-3 gap-2.5">
@@ -123,7 +144,6 @@
             </div>
           </div>
 
-          <!-- ยอดจำนวนเงินหลัก (Profit/Loss หรือ ยอดรายจ่าย) -->
           <div>
             <label id="lbl-main-amount" class="text-[13px] font-bold text-zinc-300 block mb-2">กำไร / ขาดทุน</label>
             <div class="relative">
@@ -132,13 +152,11 @@
             </div>
           </div>
 
-          <!-- วันที่ทำรายการ -->
           <div>
             <label class="text-[13px] font-bold text-zinc-300 block mb-2">วันที่บันทึกรายการ</label>
             <input type="date" id="trade-date" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 text-[18px] font-bold text-white focus:outline-none focus:border-indigo-500">
           </div>
 
-          <!-- ส่วนกรอกรายละเอียดเสริมยืดหยุ่นได้ (Additional Information - ภาษาไทย 100%) -->
           <div id="box-optional-wrapper" class="border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-950">
             <button type="button" onclick="toggleOptionalFields()" class="w-full p-4 flex justify-between items-center text-[13px] font-bold text-zinc-200 bg-zinc-900 border-b border-zinc-800/50">
               <div class="flex items-center space-x-2.5">
@@ -148,7 +166,6 @@
               <span id="optional-arrow" class="text-zinc-500 text-xs transition-transform duration-200">▼</span>
             </button>
             
-            <!-- ฟิลด์แอบซ่อนที่จะสไลด์กางเปิดออกมาเมื่อคลิก -->
             <div id="optional-fields" class="slide-down p-4.5 space-y-4.5 bg-zinc-900/40">
               <div class="grid grid-cols-2 gap-3.5">
                 <div>
@@ -175,7 +192,6 @@
             </div>
           </div>
 
-          <!-- ปุ่มควบคุมบันทึกข้อมูลด้านท้ายฟอร์ม -->
           <div class="pt-2 space-y-3">
             <button type="button" id="btn-save-trade" class="w-full bg-amber-500 text-black text-[18px] font-black py-4 rounded-xl transition-all shadow-lg hover:bg-amber-400">บันทึกข้อมูลธุรกรรม</button>
             <button type="button" onclick="hideAddTradeForm()" class="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-[17px] font-bold py-4 rounded-xl hover:bg-zinc-800 transition-all">ยกเลิก</button>
@@ -185,21 +201,20 @@
 
     </main>
 
-    <!-- ================= แถบเมนูด้านล่าง (Bottom Navigation Bar) ================= -->
     <nav class="absolute bottom-0 left-0 right-0 h-22 bg-black border-t border-zinc-900 flex justify-around items-center px-2 z-50">
-      <button onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center space-y-1.5 text-amber-400">
+      <button type="button" onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center space-y-1.5 text-amber-400 cursor-pointer">
         <span class="text-2xl">📊</span>
         <span class="text-[11px] font-bold tracking-wider">แดชบอร์ด</span>
       </button>
-      <button onclick="changeMenuTab('calendar')" id="nav-calendar" class="flex flex-col items-center space-y-1.5 text-zinc-600">
+      <button type="button" onclick="changeMenuTab('calendar')" id="nav-calendar" class="flex flex-col items-center space-y-1.5 text-zinc-600 cursor-pointer">
         <span class="text-2xl">📅</span>
         <span class="text-[11px] font-bold tracking-wider">ปฏิทิน</span>
       </button>
-      <button onclick="changeMenuTab('trades')" id="nav-trades" class="flex flex-col items-center space-y-1.5 text-zinc-600">
+      <button type="button" onclick="changeMenuTab('trades')" id="nav-trades" class="flex flex-col items-center space-y-1.5 text-zinc-600 cursor-pointer">
         <span class="text-2xl">📋</span>
         <span class="text-[11px] font-bold tracking-wider">ธุรกรรม</span>
       </button>
-      <button onclick="changeMenuTab('settings')" id="nav-settings" class="flex flex-col items-center space-y-1.5 text-zinc-600">
+      <button type="button" onclick="changeMenuTab('settings')" id="nav-settings" class="flex flex-col items-center space-y-1.5 text-zinc-600 cursor-pointer">
         <span class="text-2xl">⚙️</span>
         <span class="text-[11px] font-bold tracking-wider">ตั้งค่า</span>
       </button>
@@ -207,7 +222,6 @@
 
   </div>
 
-  <!-- ================= CORE DATABASE LOGIC (FIREBASE CONNECTION) ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -239,20 +253,24 @@
       "🛡️ ประกันและภาษี": ["ภาษีรถยนต์", "ค่าประกันภัย"]
     };
 
-    // --- ฟังก์ชันควบคุมและสลับมุมมองหน้าจอ ---
+    // --- ฟังก์ชันควบคุมและสลับมุมมองหน้าจอผ่านระบบแท็บด้านล่าง ---
+    window.changeMenuTab = function(tabName) {
+      // ซ่อนเมนูมุมมองหน้าจอทั้งหมดและเคลียร์สถานะสีของแท็บ
+      document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+      document.getElementById('view-add-trade').classList.add('hidden');
+      document.querySelectorAll('nav button').forEach(btn => btn.className = 'flex flex-col items-center space-y-1.5 text-zinc-600 cursor-pointer');
+      
+      // แสดงหน้าที่เลือกและทำแถบสีไฮไลท์
+      document.getElementById(`view-${tabName}`).classList.remove('hidden');
+      document.getElementById(`nav-${tabName}`).className = 'flex flex-col items-center space-y-1.5 text-amber-400 cursor-pointer';
+    }
+
     window.showAddTradeForm = function() {
-      document.getElementById('view-dashboard').classList.add('hidden');
+      document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       document.getElementById('view-add-trade').classList.remove('hidden');
     }
     window.hideAddTradeForm = function() {
-      document.getElementById('view-dashboard').classList.remove('hidden');
-      document.getElementById('view-add-trade').classList.add('hidden');
-    }
-
-    window.changeMenuTab = function(tabName) {
-      document.querySelectorAll('nav border button, nav button').forEach(btn => btn.className = 'flex flex-col items-center space-y-1.5 text-zinc-600');
-      document.getElementById(`nav-${tabName}`).className = 'flex flex-col items-center space-y-1.5 text-amber-400';
-      if(tabName === 'dashboard') hideAddTradeForm();
+      changeMenuTab('dashboard');
     }
 
     // --- ระบบควบคุมฟอร์มบันทึกรายการข้อมูลภายในแอป ---
@@ -343,7 +361,7 @@
       document.getElementById('opt-lot-size').value = '';
       document.getElementById('opt-exit-date').value = '';
       document.getElementById('opt-notes').value = '';
-      hideAddTradeForm();
+      changeMenuTab('dashboard');
     });
 
     // ตรวจจับและดึงประวัติความเคลื่อนไหวจากคลาวด์แบบทันท่วงที
@@ -365,24 +383,62 @@
       let totalExp = 0;
       let stockMap = {};
 
-      allTransactions.forEach(item => {
+      // เคลียร์พื้นที่หน้าประวัติธุรกรรมทั้งหมด
+      const tLogList = document.getElementById('all-trades-log-list');
+      tLogList.innerHTML = '';
+
+      // จัดเรียงธุรกรรมตามวันที่ใหม่ไปเก่าก่อนเรนเดอร์ลงบันทึกธุรกรรม
+      const sortedTransactions = [...allTransactions].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+      sortedTransactions.forEach(item => {
         if(item.isStock) {
           if(!stockMap[item.symbol]) {
             stockMap[item.symbol] = { pnl: 0, div: 0, count: 0 };
           }
+          
+          let logBadgeColor = 'bg-zinc-800 text-zinc-300';
           if(item.type === 'BUY') {
             stockMap[item.symbol].pnl -= item.total;
             netPnL -= item.total;
+            logBadgeColor = 'bg-emerald-950 text-emerald-400';
           } else if(item.type === 'SELL') {
             stockMap[item.symbol].pnl += item.total;
             netPnL += item.total;
+            logBadgeColor = 'bg-rose-950 text-rose-400';
           } else if(item.type === 'DIVIDEND') {
             stockMap[item.symbol].div += item.total;
             totalDiv += item.total;
+            logBadgeColor = 'bg-amber-950 text-amber-400';
           }
           stockMap[item.symbol].count++;
+
+          // เรนเดอร์ประวัติธุรกรรมสำหรับกลุ่มหุ้น
+          tLogList.innerHTML += `
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-[14px] font-black text-white">${item.symbol}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-bold uppercase ${logBadgeColor}">${item.type}</span>
+                </div>
+                <p class="text-[11px] text-zinc-500 mt-1">${item.date}</p>
+              </div>
+              <p class="text-[15px] font-black text-white">฿${item.total.toLocaleString()}</p>
+            </div>`;
+
         } else {
           totalExp += item.amount;
+          // เรนเดอร์ประวัติธุรกรรมสำหรับกลุ่มค่าใช้จ่ายในบ้าน
+          tLogList.innerHTML += `
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex justify-between items-center">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-[14px] font-bold text-zinc-300">${item.category}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-bold uppercase bg-zinc-800 text-rose-400">รายจ่าย</span>
+                </div>
+                <p class="text-[11px] text-zinc-500 mt-1">${item.date}</p>
+              </div>
+              <p class="text-[15px] font-black text-rose-400">฿${item.amount.toLocaleString()}</p>
+            </div>`;
         }
       });
 
@@ -415,6 +471,13 @@
             <span class="text-4xl block mb-2 opacity-40">📊</span>
             <p class="text-zinc-500 font-black text-[15px]">ยังไม่มีข้อมูลธุรกรรมในระบบ</p>
             <p class="text-[13px] text-zinc-600 mt-1">กดปุ่มเพิ่มธุรกรรมด้านบนเพื่อเริ่มต้นใช้งาน</p>
+          </div>`;
+      }
+
+      if(allTransactions.length === 0) {
+        tLogList.innerHTML = `
+          <div class="text-center py-14 border border-dashed border-zinc-800 rounded-2xl bg-zinc-950">
+            <p class="text-zinc-500 font-black text-[14px]">ไม่มีบันทึกประวัติธุรกรรมย้อนหลัง</p>
           </div>`;
       }
     }
