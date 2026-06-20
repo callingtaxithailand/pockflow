@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galaxiem - Trading Tracker Pro</title>
+  <title>PocketFlow - Dime (Trading Tracker)</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-family-papers/1.0.0/fonts.css">
   <style>
-    /* ปรับแต่งสไตล์สวิตช์เปิด-ปิดและฟิลด์ให้ดูนุ่มนวลแบบ Native App */
     .slide-down {
       transition: all 0.3s ease-out;
       max-height: 0;
@@ -27,8 +26,8 @@
     <main class="flex-1 p-5">
       
       <div class="flex justify-center items-center space-x-2 py-4 mb-2">
-        <div class="w-9 h-9 bg-amber-400 rounded-full flex items-center justify-center text-xl">🧑‍🚀</div>
-        <h1 class="text-2xl font-black tracking-tight text-[#1a1438]">Galaxiem</h1>
+        <div class="w-9 h-9 bg-amber-400 rounded-full flex items-center justify-center text-xl">💳</div>
+        <h1 class="text-2xl font-black tracking-tight text-[#1a1438]">PocketFlow <span class="text-[#f08a24] text-xl font-bold">- Dime</span></h1>
       </div>
 
       <section id="view-dashboard" class="space-y-5">
@@ -200,14 +199,12 @@
 
     document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
 
-    // ข้อมูลหมวดหมู่ตั้งต้น
     const customCategories = {
       "🔧 ซ่อมบำรุง": ["รถยนต์", "มอเตอร์ไซค์"],
       "⚡ สาธารณูปโภค": ["ค่าไฟฟ้า", "ค่าน้ำประปา", "ค่าส่วนกลาง"],
       "🛡️ ประกันและภาษี": ["ภาษีรถยนต์", "ค่าประกันภัย"]
     };
 
-    // --- ฟังก์ชันการสลับหน้าแอปพลิเคชัน ---
     window.showAddTradeForm = function() {
       document.getElementById('view-dashboard').classList.add('hidden');
       document.getElementById('view-add-trade').classList.remove('hidden');
@@ -223,7 +220,6 @@
       if(tabName === 'dashboard') hideAddTradeForm();
     }
 
-    // --- ฟังก์ชันภายในฟอร์มกรอกข้อมูล ---
     window.switchDataType = function(type) {
       currentDataType = type;
       document.getElementById('dtype-STOCK').className = type === 'STOCK' ? 'py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-sm transition-all' : 'py-2 rounded-lg font-bold text-xs text-gray-500 transition-all';
@@ -278,7 +274,6 @@
       updateSubs();
     }
 
-    // --- ระบบจัดเก็บและดึงข้อมูลจากฐานข้อมูลระดับวินาที ---
     document.getElementById('btn-save-trade').addEventListener('click', async () => {
       const amount = parseFloat(document.getElementById('trade-amount').value);
       const date = document.getElementById('trade-date').value;
@@ -306,7 +301,6 @@
       }
 
       document.getElementById('trade-amount').value = '';
-      // รีเซ็ตฟิลด์ย่อย
       document.getElementById('opt-entry-price').value = '';
       document.getElementById('opt-exit-price').value = '';
       document.getElementById('opt-lot-size').value = '';
@@ -315,7 +309,6 @@
       hideAddTradeForm();
     });
 
-    // ดึงข้อมูล Realtime
     onSnapshot(collection(db, "transactions"), (snap) => {
       allTransactions = allTransactions.filter(t => !t.isStock);
       snap.forEach(d => allTransactions.push({id: d.id, ...d.data()}));
@@ -327,7 +320,6 @@
       processAndRender();
     });
 
-    // --- ฟังก์ชันการคำนวณและประมวลผลสรุปบัญชีแยกหุ้น ---
     function processAndRender() {
       let netPnL = 0;
       let totalDiv = 0;
@@ -340,7 +332,7 @@
             stockMap[item.symbol] = { pnl: 0, div: 0, tradesCount: 0 };
           }
           if(item.type === 'BUY') {
-            stockMap[item.symbol].pnl -= item.total; // จ่ายเงินซื้อคือกำไรติดลบเบื้องต้น
+            stockMap[item.symbol].pnl -= item.total;
             netPnL -= item.total;
           } else if(item.type === 'SELL') {
             stockMap[item.symbol].pnl += item.total;
@@ -359,7 +351,6 @@
       document.getElementById('total-div-display').innerText = `฿${totalDiv.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
       document.getElementById('total-exp-display').innerText = `฿${totalExp.toLocaleString('th-TH', {minimumFractionDigits:2})}`;
 
-      // เรนเดอร์กล่องรายงานแยกแต่ละตัวหุ้น
       const rList = document.getElementById('stock-report-list');
       rList.innerHTML = '';
 
