@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PocketFlow - Dime (Trading Tracker)</title>
+  <title>PocketFlow - Dime</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-family-papers/1.0.0/fonts.css">
   <style>
+    /* เอฟเฟกต์การกาง-พับเก็บเมนูแบบนุ่มนวลสไตล์ Native Application */
     .slide-down {
       transition: all 0.3s ease-out;
       max-height: 0;
@@ -19,168 +19,200 @@
     }
   </style>
 </head>
-<body class="bg-gray-100 text-slate-800 font-sans antialiased">
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased">
 
-  <div class="max-w-md mx-auto min-h-screen flex flex-col bg-white shadow-xl relative pb-24">
+  <!-- กรอบจำลองหน้าต่างแอปพลิเคชันมือถือ (Mobile View Container) บนพื้นหลังดำ -->
+  <div class="max-w-md mx-auto min-h-screen flex flex-col bg-black shadow-2xl relative pb-24 border-x border-zinc-900">
     
+    <!-- ส่วนเนื้อหาหลักภายในแอป -->
     <main class="flex-1 p-5">
       
-      <div class="flex justify-center items-center space-x-2 py-4 mb-2">
-        <div class="w-9 h-9 bg-amber-400 rounded-full flex items-center justify-center text-xl">💳</div>
-        <h1 class="text-2xl font-black tracking-tight text-[#1a1438]">PocketFlow <span class="text-[#f08a24] text-xl font-bold">- Dime</span></h1>
+      <!-- ================= LOGO DESIGN (โฉมใหม่ธีมพื้นดำ) ================= -->
+      <div class="flex flex-col items-center justify-center py-6 mb-4 select-none">
+        <div class="flex items-center space-x-2.5">
+          <!-- โลโก้ใหม่: สัญลักษณ์เหรียญทองติดปีกโคจรรอบดวงดาวสไตล์อวกาศลึกลับ เข้ากับพื้นหลังดำ -->
+          <div class="w-10 h-10 bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-400 rounded-xl flex items-center justify-center text-xl shadow-lg shadow-indigo-500/20 font-black">
+            🪙
+          </div>
+          <div class="flex flex-col">
+            <h1 class="text-2xl font-black tracking-tighter text-white leading-none">PocketFlow</h1>
+            <span class="text-[10px] uppercase tracking-widest font-bold text-amber-400 mt-1 pl-0.5">DIME EDITION</span>
+          </div>
+        </div>
       </div>
 
+      <!-- ================= VIEW 1: DASHBOARD สรุปยอดเงินรวม ================= -->
       <section id="view-dashboard" class="space-y-5">
-        <div class="bg-gray-50 border border-gray-100 rounded-2xl p-5 text-center py-8">
-          <p class="text-sm font-medium text-gray-500 mb-1">ยอดรวมกำไร/ขาดทุนทั้งหมด</p>
-          <h2 id="total-pnl-display" class="text-4xl font-black text-slate-900">฿0.00</h2>
+        <div class="bg-zinc-900 border border-zinc-800/80 rounded-2xl p-5 text-center py-8 shadow-xl">
+          <p class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</p>
+          <h2 id="total-pnl-display" class="text-4xl font-black text-white tracking-tight">฿0.00</h2>
         </div>
 
+        <!-- กล่องแสดงสถิติย่อยแบบ Grid -->
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <p class="text-xs text-gray-400 font-bold">เงินปันผลสะสม</p>
-            <p id="total-div-display" class="text-lg font-black text-amber-500 mt-1">฿0.00</p>
+          <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800/60 shadow-md">
+            <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">เงินปันผลสะสม</p>
+            <p id="total-div-display" class="text-lg font-black text-amber-400 mt-1">฿0.00</p>
           </div>
-          <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <p class="text-xs text-gray-400 font-bold">ค่าใช้จ่ายในบ้านรวม</p>
-            <p id="total-exp-display" class="text-lg font-black text-rose-500 mt-1">฿0.00</p>
+          <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800/60 shadow-md">
+            <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">ค่าใช้จ่ายในบ้านรวม</p>
+            <p id="total-exp-display" class="text-lg font-black text-rose-400 mt-1">฿0.00</p>
           </div>
         </div>
 
+        <!-- ส่วนของรายงานข้อมูลหุ้นรายตัวเชิงลึก -->
         <div class="pt-2">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-sm font-bold text-gray-500 tracking-wide uppercase">รายงานแยกตามรายชื่อหุ้น</h3>
-            <button onclick="showAddTradeForm()" class="bg-[#f08a24] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm hover:bg-[#d6751c] transition-all">＋ เพิ่มธุรกรรม</button>
+          <div class="flex justify-between items-center mb-3.5">
+            <h3 class="text-xs font-bold text-zinc-400 tracking-widest uppercase">รายงานแยกตามรายชื่อหุ้น</h3>
+            <button onclick="showAddTradeForm()" class="bg-amber-500 text-black text-xs font-black px-3.5 py-2 rounded-xl shadow-md hover:bg-amber-400 transition-all flex items-center space-x-1">
+              <span>＋</span> <span>Add Trade</span>
+            </button>
           </div>
+          
           <div id="stock-report-list" class="space-y-2.5">
-            </div>
+            <!-- รายชื่อหุ้นและสถิติจะถูกโหลดเข้ามาแสดงผลที่นี่ผ่าน Firebase -->
+          </div>
         </div>
       </section>
 
+      <!-- ================= VIEW 2: ฟอร์ม ADD TRADE (ถอดแบบโครงสร้างจากรูปภาพต้นฉบับ) ================= -->
       <section id="view-add-trade" class="hidden space-y-5">
-        <div class="flex items-center space-x-3 mb-2">
-          <button onclick="hideAddTradeForm()" class="text-gray-500 text-xl font-bold p-1">←</button>
-          <h2 class="text-xl font-black text-slate-900">Add Trade</h2>
+        <!-- แถบหัวฟอร์มด้านบน -->
+        <div class="flex items-center space-x-3 pb-2 border-b border-zinc-900">
+          <button onclick="hideAddTradeForm()" class="text-zinc-400 text-xl font-bold p-1 hover:text-white transition-colors">←</button>
+          <h2 class="text-xl font-black text-white">Add Trade</h2>
         </div>
 
         <div class="space-y-4">
+          <!-- เมนูสลับประเภทข้อมูล (Data Type Toggle) -->
           <div>
-            <label class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1.5">Data Type</label>
-            <div class="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-xl">
-              <button type="button" onclick="switchDataType('STOCK')" id="dtype-STOCK" class="py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-sm transition-all">📈 หุ้น / สินทรัพย์</button>
-              <button type="button" onclick="switchDataType('EXPENSE')" id="dtype-EXPENSE" class="py-2 rounded-lg font-bold text-xs text-gray-500 transition-all">💸 ค่าใช้จ่ายในบ้าน</button>
+            <label class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest block mb-1.5">Data Type</label>
+            <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
+              <button type="button" onclick="switchDataType('STOCK')" id="dtype-STOCK" class="py-2 rounded-lg font-black text-xs bg-zinc-800 text-white shadow-sm transition-all">📈 หุ้น / สินทรัพย์</button>
+              <button type="button" onclick="switchDataType('EXPENSE')" id="dtype-EXPENSE" class="py-2 rounded-lg font-black text-xs text-zinc-500 transition-all">💸 ค่าใช้จ่ายในบ้าน</button>
             </div>
           </div>
 
+          <!-- ฟิลด์รับค่าชื่อย่อหุ้น (Symbol) -->
           <div id="box-symbol">
-            <label class="text-xs font-bold text-gray-700 block mb-1">Symbol</label>
-            <input type="text" id="trade-symbol" placeholder="เช่น AAPL, BTC, TISCO" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-base font-bold text-slate-900 focus:outline-none focus:border-gray-400">
+            <label class="text-xs font-bold text-zinc-300 block mb-1.5">Symbol</label>
+            <input type="text" id="trade-symbol" placeholder="เช่น AAPL, TISCO, NVDA" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-base font-black uppercase text-white placeholder-zinc-700 focus:outline-none focus:border-indigo-500 transition-colors">
           </div>
 
+          <!-- เมนูดรอปดาวน์หมวดหมู่ค่าใช้จ่ายในบ้าน -->
           <div id="box-categories" class="hidden space-y-3">
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="text-xs font-bold text-gray-700 block mb-1">หมวดหมู่หลัก</label>
-                <select id="exp-main-cat" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none"></select>
+                <label class="text-xs font-bold text-zinc-300 block mb-1.5">หมวดหมู่หลัก</label>
+                <select id="exp-main-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm font-bold text-white focus:outline-none focus:border-indigo-500"></select>
               </div>
               <div>
-                <label class="text-xs font-bold text-gray-700 block mb-1">หมวดหมู่ย่อย</label>
-                <select id="exp-sub-cat" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none"></select>
+                <label class="text-xs font-bold text-zinc-300 block mb-1.5">หมวดหมู่ย่อย</label>
+                <select id="exp-sub-cat" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm font-bold text-white focus:outline-none focus:border-indigo-500"></select>
               </div>
             </div>
           </div>
 
+          <!-- ปุ่มเลือกประเภทธุรกรรมหุ้น (Trade Type: BUY / SELL / DIVIDEND) -->
           <div id="box-trade-type">
-            <label class="text-xs font-bold text-gray-700 block mb-1">Trade Type</label>
+            <label class="text-xs font-bold text-zinc-300 block mb-1.5">Trade Type</label>
             <div class="grid grid-cols-3 gap-2">
-              <button type="button" onclick="setTradeType('BUY')" id="ttype-BUY" class="py-2.5 rounded-xl font-bold text-sm bg-[#0f975d] text-white shadow-sm transition-all">BUY</button>
-              <button type="button" onclick="setTradeType('SELL')" id="ttype-SELL" class="py-2.5 rounded-xl font-bold text-sm bg-white border border-gray-200 text-gray-400 transition-all">SELL</button>
-              <button type="button" onclick="setTradeType('DIVIDEND')" id="ttype-DIVIDEND" class="py-2.5 rounded-xl font-bold text-sm bg-white border border-gray-200 text-gray-400 transition-all">ปันผล</button>
+              <button type="button" onclick="setTradeType('BUY')" id="ttype-BUY" class="py-2.5 rounded-xl font-black text-sm bg-emerald-600 text-white shadow-md transition-all">BUY</button>
+              <button type="button" onclick="setTradeType('SELL')" id="ttype-SELL" class="py-2.5 rounded-xl font-bold text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 transition-all">SELL</button>
+              <button type="button" onclick="setTradeType('DIVIDEND')" id="ttype-DIVIDEND" class="py-2.5 rounded-xl font-bold text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 transition-all">ปันผล</button>
             </div>
           </div>
 
+          <!-- ยอดจำนวนเงินหลัก (Profit/Loss หรือ ยอดรายจ่าย) -->
           <div>
-            <label id="lbl-main-amount" class="text-xs font-bold text-gray-700 block mb-1">Profit/Loss</label>
+            <label id="lbl-main-amount" class="text-xs font-bold text-zinc-300 block mb-1.5">Profit/Loss</label>
             <div class="relative">
-              <span class="absolute left-4 top-3.5 text-lg font-bold text-[#f08a24]">฿</span>
-              <input type="number" step="any" id="trade-amount" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-xl p-3 pl-8 text-lg font-black text-slate-900 focus:outline-none focus:border-gray-400">
+              <span class="absolute left-4 top-3 text-lg font-black text-amber-400">฿</span>
+              <input type="number" step="any" id="trade-amount" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 pl-8 text-lg font-black text-white placeholder-zinc-700 focus:outline-none focus:border-indigo-500 transition-colors">
             </div>
           </div>
 
+          <!-- วันที่ระบุบันทึกรายการ -->
           <div>
-            <label class="text-xs font-bold text-gray-700 block mb-1">Entry Date</label>
-            <input type="date" id="trade-date" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-base font-bold text-slate-900 focus:outline-none">
+            <label class="text-xs font-bold text-zinc-300 block mb-1.5">Entry Date</label>
+            <input type="date" id="trade-date" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-base font-bold text-white focus:outline-none focus:border-indigo-500">
           </div>
 
-          <div id="box-optional-wrapper" class="border border-gray-200 rounded-xl overflow-hidden bg-gray-50/50">
-            <button type="button" onclick="toggleOptionalFields()" class="w-full p-3.5 flex justify-between items-center text-xs font-bold text-slate-800 bg-white border-b border-gray-100">
+          <!-- ส่วนกรอกรายละเอียดเสริมยืดหยุ่นได้ (Additional Information - ถอดแบบตามรูปภาพที่ 3 และ 4) -->
+          <div id="box-optional-wrapper" class="border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-950">
+            <button type="button" onclick="toggleOptionalFields()" class="w-full p-3.5 flex justify-between items-center text-xs font-bold text-zinc-200 bg-zinc-900 border-b border-zinc-800/50">
               <div class="flex items-center space-x-2">
-                <span class="text-blue-500 text-sm">ℹ️</span>
+                <span class="text-indigo-400 text-sm">ℹ️</span>
                 <span>Additional Information (Optional)</span>
               </div>
-              <span id="optional-arrow" class="text-gray-400 text-xs transition-transform duration-200">▼</span>
+              <span id="optional-arrow" class="text-zinc-500 text-xs transition-transform duration-200">▼</span>
             </button>
             
-            <div id="optional-fields" class="slide-down p-4 space-y-3.5 bg-white">
+            <!-- ฟิลด์แอบซ่อนที่จะสไลด์กางเปิดออกมาเมื่อคลิก -->
+            <div id="optional-fields" class="slide-down p-4 space-y-4 bg-zinc-900/40">
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="text-xs font-medium text-gray-600 block mb-1">Entry Price</label>
-                  <input type="number" step="any" id="opt-entry-price" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none">
+                  <label class="text-xs font-medium text-zinc-400 block mb-1">Entry Price</label>
+                  <input type="number" step="any" id="opt-entry-price" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm font-bold text-white focus:outline-none">
                 </div>
                 <div>
-                  <label class="text-xs font-medium text-gray-600 block mb-1">Exit Price</label>
-                  <input type="number" step="any" id="opt-exit-price" placeholder="0.00" class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none">
+                  <label class="text-xs font-medium text-zinc-400 block mb-1">Exit Price</label>
+                  <input type="number" step="any" id="opt-exit-price" placeholder="0.00" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm font-bold text-white focus:outline-none">
                 </div>
               </div>
               <div>
-                <label class="text-xs font-medium text-gray-600 block mb-1">Lot Size / Volume</label>
-                <input type="number" step="any" id="opt-lot-size" placeholder="เช่น 100, 0.5" class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none">
+                <label class="text-xs font-medium text-zinc-400 block mb-1">Lot Size / Volume</label>
+                <input type="number" step="any" id="opt-lot-size" placeholder="เช่น 100, 0.25" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm font-bold text-white focus:outline-none">
               </div>
               <div>
-                <label class="text-xs font-medium text-gray-600 block mb-1">Exit Date</label>
-                <input type="date" id="opt-exit-date" class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none">
+                <label class="text-xs font-medium text-zinc-400 block mb-1">Exit Date</label>
+                <input type="date" id="opt-exit-date" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm font-bold text-white focus:outline-none">
               </div>
               <div>
-                <label class="text-xs font-medium text-gray-600 block mb-1">Notes</label>
-                <textarea id="opt-notes" rows="3" placeholder="ระบุหมายเหตุบันทึกช่วยจำ..." class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none"></textarea>
+                <label class="text-xs font-medium text-zinc-400 block mb-1">Notes</label>
+                <textarea id="opt-notes" rows="3" placeholder="เขียนบันทึกช่วยจำสำหรับธุรกรรมนี้..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2.5 text-sm text-white placeholder-zinc-700 focus:outline-none"></textarea>
               </div>
             </div>
           </div>
 
-          <div class="pt-2 space-y-2">
-            <button type="button" id="btn-save-trade" class="w-full bg-[#f08a24] text-white text-base font-bold py-3.5 rounded-xl transition-all shadow-md hover:bg-[#d6751c]">Add Trade</button>
-            <button type="button" onclick="hideAddTradeForm()" class="w-full bg-white border border-gray-200 text-gray-500 text-base font-bold py-3.5 rounded-xl hover:bg-gray-50 transition-all">Cancel</button>
+          <!-- ปุ่มควบคุมบันทึกข้อมูลด้านท้ายฟอร์ม -->
+          <div class="pt-2 space-y-2.5">
+            <button type="button" id="btn-save-trade" class="w-full bg-amber-500 text-black text-base font-black py-3.5 rounded-xl transition-all shadow-lg hover:bg-amber-400">Add Trade</button>
+            <button type="button" onclick="hideAddTradeForm()" class="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-base font-bold py-3.5 rounded-xl hover:bg-zinc-800 transition-all">Cancel</button>
           </div>
         </div>
       </section>
 
     </main>
 
-    <nav class="absolute bottom-0 left-0 right-0 h-20 bg-white border-t border-gray-100 flex justify-around items-center px-2 z-50">
-      <button onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center space-y-1 text-[#f08a24]">
+    <!-- ================= BOTTOM NAVIGATION BAR (แถบเมนูด้านล่างสไตล์เรียบหรู) ================= -->
+    <nav class="absolute bottom-0 left-0 right-0 h-20 bg-black border-t border-zinc-900 flex justify-around items-center px-2 z-50">
+      <button onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center space-y-1 text-amber-400">
         <span class="text-xl">📊</span>
-        <span class="text-[10px] font-bold tracking-wide">Dashboard</span>
+        <span class="text-[10px] font-bold tracking-wider">Dashboard</span>
       </button>
-      <button onclick="changeMenuTab('calendar')" id="nav-calendar" class="flex flex-col items-center space-y-1 text-gray-400">
+      <button onclick="changeMenuTab('calendar')" id="nav-calendar" class="flex flex-col items-center space-y-1 text-zinc-600">
         <span class="text-xl">📅</span>
-        <span class="text-[10px] font-bold tracking-wide">Calendar</span>
+        <span class="text-[10px] font-bold tracking-wider">Calendar</span>
       </button>
-      <button onclick="changeMenuTab('trades')" id="nav-trades" class="flex flex-col items-center space-y-1 text-gray-400">
+      <button onclick="changeMenuTab('trades')" id="nav-trades" class="flex flex-col items-center space-y-1 text-zinc-600">
         <span class="text-xl">📋</span>
-        <span class="text-[10px] font-bold tracking-wide">Trades</span>
+        <span class="text-[10px] font-bold tracking-wider">Trades</span>
       </button>
-      <button onclick="changeMenuTab('settings')" id="nav-settings" class="flex flex-col items-center space-y-1 text-gray-400">
+      <button onclick="changeMenuTab('settings')" id="nav-settings" class="flex flex-col items-center space-y-1 text-zinc-600">
         <span class="text-xl">⚙️</span>
-        <span class="text-[10px] font-bold tracking-wide">Settings</span>
+        <span class="text-[10px] font-bold tracking-wider">Settings</span>
       </button>
     </nav>
 
   </div>
 
+  <!-- ================= CORE DATABASE LOGIC (FIREBASE CONNECTION) ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // กำหนดค่าคอนฟิกเชื่อมต่อฐานข้อมูลตามเดิม
     const firebaseConfig = {
       apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
       authDomain: "pocketflow-49763.firebaseapp.com",
@@ -197,14 +229,17 @@
     let currentTradeType = 'BUY';
     let allTransactions = [];
 
+    // กำหนดค่าเริ่มต้นให้กับวันที่ในฟอร์ม
     document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
 
+    // หมวดหมู่รายจ่ายในบ้านตามการตั้งค่าเดิมของคุณ
     const customCategories = {
       "🔧 ซ่อมบำรุง": ["รถยนต์", "มอเตอร์ไซค์"],
       "⚡ สาธารณูปโภค": ["ค่าไฟฟ้า", "ค่าน้ำประปา", "ค่าส่วนกลาง"],
       "🛡️ ประกันและภาษี": ["ภาษีรถยนต์", "ค่าประกันภัย"]
     };
 
+    // --- ฟังก์ชันควบคุมและสลับมุมมองหน้าจอ ---
     window.showAddTradeForm = function() {
       document.getElementById('view-dashboard').classList.add('hidden');
       document.getElementById('view-add-trade').classList.remove('hidden');
@@ -215,15 +250,16 @@
     }
 
     window.changeMenuTab = function(tabName) {
-      document.querySelectorAll('nav button').forEach(btn => btn.className = 'flex flex-col items-center space-y-1 text-gray-400');
-      document.getElementById(`nav-${tabName}`).className = 'flex flex-col items-center space-y-1 text-[#f08a24]';
+      document.querySelectorAll('nav border button, nav button').forEach(btn => btn.className = 'flex flex-col items-center space-y-1 text-zinc-600');
+      document.getElementById(`nav-${tabName}`).className = 'flex flex-col items-center space-y-1 text-amber-400';
       if(tabName === 'dashboard') hideAddTradeForm();
     }
 
+    // --- ระบบควบคุมฟอร์มบันทึกรายการข้อมูลภายในแอป ---
     window.switchDataType = function(type) {
       currentDataType = type;
-      document.getElementById('dtype-STOCK').className = type === 'STOCK' ? 'py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-sm transition-all' : 'py-2 rounded-lg font-bold text-xs text-gray-500 transition-all';
-      document.getElementById('dtype-EXPENSE').className = type === 'EXPENSE' ? 'py-2 rounded-lg font-bold text-xs bg-white text-slate-900 shadow-sm transition-all' : 'py-2 rounded-lg font-bold text-xs text-gray-500 transition-all';
+      document.getElementById('dtype-STOCK').className = type === 'STOCK' ? 'py-2 rounded-lg font-black text-xs bg-zinc-800 text-white shadow-sm transition-all' : 'py-2 rounded-lg font-bold text-xs text-zinc-500 transition-all';
+      document.getElementById('dtype-EXPENSE').className = type === 'EXPENSE' ? 'py-2 rounded-lg font-black text-xs bg-zinc-800 text-white shadow-sm transition-all' : 'py-2 rounded-lg font-bold text-xs text-zinc-500 transition-all';
       
       if(type === 'STOCK') {
         document.getElementById('box-symbol').classList.remove('hidden');
@@ -243,14 +279,14 @@
 
     window.setTradeType = function(type) {
       currentTradeType = type;
-      document.querySelectorAll('#box-trade-type button').forEach(b => b.className = 'py-2.5 rounded-xl font-bold text-sm bg-white border border-gray-200 text-gray-400 transition-all');
+      document.querySelectorAll('#box-trade-type button').forEach(b => b.className = 'py-2.5 rounded-xl font-bold text-sm bg-zinc-900 border border-zinc-800 text-zinc-400 transition-all');
       
       const styles = {
-        'BUY': 'bg-[#0f975d] text-white shadow-sm',
-        'SELL': 'bg-rose-500 text-white shadow-sm',
-        'DIVIDEND': 'bg-amber-500 text-white shadow-sm'
+        'BUY': 'bg-emerald-600 text-white shadow-md font-black',
+        'SELL': 'bg-rose-600 text-white shadow-md font-black',
+        'DIVIDEND': 'bg-amber-400 text-black shadow-md font-black'
       };
-      document.getElementById(`ttype-${type}`).className = `py-2.5 rounded-xl font-bold text-sm ${styles[type]} transition-all`;
+      document.getElementById(`ttype-${type}`).className = `py-2.5 rounded-xl text-sm ${styles[type]} transition-all`;
     }
 
     window.toggleOptionalFields = function() {
@@ -274,14 +310,15 @@
       updateSubs();
     }
 
+    // --- การส่งข้อมูลเข้าคลังเก็บข้อมูลส่วนตัวบนคลาวด์ ---
     document.getElementById('btn-save-trade').addEventListener('click', async () => {
       const amount = parseFloat(document.getElementById('trade-amount').value);
       const date = document.getElementById('trade-date').value;
-      if(!amount || !date) { alert('กรุณากรอกข้อมูลตัวเลขหลักและวันที่ให้ครบถ้วน'); return; }
+      if(!amount || !date) { alert('กรุณาระบุตัวเลขหลักและวันที่ของธุรกรรมให้ครบถ้วนก่อนบันทึกครับ'); return; }
 
       if(currentDataType === 'STOCK') {
         const symbol = document.getElementById('trade-symbol').value.trim().toUpperCase();
-        if(!symbol) { alert('กรุณาระบุชื่อย่อหุ้น'); return; }
+        if(!symbol) { alert('กรุณาระบุชื่อย่อหุ้นด้วยครับ'); return; }
         
         await addDoc(collection(db, "transactions"), {
           symbol, type: currentTradeType, total: amount, date, isStock: true,
@@ -309,6 +346,7 @@
       hideAddTradeForm();
     });
 
+    // ตรวจจับและดึงประวัติความเคลื่อนไหวจากคลาวด์แบบทันท่วงที
     onSnapshot(collection(db, "transactions"), (snap) => {
       allTransactions = allTransactions.filter(t => !t.isStock);
       snap.forEach(d => allTransactions.push({id: d.id, ...d.data()}));
@@ -320,6 +358,7 @@
       processAndRender();
     });
 
+    // --- การคำนวณและประมวลผลรายงานผลแยกชื่อหุ้น กำไรขาดทุน ---
     function processAndRender() {
       let netPnL = 0;
       let totalDiv = 0;
@@ -329,7 +368,7 @@
       allTransactions.forEach(item => {
         if(item.isStock) {
           if(!stockMap[item.symbol]) {
-            stockMap[item.symbol] = { pnl: 0, div: 0, tradesCount: 0 };
+            stockMap[item.symbol] = { pnl: 0, div: 0, count: 0 };
           }
           if(item.type === 'BUY') {
             stockMap[item.symbol].pnl -= item.total;
@@ -341,7 +380,7 @@
             stockMap[item.symbol].div += item.total;
             totalDiv += item.total;
           }
-          stockMap[item.symbol].tradesCount++;
+          stockMap[item.symbol].count++;
         } else {
           totalExp += item.amount;
         }
@@ -355,26 +394,27 @@
       rList.innerHTML = '';
 
       for(const [symbol, data] of Object.entries(stockMap)) {
-        const pnlColor = data.pnl >= 0 ? 'text-[#0f975d]' : 'text-rose-500';
+        const pnlColor = data.pnl >= 0 ? 'text-emerald-400' : 'text-rose-500';
         const pnlSign = data.pnl >= 0 ? '+' : '';
         rList.innerHTML += `
-          <div class="bg-gray-50 border border-gray-100 p-4 rounded-xl flex justify-between items-center shadow-sm">
+          <div class="bg-zinc-900 border border-zinc-800/80 p-4 rounded-xl flex justify-between items-center shadow-md">
             <div>
-              <p class="text-base font-black text-slate-900">${symbol}</p>
-              <p class="text-[11px] text-gray-400 font-medium mt-0.5">ธุรกรรมรวม: ${data.tradesCount} รายการ</p>
+              <p class="text-base font-black text-white tracking-wide">${symbol}</p>
+              <p class="text-[11px] text-zinc-500 font-bold mt-0.5">รวม: ${data.count} รายการ</p>
             </div>
             <div class="text-right">
               <p class="${pnlColor} font-black text-sm">${pnlSign}฿${data.pnl.toFixed(2)}</p>
-              <p class="text-xs font-bold text-amber-500 mt-0.5">ปันผล: ฿${data.div.toFixed(2)}</p>
+              <p class="text-xs font-bold text-amber-400 mt-0.5">ปันผล: ฿${data.div.toFixed(2)}</p>
             </div>
           </div>`;
       }
 
       if(Object.keys(stockMap).length === 0) {
         rList.innerHTML = `
-          <div class="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-white">
-            <p class="text-gray-400 font-bold text-sm">No trading data yet</p>
-            <p class="text-xs text-gray-400 mt-1">Start adding trades to see your statistics</p>
+          <div class="text-center py-12 border border-dashed border-zinc-800 rounded-2xl bg-zinc-950">
+            <span class="text-3xl block mb-2 opacity-40">📊</span>
+            <p class="text-zinc-500 font-black text-sm">No trading data yet</p>
+            <p class="text-xs text-zinc-600 mt-1">Start adding trades to see your statistics</p>
           </div>`;
       }
     }
