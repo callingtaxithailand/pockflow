@@ -1,50 +1,11 @@
 import { changeMenuTab } from "./app.js";
 
-// 1. ค่าเริ่มต้น (จะทำงานเฉพาะตอนเปิดใช้แอปครั้งแรกสุดบนเครื่องใหม่เท่านั้น)
-const defIncomeCats = {
-  "💰 รายได้หลัก": [
-    { name: "เงินเดือน", icon: "💵" },
-    { name: "โบนัส", icon: "🎁" }
-  ],
-  "🚗 ThaiRide Travel": [
-    { name: "รับส่งสนามบิน", icon: "✈️" },
-    { name: "เช่ารถส่วนบุคคล", icon: "🔑" }
-  ],
-  "📊 การลงทุน": [
-    { name: "ปันผลหุ้น", icon: "📈" },
-    { name: "กำไรขายสินทรัพย์", icon: "🪙" }
-  ]
-};
-
-const defExpenseCats = { 
-  "⚡ สาธารณูปโภค": [
-    { name: "COWAY", icon: "💧" },
-    { name: "ค่าไฟฟ้า", icon: "🔌" },
-    { name: "ค่าน้ำประปา", icon: "🚰" },
-    { name: "ค่าส่วนกลาง", icon: "🏢" }
-  ],
-  "🔧 ซ่อมบำรุง": [
-    { name: "เปลี่ยนน้ำมันเครื่อง", icon: "🛢️" },
-    { name: "เปลี่ยนน้ำมันเกียร์", icon: "⚙️" }
-  ] 
-};
-
-const defStockCats = { 
-  "🇹🇭 หุ้นไทย (SET)": [
-    { name: "กลุ่มธนาคาร", icon: "🏦" },
-    { name: "กลุ่มพลังงาน", icon: "🔋" }
-  ], 
-  "🇺🇸 หุ้นอเมริกา (US)": [
-    { name: "กลุ่ม AI & Tech", icon: "🤖" }
-  ]
-};
-
-// 2. ฟังก์ชันโหลดข้อมูลแบบป้องกันข้อมูลเดิมของพี่สูญหาย
-function loadCategories(currentKey, fallbackKeys, defaultData) {
+// 1. ระบบดึงฐานข้อมูลจริงจากเครื่องของพี่ (ล็อคข้อมูลเดิมไว้ ไม่มีการรีเซ็ตหรือทำให้หาย)
+function loadCategories(currentKey, fallbackKeys) {
   let data = localStorage.getItem(currentKey);
   if (data) return JSON.parse(data);
 
-  // ค้นหาฐานข้อมูลจากชื่อคีย์เวอร์ชันเก่าๆ ที่พี่เคยบันทึกไว้
+  // ไล่ค้นหาคีย์เก่าๆ ที่พี่เคยบันทึกไว้ก่อนหน้านี้ เพื่อดึงข้อมูลเดิมกลับมาให้ครบ
   for (let oldKey of fallbackKeys) {
     let oldData = localStorage.getItem(oldKey);
     if (oldData) {
@@ -60,23 +21,26 @@ function loadCategories(currentKey, fallbackKeys, defaultData) {
       return converted;
     }
   }
-  return defaultData;
+  // หากไม่มีข้อมูลในเครื่องเลยจริงๆ จะส่งกลับเป็น Object ว่าง เพื่อให้พี่เริ่มเพิ่มเองได้ทันที
+  return {};
 }
 
-// ผูกระบบเข้ากับหน่วยความจำเครื่อง
-let incomeCategories = loadCategories('pflow_inc_cats_v3', ['pflow_inc_cats_v2', 'pflow_income_categories', 'incomeCategories'], defIncomeCats);
-let expenseCategories = loadCategories('pflow_exp_cats_v3', ['pflow_exp_cats_v2', 'pflow_expense_categories', 'expenseCategories'], defExpenseCats);
-let stockCategories = loadCategories('pflow_stk_cats_v3', ['pflow_stk_cats_v2', 'pflow_stock_categories', 'stockCategories'], defStockCats);
+// ผูกระบบเข้ากับหน่วยความจำเครื่องของพี่โดยตรง
+let incomeCategories = loadCategories('pflow_inc_cats_v3', ['pflow_inc_cats_v2', 'pflow_income_categories', 'incomeCategories']);
+let expenseCategories = loadCategories('pflow_exp_cats_v3', ['pflow_exp_cats_v2', 'pflow_expense_categories', 'expenseCategories']);
+let stockCategories = loadCategories('pflow_stk_cats_v3', ['pflow_stk_cats_v2', 'pflow_stock_categories', 'stockCategories']);
 
 let currentMgmtType = 'INCOME';
 
-// รายการคลังอิโมจิยอดนิยมสไตล์การเงินและธุรกิจ
-const popularEmojis = [
-  "💰","💵","💸","🪙","💳","💎","📊","📈","📉","🛒",
-  "⚡","🔌","💧","🚰","🏢","🏠","🔧","🛢️","⚙️","🚗",
-  "🏍️","⛽","✈️","🔑","🍔","🍿","☕","💊","🎒","🛍️",
-  "💼","👔","👥","🏢","🛠️","📌","📝","🎉","🎁","⭐"
-];
+// 2. คลังอิโมจิยอดนิยม จัดเรียงแบ่งตามหมวดหมู่การใช้งาน (หากลุ่มง่าย)
+const emojiGroups = {
+  "💰 การเงิน/ธุรกิจ": ["💰", "💵", "💸", "🪙", "💳", "💎", "📊", "📈", "📉", "💼", "👔", "🛍️", "🛒"],
+  "🚗 ยานพาหนะ/เดินทาง": ["🚗", "🏍️", "🚕", "🚌", "🚚", "📦", "⛽", "🔧", "🛢️", "⚙️", "✈️", "🔑", "🗺️"],
+  "🏠 บ้าน/ชีวิตประจำวัน": ["🏠", "🏢", "⚡", "🔌", "💧", "🚰", "🪠", "🧹", "🛏️", "🛋️", "📌", "📝", "✂️"],
+  "🍔 อาหาร/เครื่องดื่ม": ["🍔", "🍕", "🍜", "🍲", "🍚", "🍞", "🍿", "🍰", "🥤", "☕", "🍺", "🍏", "🍇"],
+  "🐱 สัตว์เลี้ยง/ธรรมชาติ": ["🐱", "🐶", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🦆", "🦅", "🦉", "🦇", "🐺", "🐗", "🐴", "🦄", "🐝", "🐛", "🦋", "🐌", "🐞", "🐜", "🦟", "🦗", "🕷️", "🕸️", "🦂", "🐢", "🐍", "🦎", "🦖", "🦕", "🐙", "🦑", "🦐", "🦞", "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍", "🦧", "🐘", "🦛", "🦏", "🐪", "🐫", "🦒", "🦘", "🐃", "🐂", "🐄", "🐎", "🐖", "🐏", "🐑", "🐐", "🦌", "🐕", "🐩", "🐈", "🐓", "🦃", "🦚", "🦜", "🦢", "🦩", "🕊️", "🐇", "🦝", "🦨", "🦡", "🦦", "🦥", "🐁", "🐀", "🐿️", "🦔", "🐾", "🐉", "🐲", "🌵", "🎄", "🌲", "🌳", "🌴", "🌱", "🌿", "☘️", "🍀", "🍁", "🍂", "🍃", "🍄", "🌰", "🐚", "🌐", "🌞", "🌝", "🌛", "🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔", "🌙", "🌎", "🌍", "🌏", "🪐", "💫", "⭐️", "🌟", "✨", "⚡️", "☄️", "💥", "🔥", "🌪", "🌈", "☀️", "🌤", "⛅️", "🌥", "☁️", "🌦", "🌧", "⛈", "🌩", "🌨", "❄️", "☃️", "⛄️", "💨", "💨", "💧", "💦", "🌊"],
+  "🎉 บันเทิง/สุขภาพ": ["🎉", "🎁", "🎈", "🎨", "🎬", "🎤", "🎧", "🎮", "⚽️", "⛳️", "🏋️", "💊", "🩹", "🩺", "⭐"]
+};
 
 export function getCategoriesByType(type) {
   if(type === 'INCOME') return incomeCategories;
@@ -85,7 +49,6 @@ export function getCategoriesByType(type) {
 }
 
 export function initCategoryMgmt() {
-  // สร้างกล่องเลือกอิโมจิขึ้นมาบนหน้าจอ
   createEmojiPickerPopup();
 
   const triggerBtn = document.getElementById('btn-trigger-category-mgmt');
@@ -113,7 +76,6 @@ export function initCategoryMgmt() {
   const addSubBtn = document.getElementById('btn-mgmt-add-sub');
   if(addSubBtn) addSubBtn.addEventListener('click', addSubCategoryClick);
 
-  // ดักฟังเหตุการณ์คลิก: เมื่อจิ้มที่ช่องไอคอน ให้แผงอิโมจิเด้งขึ้นมาแทนคีย์บอร์ดมือถือ
   const mainIconInput = document.getElementById('mgmt-main-icon');
   if(mainIconInput) {
     mainIconInput.addEventListener('click', (e) => openEmojiPicker(e.target));
@@ -145,30 +107,35 @@ export function initCategoryMgmt() {
   setupDropdowns('INCOME');
 }
 
-// โค้ดสร้างหน้าต่างป็อปอัพเลือกอิโมจิสไตล์เลเยอร์โปร่งใส
+// สร้างป็อปอัพสไตล์แยกกลุ่มหัวข้อ ชัดเจน คัดกรองง่าย
 function createEmojiPickerPopup() {
   if (document.getElementById('pflow-emoji-picker')) return;
   
   const picker = document.createElement('div');
   picker.id = 'pflow-emoji-picker';
-  picker.className = 'fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden p-4 animate-fade-in';
+  picker.className = 'fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden p-4';
   
-  let emojiButtonsHtml = '';
-  popularEmojis.forEach(emoji => {
-    emojiButtonsHtml += `
-      <button class="text-2xl p-2.5 active:bg-zinc-800 rounded-xl transition-colors cursor-pointer" onclick="selectEmojiForInput('${emoji}')">
-        ${emoji}
-      </button>`;
+  let contentHtml = '';
+  Object.keys(emojiGroups).forEach(groupTitle => {
+    contentHtml += `<p class="text-[11px] font-black text-zinc-500 mt-3 mb-1 border-b border-zinc-800/60 pb-1">${groupTitle}</p>`;
+    contentHtml += `<div class="grid grid-cols-6 gap-1">`;
+    emojiGroups[groupTitle].forEach(emoji => {
+      contentHtml += `
+        <button class="text-2xl p-2 active:bg-zinc-800 rounded-xl transition-colors cursor-pointer" onclick="selectEmojiForInput('${emoji}')">
+          ${emoji}
+        </button>`;
+    });
+    contentHtml += `</div>`;
   });
 
   picker.innerHTML = `
-    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xs p-4 shadow-2xl">
-      <div class="flex justify-between items-center mb-3">
-        <p class="text-xs font-black text-zinc-300">เลือกไอคอนหมวดหมู่</p>
-        <button class="text-rose-500 text-xs font-bold bg-rose-950/40 px-2 py-1 rounded-lg border border-rose-900/40" onclick="closeEmojiPicker()">ปิด ✕</button>
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col max-h-[80vh]">
+      <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+        <p class="text-sm font-black text-white">เลือกไอคอนอิโมจิ</p>
+        <button class="text-rose-500 text-xs font-bold bg-rose-950/40 px-2.5 py-1 rounded-lg border border-rose-900/40" onclick="closeEmojiPicker()">ปิด ✕</button>
       </div>
-      <div class="grid grid-cols-5 gap-1 max-h-60 overflow-y-auto">
-        ${emojiButtonsHtml}
+      <div class="flex-1 overflow-y-auto pr-1">
+        ${contentHtml}
       </div>
     </div>
   `;
