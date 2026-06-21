@@ -1,6 +1,6 @@
 import { changeMenuTab } from "./app.js";
 
-// โครงสร้างหมวดหมู่เริ่มต้น
+// 1. ค่าเริ่มต้นของระบบ (จะถูกใช้เฉพาะตอนเปิดแอปครั้งแรกสุดบนเครื่องใหม่เท่านั้น)
 const defIncomeCats = {
   "💰 รายได้หลัก": [
     { name: "เงินเดือน", icon: "💵" },
@@ -39,12 +39,42 @@ const defStockCats = {
   ]
 };
 
-let incomeCategories = JSON.parse(localStorage.getItem('pflow_inc_cats_v3')) || defIncomeCats;
-let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats_v3')) || defExpenseCats;
-let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats_v3')) || defStockCats;
+// 2. ระบบรักษารากฐานข้อมูลเดิม (ตรวจสอบทุกลำดับคีย์ที่เคยมี เพื่อไม่ให้ข้อมูลพี่หลุดหาย)
+function loadCategories(currentKey, fallbackKeys, defaultData) {
+  // ลองดึงจากคีย์ปัจจุบันก่อน
+  let data = localStorage.getItem(currentKey);
+  if (data) return JSON.parse(data);
+
+  // ถ้าไม่เจอในคีย์ปัจจุบัน ให้วิ่งไปรื้อค้นจากคีย์เก่าๆ ที่พี่อาจเคยบันทึกไว้ก่อนหน้า
+  for (let oldKey of fallbackKeys) {
+    let oldData = localStorage.getItem(oldKey);
+    if (oldData) {
+      // ตรวจสอบและแปลงโครงสร้างข้อมูลเก่า (ถ้ามี) ให้เข้ากับระบบไอคอนแบบใหม่โดยไม่ทำข้อมูลหาย
+      let parsed = JSON.parse(oldData);
+      let converted = {};
+      Object.keys(parsed).forEach(main => {
+        converted[main] = parsed[main].map(sub => {
+          if (typeof sub === 'string') return { name: sub, icon: "🔹" };
+          return sub;
+        });
+      });
+      // ย้ายข้อมูลเดิมมาเซฟเข้าคีย์ใหม่ทันทีเพื่อความปลอดภัย
+      localStorage.setItem(currentKey, JSON.stringify(converted));
+      return converted;
+    }
+  }
+  // ถ้าไม่เคยมีข้อมูลในระบบเลยจริงๆ ถึงจะยอมปล่อยให้โหลดค่าเริ่มต้นมาใช้งาน
+  return defaultData;
+}
+
+// ผูกระบบโหลดข้อมูลเข้ากับฐานข้อมูลเดิมของพี่ทั้งหมด
+let incomeCategories = loadCategories('pflow_inc_cats_v3', ['pflow_inc_cats_v2', 'pflow_income_categories', 'incomeCategories'], defIncomeCats);
+let expenseCategories = loadCategories('pflow_exp_cats_v3', ['pflow_exp_cats_v2', 'pflow_expense_categories', 'expenseCategories'], defExpenseCats);
+let stockCategories = loadCategories('pflow_stk_cats_v3', ['pflow_stk_cats_v2', 'pflow_stock_categories', 'stockCategories'], defStockCats);
+
 let currentMgmtType = 'INCOME';
 
-// รายการอิโมจิยอดนิยมสไตล์แอปการเงิน สำหรับให้กดเลือก
+// รายการอิโมจิยอดนิยมสไตล์แอปการเงิน สำหรับกดเลือกบนหน้าจอ
 const popularEmojis = [
   "💰","💵","💸","🪙","💳","💎","📊","📈","📉","🛒",
   "⚡","🔌","💧","🚰","🏢","🏠","🔧","🛢️","⚙️","🚗",
@@ -58,7 +88,6 @@ export function getCategoriesByType(type) {
 }
 
 export function initCategoryMgmt() {
-  // สร้างและแทรกกล่อง Emoji Picker Popup เข้าไปในหน้าเว็บแบบ Dynamic
   createEmojiPickerPopup();
 
   const triggerBtn = document.getElementById('btn-trigger-category-mgmt');
@@ -86,11 +115,10 @@ export function initCategoryMgmt() {
   const addSubBtn = document.getElementById('btn-mgmt-add-sub');
   if(addSubBtn) addSubBtn.addEventListener('click', addSubCategoryClick);
 
-  // ผูกการคลิกที่ช่องไอคอนหลักและย่อยเพื่อให้กล่องเลือกอีโมจิเด้งขึ้นมา
   const mainIconInput = document.getElementById('mgmt-main-icon');
   if(mainIconInput) {
     mainIconInput.addEventListener('click', (e) => openEmojiPicker(e.target));
-    mainIconInput.readOnly = true; // ป้องกันคีย์บอร์ดมือถือเด้งขึ้นมาบัง
+    mainIconInput.readOnly = true; 
   }
 
   const subIconInput = document.getElementById('mgmt-sub-icon');
@@ -118,7 +146,6 @@ export function initCategoryMgmt() {
   setupDropdowns('INCOME');
 }
 
-// ฟังก์ชันสร้างกล่องป็อปอัพเลือกอิโมจิ
 function createEmojiPickerPopup() {
   if (document.getElementById('pflow-emoji-picker')) return;
   
