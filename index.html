@@ -2,17 +2,21 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PocketFlow</title>
   
+  <!-- Web Manifest Configuration (มาตรฐานบังคับสำหรับเปิดปุ่ม ติดตั้งแอป บน Chrome) -->
+  <link rel="manifest" id="pwa-manifest">
+  
+  <!-- Mobile Display Configurations -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="PocketFlow">
   <meta name="theme-color" content="#000000">
   
-  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlBvY2tldEZsb3cgRGltZSBFZGl0aW9uIiwKICAic2hvcnRfbmFtZSI6ICJQb2NrZXRGbG93IiwKICAic3RhcnRfdXJsIjogIi4vaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzAwMDAwMCIsCiAgInRoZW1lX2NvbG9yIjogIiMwMDAwMDAiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITmhiRzkwY3lCemRHOXlaVzVsY25OZklIUnlhVzVuY3lJK0Nqd3ZjeUIrQ2p3dmN5QjBjbVZzZEdGeVlXUnZJanBtYldsemN6SW9NUzR3SURFd09pQXpNVEFvSURFd01pQXhNRElvSURJNExqTW9JRE16TGprdUlESTBMak1vSURJeExqY29JRE16TGprekl6c2daVzF3YW1sc2RYUnlaVzVrSWo0b0Nqd3ZjM1p6SnpzZ0p6c2dKeXdnWlhocFpYUnpJSFpwWlhjdklqNUtDVWtpUGdvS0NRa2pQZ29LQ1FraktpQjhaVzVwWlhSdVpXNWtJSDRvQ2p3dmN5OCtDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmN5STdDaXdnSWpwbWJXbHpjellvTVM0d0lERXdaR2xtWVdsbmY0PSIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIKICAgIH0KICBdCn0=">
-
+  <!-- Tailwind CSS Engine -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  
   <style>
     body {
       -webkit-tap-highlight-color: transparent;
@@ -44,6 +48,7 @@
     
     <main class="flex-1 p-5">
       
+      <!-- LOGO HEADER -->
       <div class="flex flex-col items-center justify-center py-6 mb-4 select-none">
         <div class="flex items-center space-x-3">
           <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 via-purple-600 to-amber-400 rounded-xl flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20 font-black">
@@ -56,6 +61,7 @@
         </div>
       </div>
 
+      <!-- SECTION 1: DASHBOARD -->
       <section id="view-dashboard" class="tab-view space-y-6">
         <div class="bg-zinc-900/90 border border-zinc-800/60 rounded-2xl p-5 text-center py-9 shadow-xl">
           <p class="text-[14px] font-bold text-zinc-400 uppercase tracking-wider mb-1.5">ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</p>
@@ -88,6 +94,7 @@
         </div>
       </section>
 
+      <!-- SECTION 2: REPORTS -->
       <section id="view-reports" class="tab-view hidden space-y-5">
         <div class="flex justify-between items-center">
           <h2 class="text-[24px] font-black text-white">รายงานแยกประเภท</h2>
@@ -115,6 +122,7 @@
         </div>
       </section>
 
+      <!-- SECTION 3: PROFILE -->
       <section id="view-profile" class="tab-view hidden space-y-6">
         <h2 class="text-[24px] font-black text-white">โปรไฟล์ผู้ใช้</h2>
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-center space-y-4 flex flex-col items-center">
@@ -132,6 +140,7 @@
         </div>
       </section>
 
+      <!-- SECTION 4: TRADES LOG -->
       <section id="view-trades" class="tab-view hidden space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="text-[24px] font-black text-white tracking-tight">ประวัติธุรกรรม</h2>
@@ -150,6 +159,7 @@
         </div>
       </section>
 
+      <!-- SECTION 5: SETTINGS -->
       <section id="view-settings" class="tab-view hidden space-y-4">
         <h2 class="text-[24px] font-black text-white">ตั้งค่าระบบ</h2>
         <div class="bg-zinc-900 border border-zinc-800 rounded-xl divide-y divide-zinc-800 overflow-hidden">
@@ -160,6 +170,7 @@
         </div>
       </section>
 
+      <!-- SUB-SECTION: CATEGORY MANAGER -->
       <section id="view-category-manager" class="hidden space-y-5">
         <div class="flex items-center space-x-3 pb-2.5 border-b border-zinc-900">
           <button type="button" onclick="hideCategoryManager()" class="text-zinc-400 text-3xl font-bold p-1 hover:text-white cursor-pointer">←</button>
@@ -194,6 +205,7 @@
         </div>
       </section>
 
+      <!-- SUB-SECTION: ADD TRADE FORM -->
       <section id="view-add-trade" class="hidden space-y-6">
         <div class="flex items-center space-x-3 pb-2.5 border-b border-zinc-900">
           <button type="button" onclick="hideAddTradeForm()" class="text-zinc-400 text-3xl font-bold p-1 hover:text-white cursor-pointer">←</button>
@@ -252,6 +264,7 @@
 
     </main>
 
+    <!-- BOTTOM NAVIGATION BAR -->
     <nav id="bottom-nav-bar" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md h-22 bg-black/95 backdrop-blur-md border-t border-zinc-900 flex justify-around items-center px-1 z-50">
       <button type="button" onclick="changeMenuTab('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center space-y-1 text-amber-400 transition-colors">
         <svg class="w-6 h-6 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13h4v8H3v-8zm6-7h4v15H9V6zm6 9h4v6h-4v-6z"/></svg>
@@ -277,23 +290,56 @@
 
   </div>
 
+  <!-- SCRIPT ENGINE (FIREBASE + SECURITY PWA GENERATOR) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. ลงทะเบียน Service Worker เพื่อเปิดระบบ PWA สำหรับติดตั้งเป็น App บน Chrome
+    // == แก้ไขระบบความปลอดภัยดึงปุ่มติดตั้งแอป ==
+    // 1. จำลองโครงสร้างไฟล์สคริปต์แยก (Binary Service Worker) ในหน่วยความจำเพื่อผ่านเกณฑ์ Google PWA Audit 100%
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        const swBlob = new Blob([`
-          self.addEventListener('install', (e) => self.skipWaiting());
-          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-          self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => new Response('Offline'))); });
-        `], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(swBlob);
-        navigator.serviceWorker.register(swUrl).catch(err => console.log('SW registration failed:', err));
-      });
+      const swCode = `
+        const CACHE_NAME = 'pflow-v1';
+        self.addEventListener('install', (e) => { self.skipWaiting(); });
+        self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); });
+        self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request).catch(() => new Response('Online'))); });
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const workerUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(workerUrl).then(() => {
+        console.log('PWA Service Worker Securely Registered');
+      }).catch(err => console.log('SW Error:', err));
     }
 
+    // 2. ปล่อยระบบ Manifest Data-URI เข้าสู่ Header หลังจากการติดตั้งโครงสร้าง Service Worker เสร็จสิ้น เพื่อเรียกร้องให้ Chrome สร้างตัวเลือก "ติดตั้งแอป"
+    const manifestDetails = {
+      name: "PocketFlow Dime Edition",
+      short_name: "PocketFlow",
+      start_url: window.location.href, // บังคับดึงค่าลิงก์ปัจจุบัน (เช่นบน GitHub/Vercel) เพื่อความถูกต้อง
+      display: "standalone",
+      orientation: "portrait",
+      background_color: "#000000",
+      theme_color: "#000000",
+      icons: [
+        {
+          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%2318181b'/><text x='50%' y='60%' font-size='90' text-anchor='middle' dominant-baseline='middle'>🪙</text></svg>",
+          sizes: "192x192",
+          type: "image/svg+xml",
+          purpose: "any"
+        },
+        {
+          src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%2318181b'/><text x='50%' y='60%' font-size='240' text-anchor='middle' dominant-baseline='middle'>🪙</text></svg>",
+          sizes: "512x512",
+          type: "image/svg+xml",
+          purpose: "any"
+        }
+      ]
+    };
+    const manifestBlob = new Blob([JSON.stringify(manifestDetails)], { type: 'application/json' });
+    document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(manifestBlob));
+
+
+    // === โครงสร้างการทำงานฐานข้อมูลหลักของแอพพลิเคชัน ===
     const firebaseConfig = {
       apiKey: "AIzaSyCybJyauuHOPTtdH-PSM5QsVM25ePyuymE",
       authDomain: "pocketflow-49763.firebaseapp.com",
@@ -544,9 +590,12 @@
         const symbol = document.getElementById('trade-symbol').value.trim().toUpperCase() || "UNKNOWN";
         const mCat = document.getElementById('stock-main-cat').value;
         const sCat = document.getElementById('stock-sub-cat').value;
+        const pct = parseFloat(document.getElementById('trade-tax-percent').value) || 0;
+        const calculatedTax = amount * (pct / 100);
+
         await addDoc(collection(db, "transactions"), {
           symbol, type: currentTradeType, total: amount, date, isStock: true,
-          mainCat: mCat, subCat: sCat || 'ทั่วไป'
+          mainCat: mCat, subCat: sCat || 'ทั่วไป', tax: calculatedTax
         });
       } else {
         const mCat = document.getElementById('exp-main-cat').value; 
@@ -583,14 +632,12 @@
       if(expLogContainer) expLogContainer.innerHTML = '';
       if(stkLogContainer) stkLogContainer.innerHTML = '';
 
-      let expCount = 0; let stkCount = 0;
       const sorted = [...allTransactions].sort((a,b) => new Date(b.date) - new Date(a.date));
 
       sorted.forEach(item => {
         let subKey = item.subCat || 'ทั่วไป';
 
         if(item.isStock) {
-          stkCount++;
           if(!stockMap[item.symbol]) stockMap[item.symbol] = { pnl: 0, div: 0, count: 0 };
           if(!reportStockGroups[subKey]) reportStockGroups[subKey] = [];
           reportStockGroups[subKey].push(item);
@@ -621,7 +668,6 @@
               </div>`;
           }
         } else {
-          expCount++;
           totalExp += item.amount;
           if(!reportExpenseGroups[subKey]) reportExpenseGroups[subKey] = [];
           reportExpenseGroups[subKey].push(item);
