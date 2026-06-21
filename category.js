@@ -1,11 +1,49 @@
 import { changeMenuTab } from "./app.js";
 
-// 1. ระบบดึงฐานข้อมูลจริงจากเครื่องของพี่ (ล็อคข้อมูลเดิมไว้ ไม่มีการรีเซ็ตหรือทำให้หาย)
-function loadCategories(currentKey, fallbackKeys) {
+// หมวดหมู่เริ่มต้น (จะดึงมาช่วยพยุงระบบทันทีหากคีย์ในเครื่องของพี่ว่าง เพื่อให้มีหมวดหมู่หลักเลือกใช้งาน)
+const defIncomeCats = {
+  "💰 รายได้หลัก": [
+    { name: "เงินเดือน", icon: "💵" },
+    { name: "โบนัส", icon: "🎁" }
+  ],
+  "🚗 ThaiRide Travel": [
+    { name: "รับส่งสนามบิน", icon: "✈️" },
+    { name: "เช่ารถส่วนบุคคล", icon: "🔑" }
+  ],
+  "📊 การลงทุน": [
+    { name: "ปันผลหุ้น", icon: "📈" },
+    { name: "กำไรขายสินทรัพย์", icon: "🪙" }
+  ]
+};
+
+const defExpenseCats = { 
+  "⚡ สาธารณูปโภค": [
+    { name: "COWAY", icon: "💧" },
+    { name: "ค่าไฟฟ้า", icon: "🔌" },
+    { name: "ค่าน้ำประปา", icon: "🚰" },
+    { name: "ค่าส่วนกลาง", icon: "🏢" }
+  ],
+  "🔧 ซ่อมบำรุง": [
+    { name: "เปลี่ยนน้ำมันเครื่อง", icon: "🛢️" },
+    { name: "เปลี่ยนน้ำมันเกียร์", icon: "⚙️" }
+  ] 
+};
+
+const defStockCats = { 
+  "🇹🇭 หุ้นไทย (SET)": [
+    { name: "กลุ่มธนาคาร", icon: "🏦" },
+    { name: "กลุ่มพลังงาน", icon: "🔋" }
+  ], 
+  "🇺🇸 หุ้นอเมริกา (US)": [
+    { name: "กลุ่ม AI & Tech", icon: "🤖" }
+  ]
+};
+
+// ฟังก์ชันโหลดข้อมูล (ตรวจสอบข้อมูลจริงของพี่ก่อน ถ้าไม่มีค่อยดึงค่าเริ่มต้นมาใช้งาน)
+function loadCategories(currentKey, fallbackKeys, defaultData) {
   let data = localStorage.getItem(currentKey);
   if (data) return JSON.parse(data);
 
-  // ไล่ค้นหาคีย์เก่าๆ ที่พี่เคยบันทึกไว้ก่อนหน้านี้ เพื่อดึงข้อมูลเดิมกลับมาให้ครบ
   for (let oldKey of fallbackKeys) {
     let oldData = localStorage.getItem(oldKey);
     if (oldData) {
@@ -21,24 +59,22 @@ function loadCategories(currentKey, fallbackKeys) {
       return converted;
     }
   }
-  // หากไม่มีข้อมูลในเครื่องเลยจริงๆ จะส่งกลับเป็น Object ว่าง เพื่อให้พี่เริ่มเพิ่มเองได้ทันที
-  return {};
+  return defaultData;
 }
 
-// ผูกระบบเข้ากับหน่วยความจำเครื่องของพี่โดยตรง
-let incomeCategories = loadCategories('pflow_inc_cats_v3', ['pflow_inc_cats_v2', 'pflow_income_categories', 'incomeCategories']);
-let expenseCategories = loadCategories('pflow_exp_cats_v3', ['pflow_exp_cats_v2', 'pflow_expense_categories', 'expenseCategories']);
-let stockCategories = loadCategories('pflow_stk_cats_v3', ['pflow_stk_cats_v2', 'pflow_stock_categories', 'stockCategories']);
+let incomeCategories = loadCategories('pflow_inc_cats_v3', ['pflow_inc_cats_v2', 'pflow_income_categories', 'incomeCategories'], defIncomeCats);
+let expenseCategories = loadCategories('pflow_exp_cats_v3', ['pflow_exp_cats_v2', 'pflow_expense_categories', 'expenseCategories'], defExpenseCats);
+let stockCategories = loadCategories('pflow_stk_cats_v3', ['pflow_stk_cats_v2', 'pflow_stock_categories', 'stockCategories'], defStockCats);
 
 let currentMgmtType = 'INCOME';
 
-// 2. คลังอิโมจิยอดนิยม จัดเรียงแบ่งตามหมวดหมู่การใช้งาน (หากลุ่มง่าย)
+// คลังอิโมจิยอดนิยมแบ่งตามหมวดหมู่
 const emojiGroups = {
   "💰 การเงิน/ธุรกิจ": ["💰", "💵", "💸", "🪙", "💳", "💎", "📊", "📈", "📉", "💼", "👔", "🛍️", "🛒"],
   "🚗 ยานพาหนะ/เดินทาง": ["🚗", "🏍️", "🚕", "🚌", "🚚", "📦", "⛽", "🔧", "🛢️", "⚙️", "✈️", "🔑", "🗺️"],
   "🏠 บ้าน/ชีวิตประจำวัน": ["🏠", "🏢", "⚡", "🔌", "💧", "🚰", "🪠", "🧹", "🛏️", "🛋️", "📌", "📝", "✂️"],
   "🍔 อาหาร/เครื่องดื่ม": ["🍔", "🍕", "🍜", "🍲", "🍚", "🍞", "🍿", "🍰", "🥤", "☕", "🍺", "🍏", "🍇"],
-  "🐱 สัตว์เลี้ยง/ธรรมชาติ": ["🐱", "🐶", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🦆", "🦅", "🦉", "🦇", "🐺", "🐗", "🐴", "🦄", "🐝", "🐛", "🦋", "🐌", "🐞", "🐜", "🦟", "🦗", "🕷️", "🕸️", "🦂", "🐢", "🐍", "🦎", "🦖", "🦕", "🐙", "🦑", "🦐", "🦞", "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍", "🦧", "🐘", "🦛", "🦏", "🐪", "🐫", "🦒", "🦘", "🐃", "🐂", "🐄", "🐎", "🐖", "🐏", "🐑", "🐐", "🦌", "🐕", "🐩", "🐈", "🐓", "🦃", "🦚", "🦜", "🦢", "🦩", "🕊️", "🐇", "🦝", "🦨", "🦡", "🦦", "🦥", "🐁", "🐀", "🐿️", "🦔", "🐾", "🐉", "🐲", "🌵", "🎄", "🌲", "🌳", "🌴", "🌱", "🌿", "☘️", "🍀", "🍁", "🍂", "🍃", "🍄", "🌰", "🐚", "🌐", "🌞", "🌝", "🌛", "🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔", "🌙", "🌎", "🌍", "🌏", "🪐", "💫", "⭐️", "🌟", "✨", "⚡️", "☄️", "💥", "🔥", "🌪", "🌈", "☀️", "🌤", "⛅️", "🌥", "☁️", "🌦", "🌧", "⛈", "🌩", "🌨", "❄️", "☃️", "⛄️", "💨", "💨", "💧", "💦", "🌊"],
+  "🐱 สัตว์/ธรรมชาติ": ["🐱", "🐶", "🐰", "🦊", "🐻", "🐼", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐦", "🦆", "🦅", "🦉", "🐝", "🐛", "🦋", "🐌", "🐞", "🐜", "🐢", "🐍", "🦎", "🐙", "🦑", "🦐", "🦪", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍", "🐘", "🐪", "🦒", "🦘", "🐎", "🐖", "🐏", "🐐", "🦌", "🐕", "🐈", "🐓", "🕊️", "🐇", "🌱", "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🌐", "🌞", "🌙", "⭐️", "🌟", "✨", "🔥", "🌈", "☀️", "🌤️", "☁️", "🌧️", "⛈️", "❄️", "🌊"],
   "🎉 บันเทิง/สุขภาพ": ["🎉", "🎁", "🎈", "🎨", "🎬", "🎤", "🎧", "🎮", "⚽️", "⛳️", "🏋️", "💊", "🩹", "🩺", "⭐"]
 };
 
@@ -71,22 +107,19 @@ export function initCategoryMgmt() {
   });
 
   const addMainBtn = document.getElementById('btn-mgmt-add-main');
-  if(addMainBtn) addMainBtn.addEventListener('click', addMainCategoryClick);
+  if(addMainBtn) {
+    addMainBtn.replaceWith(addMainBtn.cloneNode(true)); // ล้าง Listener เก่ากันทำงานซ้ำซ้อน
+    document.getElementById('btn-mgmt-add-main').addEventListener('click', addMainCategoryClick);
+  }
 
   const addSubBtn = document.getElementById('btn-mgmt-add-sub');
-  if(addSubBtn) addSubBtn.addEventListener('click', addSubCategoryClick);
-
-  const mainIconInput = document.getElementById('mgmt-main-icon');
-  if(mainIconInput) {
-    mainIconInput.addEventListener('click', (e) => openEmojiPicker(e.target));
-    mainIconInput.readOnly = true; 
+  if(addSubBtn) {
+    addSubBtn.replaceWith(addSubBtn.cloneNode(true));
+    document.getElementById('btn-mgmt-add-sub').addEventListener('click', addSubCategoryClick);
   }
 
-  const subIconInput = document.getElementById('mgmt-sub-icon');
-  if(subIconInput) {
-    subIconInput.addEventListener('click', (e) => openEmojiPicker(e.target));
-    subIconInput.readOnly = true; 
-  }
+  // ตัวดักการคลิกเพื่อเรียกกล่องเลือกอิโมจิ
+  setupIconInputListeners();
 
   window.deleteMainCat = function(mainName) {
     if(!confirm(`ยืนยันลบหมวดหมู่หลัก "${mainName}" และหมวดหมู่ย่อยทั้งหมดข้างในหรือไม่?`)) return;
@@ -104,10 +137,23 @@ export function initCategoryMgmt() {
     }
   };
 
-  setupDropdowns('INCOME');
+  updateMgmtDisplay();
 }
 
-// สร้างป็อปอัพสไตล์แยกกลุ่มหัวข้อ ชัดเจน คัดกรองง่าย
+function setupIconInputListeners() {
+  const mainIconInput = document.getElementById('mgmt-main-icon');
+  if(mainIconInput) {
+    mainIconInput.onclick = (e) => openEmojiPicker(e.target);
+    mainIconInput.readOnly = true; 
+  }
+
+  const subIconInput = document.getElementById('mgmt-sub-icon');
+  if(subIconInput) {
+    subIconInput.onclick = (e) => openEmojiPicker(e.target);
+    subIconInput.readOnly = true; 
+  }
+}
+
 function createEmojiPickerPopup() {
   if (document.getElementById('pflow-emoji-picker')) return;
   
@@ -129,7 +175,7 @@ function createEmojiPickerPopup() {
   });
 
   picker.innerHTML = `
-    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col max-h-[80vh]">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-sm p-4 shadow-2xl flex flex-col max-h-[70vh]">
       <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
         <p class="text-sm font-black text-white">เลือกไอคอนอิโมจิ</p>
         <button class="text-rose-500 text-xs font-bold bg-rose-950/40 px-2.5 py-1 rounded-lg border border-rose-900/40" onclick="closeEmojiPicker()">ปิด ✕</button>
@@ -260,11 +306,12 @@ function addMainCategoryClick() {
   
   if(!target[fullMainName]) {
     target[fullMainName] = [];
+    if(nameInput) nameInput.value = '';
+    if(iconInput) iconInput.value = '📁'; 
+    saveToStorage();
+  } else {
+    alert('มีหมวดหมู่หลักชื่อนี้อยู่แล้วครับพี่!');
   }
-  
-  if(nameInput) nameInput.value = '';
-  if(iconInput) iconInput.value = '📁'; 
-  saveToStorage();
 }
 
 function addSubCategoryClick() {
@@ -283,10 +330,11 @@ function addSubCategoryClick() {
     const isExist = target[mainName].some(s => s.name === name);
     if(!isExist) {
       target[mainName].push({ name: name, icon: icon });
+      if(nameInput) nameInput.value = '';
+      if(iconInput) iconInput.value = '🔹'; 
+      saveToStorage();
+    } else {
+      alert('มีหมวดหมู่ย่อยชื่อนี้อยู่ในกลุ่มนี้แล้วครับพี่!');
     }
   }
-  
-  if(nameInput) nameInput.value = '';
-  if(iconInput) iconInput.value = '🔹'; 
-  saveToStorage();
 }
