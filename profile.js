@@ -6,7 +6,6 @@ export function initProfileModule() {
     trigger.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleProfileImageChange);
   }
-
   loadSavedProfileImage();
 }
 
