@@ -24,7 +24,9 @@ let currentLogTab = 'INCOME';
 document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
 
 export function changeMenuTab(tabName) {
+  // บันทึกหน้าปัจจุบันลง LocalStorage ทุกครั้งที่มีการเปลี่ยนแท็บ
   localStorage.setItem('pflow_active_tab', tabName);
+  
   document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
   document.getElementById('view-add-trade').classList.add('hidden');
   document.getElementById('view-category-manager').classList.add('hidden');
@@ -112,7 +114,6 @@ function processAndRender() {
     }
   });
 
-  // Calculate net portfolio PnL including simple Incomes/Expenses
   let totalPortfolioNet = netPnL + totalDiv + totalInc - totalExp;
 
   if(document.getElementById('total-pnl-display')) document.getElementById('total-pnl-display').innerText = `฿${totalPortfolioNet.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
@@ -138,9 +139,7 @@ function processAndRender() {
     });
   }
 
-  // ----------------------------------------------------
   // LOG HISTORY RENDER WITH FILTER & SORTING
-  // ----------------------------------------------------
   const sortBy = document.getElementById('log-sort-by')?.value || 'date-desc';
   const filterMain = document.getElementById('log-filter-main')?.value || 'ALL';
 
@@ -313,5 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     processAndRender();
   });
 
-  changeMenuTab('dashboard');
+  // --- [ส่วนที่แก้ไข] ตรวจสอบและดึงข้อมูลสเตตัสแท็บล่าสุดตอนกด F5 ---
+  const savedActiveTab = localStorage.getItem('pflow_active_tab') || 'dashboard';
+  changeMenuTab(savedActiveTab);
 });
