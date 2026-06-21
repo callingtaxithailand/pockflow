@@ -1,6 +1,6 @@
 import { changeMenuTab } from "./app.js";
 
-// หมวดหมู่เริ่มต้น (จะดึงมาช่วยพยุงระบบทันทีหากคีย์ในเครื่องของพี่ว่าง เพื่อให้มีหมวดหมู่หลักเลือกใช้งาน)
+// 1. หมวดหมู่เริ่มต้น (จะดึงมาช่วยพยุงระบบหากคีย์ในเครื่องว่างเปล่า)
 const defIncomeCats = {
   "💰 รายได้หลัก": [
     { name: "เงินเดือน", icon: "💵" },
@@ -39,7 +39,7 @@ const defStockCats = {
   ]
 };
 
-// ฟังก์ชันโหลดข้อมูล (ตรวจสอบข้อมูลจริงของพี่ก่อน ถ้าไม่มีค่อยดึงค่าเริ่มต้นมาใช้งาน)
+// ฟังก์ชันโหลดข้อมูลป้องกันข้อมูลสูญหาย
 function loadCategories(currentKey, fallbackKeys, defaultData) {
   let data = localStorage.getItem(currentKey);
   if (data) return JSON.parse(data);
@@ -86,6 +86,7 @@ export function getCategoriesByType(type) {
 
 export function initCategoryMgmt() {
   createEmojiPickerPopup();
+  setupPreventRefresh(); // เรียกเปิดใช้งานระบบล็อกปุ่ม F5 และ Refresh เบราว์เซอร์
 
   const triggerBtn = document.getElementById('btn-trigger-category-mgmt');
   if(triggerBtn) {
@@ -108,7 +109,7 @@ export function initCategoryMgmt() {
 
   const addMainBtn = document.getElementById('btn-mgmt-add-main');
   if(addMainBtn) {
-    addMainBtn.replaceWith(addMainBtn.cloneNode(true)); // ล้าง Listener เก่ากันทำงานซ้ำซ้อน
+    addMainBtn.replaceWith(addMainBtn.cloneNode(true));
     document.getElementById('btn-mgmt-add-main').addEventListener('click', addMainCategoryClick);
   }
 
@@ -118,7 +119,6 @@ export function initCategoryMgmt() {
     document.getElementById('btn-mgmt-add-sub').addEventListener('click', addSubCategoryClick);
   }
 
-  // ตัวดักการคลิกเพื่อเรียกกล่องเลือกอิโมจิ
   setupIconInputListeners();
 
   window.deleteMainCat = function(mainName) {
@@ -138,6 +138,24 @@ export function initCategoryMgmt() {
   };
 
   updateMgmtDisplay();
+}
+
+// 2. ฟังก์ชันตรวจสอบและล็อกการรีเฟรชหน้าจอ (F5) เมื่อมีข้อมูลค้างในฟอร์ม
+function setupPreventRefresh() {
+  window.addEventListener('beforeunload', (e) => {
+    const mainInput = document.getElementById('mgmt-new-main');
+    const subInput = document.getElementById('mgmt-new-sub');
+    
+    const hasMainText = mainInput && mainInput.value.trim().length > 0;
+    const hasSubText = subInput && subInput.value.trim().length > 0;
+
+    // ถ้าพบว่าพี่มีการพิมพ์ตัวหนังสือค้างไว้ในช่องใดช่องหนึ่ง ให้เบราว์เซอร์ทำป็อปอัพแจ้งเตือนทันที
+    if (hasMainText || hasSubText) {
+      e.preventDefault();
+      e.returnValue = 'คุณมีข้อมูลที่ยังไม่ได้บันทึก ยืนยันที่จะรีเฟรชหน้าจอหรือไม่?'; 
+      return e.returnValue;
+    }
+  });
 }
 
 function setupIconInputListeners() {
