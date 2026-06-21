@@ -1,6 +1,6 @@
 import { changeMenuTab } from "./app.js";
 
-// 1. ค่าเริ่มต้นของระบบ (จะถูกใช้เฉพาะตอนเปิดแอปครั้งแรกสุดบนเครื่องใหม่เท่านั้น)
+// 1. ค่าเริ่มต้น (จะทำงานเฉพาะตอนเปิดใช้แอปครั้งแรกสุดบนเครื่องใหม่เท่านั้น)
 const defIncomeCats = {
   "💰 รายได้หลัก": [
     { name: "เงินเดือน", icon: "💵" },
@@ -39,17 +39,15 @@ const defStockCats = {
   ]
 };
 
-// 2. ระบบรักษารากฐานข้อมูลเดิม (ตรวจสอบทุกลำดับคีย์ที่เคยมี เพื่อไม่ให้ข้อมูลพี่หลุดหาย)
+// 2. ฟังก์ชันโหลดข้อมูลแบบป้องกันข้อมูลเดิมของพี่สูญหาย
 function loadCategories(currentKey, fallbackKeys, defaultData) {
-  // ลองดึงจากคีย์ปัจจุบันก่อน
   let data = localStorage.getItem(currentKey);
   if (data) return JSON.parse(data);
 
-  // ถ้าไม่เจอในคีย์ปัจจุบัน ให้วิ่งไปรื้อค้นจากคีย์เก่าๆ ที่พี่อาจเคยบันทึกไว้ก่อนหน้า
+  // ค้นหาฐานข้อมูลจากชื่อคีย์เวอร์ชันเก่าๆ ที่พี่เคยบันทึกไว้
   for (let oldKey of fallbackKeys) {
     let oldData = localStorage.getItem(oldKey);
     if (oldData) {
-      // ตรวจสอบและแปลงโครงสร้างข้อมูลเก่า (ถ้ามี) ให้เข้ากับระบบไอคอนแบบใหม่โดยไม่ทำข้อมูลหาย
       let parsed = JSON.parse(oldData);
       let converted = {};
       Object.keys(parsed).forEach(main => {
@@ -58,27 +56,26 @@ function loadCategories(currentKey, fallbackKeys, defaultData) {
           return sub;
         });
       });
-      // ย้ายข้อมูลเดิมมาเซฟเข้าคีย์ใหม่ทันทีเพื่อความปลอดภัย
       localStorage.setItem(currentKey, JSON.stringify(converted));
       return converted;
     }
   }
-  // ถ้าไม่เคยมีข้อมูลในระบบเลยจริงๆ ถึงจะยอมปล่อยให้โหลดค่าเริ่มต้นมาใช้งาน
   return defaultData;
 }
 
-// ผูกระบบโหลดข้อมูลเข้ากับฐานข้อมูลเดิมของพี่ทั้งหมด
+// ผูกระบบเข้ากับหน่วยความจำเครื่อง
 let incomeCategories = loadCategories('pflow_inc_cats_v3', ['pflow_inc_cats_v2', 'pflow_income_categories', 'incomeCategories'], defIncomeCats);
 let expenseCategories = loadCategories('pflow_exp_cats_v3', ['pflow_exp_cats_v2', 'pflow_expense_categories', 'expenseCategories'], defExpenseCats);
 let stockCategories = loadCategories('pflow_stk_cats_v3', ['pflow_stk_cats_v2', 'pflow_stock_categories', 'stockCategories'], defStockCats);
 
 let currentMgmtType = 'INCOME';
 
-// รายการอิโมจิยอดนิยมสไตล์แอปการเงิน สำหรับกดเลือกบนหน้าจอ
+// รายการคลังอิโมจิยอดนิยมสไตล์การเงินและธุรกิจ
 const popularEmojis = [
   "💰","💵","💸","🪙","💳","💎","📊","📈","📉","🛒",
   "⚡","🔌","💧","🚰","🏢","🏠","🔧","🛢️","⚙️","🚗",
-  "🏍️","⛽","✈️","🔑","🍔","🍿","☕","💊","🎒","🛍️"
+  "🏍️","⛽","✈️","🔑","🍔","🍿","☕","💊","🎒","🛍️",
+  "💼","👔","👥","🏢","🛠️","📌","📝","🎉","🎁","⭐"
 ];
 
 export function getCategoriesByType(type) {
@@ -88,6 +85,7 @@ export function getCategoriesByType(type) {
 }
 
 export function initCategoryMgmt() {
+  // สร้างกล่องเลือกอิโมจิขึ้นมาบนหน้าจอ
   createEmojiPickerPopup();
 
   const triggerBtn = document.getElementById('btn-trigger-category-mgmt');
@@ -115,6 +113,7 @@ export function initCategoryMgmt() {
   const addSubBtn = document.getElementById('btn-mgmt-add-sub');
   if(addSubBtn) addSubBtn.addEventListener('click', addSubCategoryClick);
 
+  // ดักฟังเหตุการณ์คลิก: เมื่อจิ้มที่ช่องไอคอน ให้แผงอิโมจิเด้งขึ้นมาแทนคีย์บอร์ดมือถือ
   const mainIconInput = document.getElementById('mgmt-main-icon');
   if(mainIconInput) {
     mainIconInput.addEventListener('click', (e) => openEmojiPicker(e.target));
@@ -146,12 +145,13 @@ export function initCategoryMgmt() {
   setupDropdowns('INCOME');
 }
 
+// โค้ดสร้างหน้าต่างป็อปอัพเลือกอิโมจิสไตล์เลเยอร์โปร่งใส
 function createEmojiPickerPopup() {
   if (document.getElementById('pflow-emoji-picker')) return;
   
   const picker = document.createElement('div');
   picker.id = 'pflow-emoji-picker';
-  picker.className = 'fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4';
+  picker.className = 'fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden p-4 animate-fade-in';
   
   let emojiButtonsHtml = '';
   popularEmojis.forEach(emoji => {
@@ -162,10 +162,10 @@ function createEmojiPickerPopup() {
   });
 
   picker.innerHTML = `
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xs p-4 shadow-2xl">
       <div class="flex justify-between items-center mb-3">
-        <p class="text-sm font-black text-white">เลือกไอคอน/อิโมจิ</p>
-        <button class="text-zinc-500 text-xs font-bold" onclick="closeEmojiPicker()">ปิด ✕</button>
+        <p class="text-xs font-black text-zinc-300">เลือกไอคอนหมวดหมู่</p>
+        <button class="text-rose-500 text-xs font-bold bg-rose-950/40 px-2 py-1 rounded-lg border border-rose-900/40" onclick="closeEmojiPicker()">ปิด ✕</button>
       </div>
       <div class="grid grid-cols-5 gap-1 max-h-60 overflow-y-auto">
         ${emojiButtonsHtml}
