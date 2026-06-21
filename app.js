@@ -24,7 +24,7 @@ let currentLogTab = 'INCOME';
 document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
 
 export function changeMenuTab(tabName) {
-  // บันทึกหน้าปัจจุบันลง LocalStorage ทุกครั้งที่มีการเปลี่ยนแท็บ
+  // บันทึกสเตตัสหน้าปัจจุบันลง LocalStorage ทันทีที่มีการสลับหน้า
   localStorage.setItem('pflow_active_tab', tabName);
   
   document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
@@ -87,7 +87,6 @@ function processAndRender() {
   if(expLogContainer) expLogContainer.innerHTML = '';
   if(stkLogContainer) stkLogContainer.innerHTML = '';
 
-  // Processing Data Loop
   allTransactions.forEach(item => {
     let subKey = item.subCat || 'ทั่วไป';
 
@@ -122,7 +121,6 @@ function processAndRender() {
   if(document.getElementById('total-exp-display')) document.getElementById('total-exp-display').innerText = `฿${totalExp.toLocaleString()}`;
   if(document.getElementById('total-tax-display')) document.getElementById('total-tax-display').innerText = `฿${totalTax.toLocaleString()}`;
 
-  // Dashboard Stock summaries rendering
   const repList = document.getElementById('stock-report-list');
   if(repList) {
     repList.innerHTML = '';
@@ -139,7 +137,6 @@ function processAndRender() {
     });
   }
 
-  // LOG HISTORY RENDER WITH FILTER & SORTING
   const sortBy = document.getElementById('log-sort-by')?.value || 'date-desc';
   const filterMain = document.getElementById('log-filter-main')?.value || 'ALL';
 
@@ -234,6 +231,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initCategoryMgmt();
   initProfileModule();
 
+  // [จุดที่ปรับปรุง] ทำการสลับหน้าล่าสุดในทันทีที่ตัวเว็บเริ่มทำงาน เพื่อป้องกันหน้าแรกแวบขึ้นมาก่อน
+  const savedActiveTab = localStorage.getItem('pflow_active_tab') || 'dashboard';
+  changeMenuTab(savedActiveTab);
+
   ['dashboard', 'reports', 'profile', 'trades', 'settings'].forEach(tab => {
     document.getElementById(`nav-${tab}`).addEventListener('click', () => changeMenuTab(tab));
   });
@@ -295,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     changeMenuTab('dashboard');
   });
 
-  // Database Synced Hooking
+  // Database Synced Hooking (ทำงานแบบเบื้องหลังไม่รบกวนหน้า UI ตอนสลับแท็บแรกเริ่ม)
   onSnapshot(collection(db, "transactions"), (snap) => {
     allTransactions = allTransactions.filter(t => t.originType !== 'STOCK');
     snap.forEach(d => allTransactions.push({id: d.id, ...d.data(), originType: 'STOCK'}));
@@ -311,8 +312,4 @@ document.addEventListener('DOMContentLoaded', () => {
     snap.forEach(d => allTransactions.push({id: d.id, ...d.data(), originType: 'INCOME'}));
     processAndRender();
   });
-
-  // --- [ส่วนที่แก้ไข] ตรวจสอบและดึงข้อมูลสเตตัสแท็บล่าสุดตอนกด F5 ---
-  const savedActiveTab = localStorage.getItem('pflow_active_tab') || 'dashboard';
-  changeMenuTab(savedActiveTab);
 });
