@@ -2,19 +2,20 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PocketFlow - Dime Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>PocketFlow</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PocketFlow">
+  
+  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlBvY2tldEZsb3cgRGltZSBFZGl0aW9uIiwKICAic2hvcnRfbmFtZSI6ICJQb2NrZXRGbG93IiwKICAic3RhcnRfdXJsIjogIi4vaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzAwMDAwMCIsCiAgInRoZW1lX2NvbG9yIjogIiMwMDAwMDAiCiB9">
+
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
-    .slide-down {
-      transition: all 0.3s ease-out;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-    }
-    .slide-down.open {
-      max-height: 900px;
-      opacity: 1;
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
     input[type="date"]::-webkit-calendar-picker-indicator {
       filter: invert(1);
@@ -27,11 +28,18 @@
       background-size: 16px;
       padding-right: 36px !important;
     }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
 <body class="bg-black text-zinc-100 font-sans antialiased selection:bg-zinc-800">
 
-  <div class="max-w-md mx-auto min-h-screen flex flex-col bg-black shadow-2xl relative pb-26 border-x border-zinc-950">
+  <div class="max-w-md mx-auto min-h-screen flex flex-col bg-black relative pb-26 border-x border-zinc-950">
     
     <main class="flex-1 p-5">
       
@@ -124,25 +132,19 @@
       </section>
 
       <section id="view-trades" class="tab-view hidden space-y-6">
-        <h2 class="text-[24px] font-black text-white tracking-tight">ประวัติธุรกรรมทั้งหมด</h2>
-        
-        <div class="border-2 border-rose-950/70 bg-zinc-950/50 rounded-2xl p-3.5 space-y-3">
-          <div class="flex justify-between items-center px-1">
-            <h3 class="text-[14px] font-black text-rose-400 tracking-widest uppercase flex items-center space-x-1.5">
-              <span>💸 ประวัติรายจ่ายในบ้าน</span>
-            </h3>
-            <span id="badge-count-expense" class="text-xs font-bold bg-rose-950 text-rose-300 px-2.5 py-0.5 rounded-full">0 รายการ</span>
+        <div class="flex justify-between items-center">
+          <h2 class="text-[24px] font-black text-white tracking-tight">ประวัติธุรกรรม</h2>
+          <div class="flex space-x-1.5">
+            <button onclick="toggleLogView('EXPENSE')" id="btn-log-EXPENSE" class="text-xs font-black bg-rose-950 text-rose-300 border border-rose-800 px-3 py-1.5 rounded-lg cursor-pointer">💸 รายจ่าย</button>
+            <button onclick="toggleLogView('STOCK')" id="btn-log-STOCK" class="text-xs font-bold bg-zinc-900 text-zinc-400 border border-zinc-800 px-3 py-1.5 rounded-lg cursor-pointer">📈 หุ้น</button>
           </div>
+        </div>
+
+        <div id="wrapper-expense-log" class="space-y-3">
           <div id="expense-trades-log-list" class="space-y-2.5"></div>
         </div>
 
-        <div class="border-2 border-emerald-950/70 bg-zinc-950/50 rounded-2xl p-3.5 space-y-3">
-          <div class="flex justify-between items-center px-1">
-            <h3 class="text-[14px] font-black text-emerald-400 tracking-widest uppercase flex items-center space-x-1.5">
-              <span>📈 ประวัติธุรกรรมหุ้น & สินทรัพย์</span>
-            </h3>
-            <span id="badge-count-stock" class="text-xs font-bold bg-emerald-950 text-emerald-300 px-2.5 py-0.5 rounded-full">0 รายการ</span>
-          </div>
+        <div id="wrapper-stock-log" class="hidden space-y-3">
           <div id="stock-trades-log-list" class="space-y-2.5"></div>
         </div>
       </section>
@@ -152,7 +154,7 @@
         <div class="bg-zinc-900 border border-zinc-800 rounded-xl divide-y divide-zinc-800 overflow-hidden">
           <div onclick="showCategoryManager()" class="p-4 flex justify-between items-center hover:bg-zinc-800/40 cursor-pointer">
             <span class="text-[17px] font-bold">📁 จัดการหมวดหมู่หลัก & ย่อย (หุ้น / รายจ่าย)</span>
-            <span class="text-amber-400 text-sm font-bold">เพิ่ม-ลบได้จริง ▶</span>
+            <span class="text-amber-400 text-sm font-bold">จัดการ ▶</span>
           </div>
         </div>
       </section>
@@ -187,7 +189,7 @@
 
         <div class="bg-zinc-900 rounded-xl p-4 border border-zinc-800 space-y-2">
           <p class="text-xs font-bold text-zinc-400">โครงสร้างหมวดหมู่ปัจจุบัน</p>
-          <div id="mgmt-tree-display" class="divide-y divide-zinc-800 max-h-64 overflow-y-auto text-sm"></div>
+          <div id="mgmt-tree-display" class="divide-y divide-zinc-800 max-h-56 overflow-y-auto hide-scrollbar text-sm"></div>
         </div>
       </section>
 
@@ -198,11 +200,9 @@
         </div>
         
         <div class="space-y-4.5">
-          <div>
-            <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
-              <button type="button" onclick="switchDataType('STOCK')" id="dtype-STOCK" class="py-2.5 rounded-lg font-black text-[14px] bg-zinc-800 text-white cursor-pointer">📈 หุ้น / สินทรัพย์</button>
-              <button type="button" onclick="switchDataType('EXPENSE')" id="dtype-EXPENSE" class="py-2.5 rounded-lg font-bold text-[14px] text-zinc-500 cursor-pointer">💸 ค่าใช้จ่ายในบ้าน</button>
-            </div>
+          <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-900 rounded-xl border border-zinc-800">
+            <button type="button" onclick="switchDataType('STOCK')" id="dtype-STOCK" class="py-2.5 rounded-lg font-black text-[14px] bg-zinc-800 text-white cursor-pointer">📈 หุ้น / สินทรัพย์</button>
+            <button type="button" onclick="switchDataType('EXPENSE')" id="dtype-EXPENSE" class="py-2.5 rounded-lg font-bold text-[14px] text-zinc-500 cursor-pointer">💸 ค่าใช้จ่ายในบ้าน</button>
           </div>
           
           <div id="box-trade-type">
@@ -299,7 +299,6 @@
 
     document.getElementById('trade-date').value = new Date().toISOString().split('T')[0];
 
-    // ข้อมูลเริ่มต้นพร้อมชุดอิโมจิใหม่พรีเมียมสำหรับหมวดหมู่หลักและย่อย
     const defExpenseCats = { 
       "🔧 ซ่อมบำรุง": ["รถยนต์", "มอเตอร์ไซค์"], 
       "⚡ สาธารณูปโภค": ["ค่าไฟฟ้า", "ค่าน้ำประปา", "ค่าส่วนกลาง"] 
@@ -313,7 +312,20 @@
     let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats')) || defExpenseCats;
     let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats')) || defStockCats;
 
-    // ระบบจัดเก็บรูปโปรไฟล์
+    window.toggleLogView = function(viewType) {
+      if(viewType === 'EXPENSE') {
+        document.getElementById('btn-log-EXPENSE').className = 'text-xs font-black bg-rose-950 text-rose-300 border border-rose-800 px-3 py-1.5 rounded-lg cursor-pointer';
+        document.getElementById('btn-log-STOCK').className = 'text-xs font-bold bg-zinc-900 text-zinc-400 border border-zinc-800 px-3 py-1.5 rounded-lg cursor-pointer';
+        document.getElementById('wrapper-expense-log').classList.remove('hidden');
+        document.getElementById('wrapper-stock-log').classList.add('hidden');
+      } else {
+        document.getElementById('btn-log-EXPENSE').className = 'text-xs font-bold bg-zinc-900 text-zinc-400 border border-zinc-800 px-3 py-1.5 rounded-lg cursor-pointer';
+        document.getElementById('btn-log-STOCK').className = 'text-xs font-black bg-emerald-950 text-emerald-300 border border-emerald-800 px-3 py-1.5 rounded-lg cursor-pointer';
+        document.getElementById('wrapper-expense-log').classList.add('hidden');
+        document.getElementById('wrapper-stock-log').classList.remove('hidden');
+      }
+    }
+
     window.handleProfileImageChange = function(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -426,7 +438,6 @@
       if(currentDataType === 'EXPENSE' && eMain && eMain.value) eMain.onchange();
     }
 
-    // ฟังก์ชันจัดการหมวดหมู่ (แก้ไขให้คลิกทำงานได้จริง)
     window.switchMgmtType = function(type) {
       currentMgmtType = type;
       if(type === 'EXPENSE') {
@@ -620,7 +631,6 @@
         }
       });
 
-      // อัปเดตตัวเลขแสดงผลรวมบนหน้า Dashboard
       if(document.getElementById('total-pnl-display')) document.getElementById('total-pnl-display').innerText = `฿${netPnL.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       if(document.getElementById('total-div-display')) document.getElementById('total-div-display').innerText = `฿${totalDiv.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       if(document.getElementById('total-exp-display')) document.getElementById('total-exp-display').innerText = `฿${totalExp.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -628,11 +638,7 @@
 
       if(expCount === 0 && expLogContainer) expLogContainer.innerHTML = `<p class="text-sm text-zinc-700 italic p-3 text-center">ไม่มีประวัติการบันทึกรายจ่าย</p>`;
       if(stkCount === 0 && stkLogContainer) stkLogContainer.innerHTML = `<p class="text-sm text-zinc-700 italic p-3 text-center">ไม่มีประวัติการทำธุรกรรมหุ้น</p>`;
-      
-      if(document.getElementById('badge-count-expense')) document.getElementById('badge-count-expense').innerText = `${expCount} รายการ`;
-      if(document.getElementById('badge-count-stock')) document.getElementById('badge-count-stock').innerText = `${stkCount} รายการ`;
 
-      // แสดงรายงานแยกรายชื่อหุ้นบนหน้าแดชบอร์ด
       const repList = document.getElementById('stock-report-list');
       if(repList) {
         repList.innerHTML = '';
@@ -653,7 +659,6 @@
         if(Object.keys(stockMap).length === 0) repList.innerHTML = `<p class="text-sm text-zinc-700 italic text-center py-4">ไม่มีข้อมูลสรุปรายหุ้น</p>`;
       }
 
-      // แสดงรายงานแยกประเภทกลุ่มย่อย (หมวดรายงาน)
       const stockSubGroup = document.getElementById('report-stock-sub-group');
       if(stockSubGroup) {
         stockSubGroup.innerHTML = '';
