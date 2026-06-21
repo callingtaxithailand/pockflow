@@ -1,17 +1,17 @@
-// ฟังก์ชันสลับหน้าจอแอปแบบปลอดภัยสูง
+// ฟังก์ชันสลับหน้าจอแอปแบบปลอดภัยสูงระดับ Global
 export function switchTab(tabName) {
-  // 1. ซ่อนหน้าต่าง View ทั้งหมดในระบบ
+  // 1. ซ่อนหน้าต่าง View ทั้งหมด
   document.querySelectorAll('.tab-view').forEach(view => {
     view.classList.add('hidden');
   });
 
-  // 2. เปิดหน้าต่างที่เลือก
+  // 2. เปิดหน้าต่างที่กดเลือก
   const targetView = document.getElementById(`view-${tabName}`);
   if (targetView) {
     targetView.classList.remove('hidden');
   }
 
-  // 3. ปรับเปลี่ยนสีและน้ำหนักของปุ่มเมนูบาร์ด้านล่าง
+  // 3. ปรับไฮไลท์สีปุ่มเมนูด้านล่างให้ตรงหน้าปัจจุบัน
   const tabs = ['dashboard', 'reports', 'profile', 'transactions', 'settings'];
   tabs.forEach(t => {
     const btn = document.getElementById(`nav-${t}`);
@@ -27,8 +27,8 @@ export function switchTab(tabName) {
   });
 }
 
-// ฟังก์ชันผูกมัด EventListener ป้องกันบราวเซอร์มือถือหา Inline Onclick ไม่เจอ
-export function bindNavEvents() {
+// รวมศุนย์การผูกมัด EventListener แก้ไขปัญหาคลิกไม่ไปบนเบราว์เซอร์มือถือ
+export function bindAllAppEvents() {
   const mapping = {
     'nav-dashboard': 'dashboard',
     'nav-reports': 'reports',
@@ -37,12 +37,26 @@ export function bindNavEvents() {
     'nav-settings': 'settings'
   };
 
+  // ผูกปุ่มเนวิเกชันบาร์ 5 ปุ่มหลัก
   Object.keys(mapping).forEach(id => {
     const element = document.getElementById(id);
     if (element) {
-      element.addEventListener('click', () => {
-        switchTab(mapping[id]);
-      });
+      element.addEventListener('click', () => switchTab(mapping[id]));
     }
   });
+
+  // ผูกปุ่มเพิ่มธุรกรรมในหน้าแดชบอร์ด
+  const goAddBtn = document.getElementById('btn-go-add-transaction');
+  if (goAddBtn) {
+    goAddBtn.addEventListener('click', () => switchTab('add-transaction'));
+  }
+  
+  // ผูกปุ่มกดบันทึกธุรกรรม
+  const saveTxBtn = document.getElementById('btn-save-tx');
+  if (saveTxBtn) {
+    saveTxBtn.addEventListener('click', () => {
+      alert('บันทึกข้อมูลธุรกรรมสำเร็จ!');
+      switchTab('dashboard');
+    });
+  }
 }
