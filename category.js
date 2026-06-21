@@ -1,19 +1,23 @@
 import { changeMenuTab } from "./app.js";
 
+// กำหนดค่าหมวดหมู่เริ่มต้นตามโครงสร้างที่พี่เลือกใช้งาน
 const defIncomeCats = {
   "💰 รายได้หลัก": ["เงินเดือน", "โบนัส"],
   "🚗 ThaiRide Travel": ["รับส่งสนามบิน", "เช่ารถส่วนบุคคล"],
   "📊 การลงทุน": ["ปันผลหุ้น", "กำไรขายสินทรัพย์"]
 };
+
 const defExpenseCats = { 
-  "🔧 ซ่อมบำรุง": ["รถยนต์", "มอเตอร์ไซค์"], 
-  "⚡ สาธารณูปโภค": ["ค่าไฟฟ้า", "ค่าน้ำประปา"] 
+  "⚡ สาธารณูปโภค": ["COWAY", "ค่าไฟฟ้า", "ค่าน้ำประปา", "ค่าส่วนกลาง"],
+  "🔧 ซ่อมบำรุง": ["เปลี่ยนน้ำมันเครื่อง", "เปลี่ยนน้ำมันเกียร์"] 
 };
+
 const defStockCats = { 
   "🇹🇭 หุ้นไทย (SET)": ["🏦 กลุ่มธนาคาร", "🔋 กลุ่มพลังงาน"], 
   "🇺🇸 หุ้นอเมริกา (US)": ["🤖 กลุ่ม AI & Tech"]
 };
 
+// ดึงข้อมูลจาก LocalStorage หรือใช้ค่าเริ่มต้นหากยังไม่มีการแก้ไข
 let incomeCategories = JSON.parse(localStorage.getItem('pflow_inc_cats')) || defIncomeCats;
 let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats')) || defExpenseCats;
 let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats')) || defStockCats;
@@ -42,14 +46,14 @@ export function initCategoryMgmt() {
   document.getElementById('btn-mgmt-add-sub').addEventListener('click', addSubCategoryClick);
 
   window.deleteMainCat = function(mainName) {
-    if(!confirm(`ยืนยันลบหมวดหมู่หลัก "${mainName}" และย่อยทั้งหมด?`)) return;
+    if(!confirm(`ยืนยันลบหมวดหมู่หลัก "${mainName}" และหมวดหมู่ย่อยทั้งหมดข้างในหรือไม่?`)) return;
     const target = currentMgmtType === 'INCOME' ? incomeCategories : (currentMgmtType === 'EXPENSE' ? expenseCategories : stockCategories);
     delete target[mainName];
     saveToStorage();
   };
 
   window.deleteSubCat = function(mainName, subName) {
-    if(!confirm(`ยืนยันลบหมวดหมู่ย่อย "${subName}"?`)) return;
+    if(!confirm(`ยืนยันลบหมวดหมู่ย่อย "${subName}" หรือไม่?`)) return;
     const target = currentMgmtType === 'INCOME' ? incomeCategories : (currentMgmtType === 'EXPENSE' ? expenseCategories : stockCategories);
     if(target[mainName]) {
       target[mainName] = target[mainName].filter(s => s !== subName);
@@ -120,20 +124,22 @@ function updateMgmtDisplay() {
   Object.keys(targetCats).forEach(main => {
     selectMain.innerHTML += `<option value="${main}">${main}</option>`;
     let subItemsHtml = '';
+    
+    // วนลูปแสดงผลหมวดหมู่ย่อยหลายๆ รายการภายใต้หมวดหมู่หลักตัวเดียว
     targetCats[main].forEach(sub => {
       subItemsHtml += `
-        <span class="inline-flex items-center bg-zinc-800 text-zinc-300 text-xs px-2 py-1 rounded-md mr-1.5 mb-1.5 font-bold">
-          ${sub} <button onclick="deleteSubCat('${main}','${sub}')" class="ml-1 text-rose-500 font-black">×</button>
+        <span class="inline-flex items-center bg-zinc-800 text-zinc-300 text-xs px-2.5 py-1.5 rounded-lg mr-2 mb-2 font-bold border border-zinc-700/50">
+          ${sub} <button onclick="deleteSubCat('${main}','${sub}')" class="ml-1.5 text-rose-500 font-black text-sm hover:text-rose-400">×</button>
         </span>`;
     });
     
     treeDisplay.innerHTML += `
-      <div class="py-3">
-        <div class="flex justify-between items-center mb-1">
-          <p class="font-black text-white text-[15px]">${main}</p>
-          <button onclick="deleteMainCat('${main}')" class="text-xs text-rose-500 font-bold">🗑️ ลบหลัก</button>
+      <div class="py-3.5">
+        <div class="flex justify-between items-center mb-2">
+          <p class="font-black text-white text-[15px] tracking-tight">${main}</p>
+          <button onclick="deleteMainCat('${main}')" class="text-xs text-rose-500 font-bold bg-rose-950/30 px-2 py-1 rounded-md border border-rose-900/40">🗑️ ลบหลัก</button>
         </div>
-        <div class="pl-2">${subItemsHtml || '<span class="text-xs text-zinc-600 italic">ไม่มีหมวดหมู่ย่อย</span>'}</div>
+        <div class="pl-1 flex flex-wrap">${subItemsHtml || '<span class="text-xs text-zinc-650 italic">ไม่มีหมวดหมู่ย่อยภายในกลุ่มนี้</span>'}</div>
       </div>`;
   });
 }
