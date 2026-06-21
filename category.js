@@ -1,6 +1,6 @@
 import { changeMenuTab } from "./app.js";
 
-// กำหนดค่าเริ่มต้นของระบบหมวดหมู่แบบ object ที่มีชื่อและไอคอนในตัว
+// โครงสร้างหมวดหมู่เริ่มต้น
 const defIncomeCats = {
   "💰 รายได้หลัก": [
     { name: "เงินเดือน", icon: "💵" },
@@ -39,10 +39,17 @@ const defStockCats = {
   ]
 };
 
-let incomeCategories = JSON.parse(localStorage.getItem('pflow_inc_cats_v2')) || defIncomeCats;
-let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats_v2')) || defExpenseCats;
-let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats_v2')) || defStockCats;
+let incomeCategories = JSON.parse(localStorage.getItem('pflow_inc_cats_v3')) || defIncomeCats;
+let expenseCategories = JSON.parse(localStorage.getItem('pflow_exp_cats_v3')) || defExpenseCats;
+let stockCategories = JSON.parse(localStorage.getItem('pflow_stk_cats_v3')) || defStockCats;
 let currentMgmtType = 'INCOME';
+
+// รายการอิโมจิยอดนิยมสไตล์แอปการเงิน สำหรับให้กดเลือก
+const popularEmojis = [
+  "💰","💵","💸","🪙","💳","💎","📊","📈","📉","🛒",
+  "⚡","🔌","💧","🚰","🏢","🏠","🔧","🛢️","⚙️","🚗",
+  "🏍️","⛽","✈️","🔑","🍔","🍿","☕","💊","🎒","🛍️"
+];
 
 export function getCategoriesByType(type) {
   if(type === 'INCOME') return incomeCategories;
@@ -51,6 +58,9 @@ export function getCategoriesByType(type) {
 }
 
 export function initCategoryMgmt() {
+  // สร้างและแทรกกล่อง Emoji Picker Popup เข้าไปในหน้าเว็บแบบ Dynamic
+  createEmojiPickerPopup();
+
   const triggerBtn = document.getElementById('btn-trigger-category-mgmt');
   if(triggerBtn) {
     triggerBtn.addEventListener('click', () => {
@@ -76,6 +86,19 @@ export function initCategoryMgmt() {
   const addSubBtn = document.getElementById('btn-mgmt-add-sub');
   if(addSubBtn) addSubBtn.addEventListener('click', addSubCategoryClick);
 
+  // ผูกการคลิกที่ช่องไอคอนหลักและย่อยเพื่อให้กล่องเลือกอีโมจิเด้งขึ้นมา
+  const mainIconInput = document.getElementById('mgmt-main-icon');
+  if(mainIconInput) {
+    mainIconInput.addEventListener('click', (e) => openEmojiPicker(e.target));
+    mainIconInput.readOnly = true; // ป้องกันคีย์บอร์ดมือถือเด้งขึ้นมาบัง
+  }
+
+  const subIconInput = document.getElementById('mgmt-sub-icon');
+  if(subIconInput) {
+    subIconInput.addEventListener('click', (e) => openEmojiPicker(e.target));
+    subIconInput.readOnly = true; 
+  }
+
   window.deleteMainCat = function(mainName) {
     if(!confirm(`ยืนยันลบหมวดหมู่หลัก "${mainName}" และหมวดหมู่ย่อยทั้งหมดข้างในหรือไม่?`)) return;
     const target = getCategoriesByType(currentMgmtType);
@@ -95,10 +118,59 @@ export function initCategoryMgmt() {
   setupDropdowns('INCOME');
 }
 
+// ฟังก์ชันสร้างกล่องป็อปอัพเลือกอิโมจิ
+function createEmojiPickerPopup() {
+  if (document.getElementById('pflow-emoji-picker')) return;
+  
+  const picker = document.createElement('div');
+  picker.id = 'pflow-emoji-picker';
+  picker.className = 'fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden p-4';
+  
+  let emojiButtonsHtml = '';
+  popularEmojis.forEach(emoji => {
+    emojiButtonsHtml += `
+      <button class="text-2xl p-2.5 active:bg-zinc-800 rounded-xl transition-colors cursor-pointer" onclick="selectEmojiForInput('${emoji}')">
+        ${emoji}
+      </button>`;
+  });
+
+  picker.innerHTML = `
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-xs p-4 shadow-2xl">
+      <div class="flex justify-between items-center mb-3">
+        <p class="text-sm font-black text-white">เลือกไอคอน/อิโมจิ</p>
+        <button class="text-zinc-500 text-xs font-bold" onclick="closeEmojiPicker()">ปิด ✕</button>
+      </div>
+      <div class="grid grid-cols-5 gap-1 max-h-60 overflow-y-auto">
+        ${emojiButtonsHtml}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(picker);
+}
+
+let activeTargetInput = null;
+
+function openEmojiPicker(inputElement) {
+  activeTargetInput = inputElement;
+  document.getElementById('pflow-emoji-picker').classList.remove('hidden');
+}
+
+window.closeEmojiPicker = function() {
+  document.getElementById('pflow-emoji-picker').classList.add('hidden');
+  activeTargetInput = null;
+}
+
+window.selectEmojiForInput = function(emoji) {
+  if (activeTargetInput) {
+    activeTargetInput.value = emoji;
+  }
+  closeEmojiPicker();
+}
+
 function saveToStorage() {
-  localStorage.setItem('pflow_inc_cats_v2', JSON.stringify(incomeCategories));
-  localStorage.setItem('pflow_exp_cats_v2', JSON.stringify(expenseCategories));
-  localStorage.setItem('pflow_stk_cats_v2', JSON.stringify(stockCategories));
+  localStorage.setItem('pflow_inc_cats_v3', JSON.stringify(incomeCategories));
+  localStorage.setItem('pflow_exp_cats_v3', JSON.stringify(expenseCategories));
+  localStorage.setItem('pflow_stk_cats_v3', JSON.stringify(stockCategories));
   updateMgmtDisplay();
   setupDropdowns(currentMgmtType);
 }
@@ -189,7 +261,6 @@ function addMainCategoryClick() {
   
   if(!name) return;
   
-  // รวมไอคอนเข้ากับชื่อหลักไปเลยเพื่อให้ง่ายต่อการคัดกรองในหน้าธุรกรรม
   const fullMainName = `${icon} ${name}`.trim();
   const target = getCategoriesByType(currentMgmtType);
   
@@ -198,7 +269,7 @@ function addMainCategoryClick() {
   }
   
   if(nameInput) nameInput.value = '';
-  if(iconInput) iconInput.value = '📁'; // รีเซ็ตไอคอนเริ่มต้น
+  if(iconInput) iconInput.value = '📁'; 
   saveToStorage();
 }
 
@@ -222,6 +293,6 @@ function addSubCategoryClick() {
   }
   
   if(nameInput) nameInput.value = '';
-  if(iconInput) iconInput.value = '🔹'; // รีเซ็ตไอคอนเริ่มต้น
+  if(iconInput) iconInput.value = '🔹'; 
   saveToStorage();
 }
