@@ -29,20 +29,20 @@
       </div>
 
       <div class="grid grid-cols-2 gap-3.5">
-        <div class="bg-emerald-500/10 border border-emerald-500/20 p-5 rounded-2xl text-center">
-          <p class="text-[14px] font-bold text-emerald-400">รายรับทั้งหมด</p>
+        <div class="bg-[#0fb77a]/10 border border-[#0fb77a]/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-[#0fb77a]">รายรับทั้งหมด</p>
           <p class="text-[25px] font-black text-white mt-1">฿3,600</p>
         </div>
-        <div class="bg-rose-500/10 border border-rose-500/20 p-5 rounded-2xl text-center">
-          <p class="text-[14px] font-bold text-rose-400">ค่าใช้จ่ายในบ้าน</p>
+        <div class="bg-[#ff526c]/10 border border-[#ff526c]/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-[#ff526c]">ค่าใช้จ่ายในบ้าน</p>
           <p class="text-[25px] font-black text-white mt-1">฿5,389</p>
         </div>
-        <div class="bg-amber-500/10 border border-amber-500/20 p-5 rounded-2xl text-center">
-          <p class="text-[14px] font-bold text-amber-400">เงินปันผลสะสม</p>
+        <div class="bg-[#ffb600]/10 border border-[#ffb600]/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-[#ffb600]">เงินปันผลสะสม</p>
           <p class="text-[25px] font-black text-white mt-1">฿0</p>
         </div>
-        <div class="bg-cyan-500/10 border border-cyan-500/20 p-5 rounded-2xl text-center">
-          <p class="text-[14px] font-bold text-cyan-400">ภาษีที่โดนหักรวม</p>
+        <div class="bg-[#00b4eb]/10 border border-[#00b4eb]/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-[#00b4eb]">ภาษีที่โดนหักรวม</p>
           <p class="text-[25px] font-black text-white mt-1">฿0</p>
         </div>
       </div>
@@ -53,23 +53,29 @@
           + เพิ่มธุรกรรม
         </button>
       </div>
+
+      <div class="space-y-3 pt-2">
+        <p class="text-[14px] font-black text-zinc-500 uppercase tracking-wider">ประวัติรายการล่าสุด</p>
+        <div id="dash-recent-tx-container" class="space-y-3">
+          </div>
+      </div>
     </section>
 
     <section id="view-reports" class="tab-view hidden space-y-5">
       <h2 class="text-[28px] font-black tracking-tight">รายงานแยกประเภท</h2>
 
       <div>
-        <h3 class="text-[14px] font-black text-emerald-400 mb-2 uppercase tracking-wider">💰 กลุ่มย่อยรายรับ (INCOME)</h3>
+        <h3 class="text-[14px] font-black text-[#0fb77a] mb-2 uppercase tracking-wider">💰 กลุ่มย่อยรายรับ (INCOME)</h3>
         <div id="report-income-sub-group" class="space-y-2.5"></div>
       </div>
 
       <div>
-        <h3 class="text-[14px] font-black text-rose-400 mb-2 uppercase tracking-wider">💸 กลุ่มย่อยค่าใช้จ่ายในบ้าน</h3>
+        <h3 class="text-[14px] font-black text-[#ff526c] mb-2 uppercase tracking-wider">💸 กลุ่มย่อยค่าใช้จ่ายในบ้าน</h3>
         <div id="report-expense-sub-group" class="space-y-2.5"></div>
       </div>
 
       <div>
-        <h3 class="text-[14px] font-black text-cyan-400 mb-2 uppercase tracking-wider">📈 กลุ่มย่อยสินทรัพย์ & หุ้น</h3>
+        <h3 class="text-[14px] font-black text-[#00b4eb] mb-2 uppercase tracking-wider">📈 กลุ่มย่อยสินทรัพย์ & หุ้น</h3>
         <div id="report-stock-sub-group" class="space-y-2.5"></div>
       </div>
     </section>
@@ -89,7 +95,7 @@
           <h3 id="report-detail-sum" class="text-[32px] font-black">฿0.00</h3>
         </div>
         <div class="text-right">
-          <p class="text-[12px] font-black text-zinc-500 uppercase">จำนวนครั้ง</p>
+          <p class="text-[12px] font-black text-zinc-500 uppercase">¼ำนวนครั้ง</p>
           <p id="report-detail-count" class="text-[21px] font-bold text-white">0 รายการ</p>
         </div>
       </div>
@@ -97,26 +103,42 @@
       <div id="report-detail-list" class="space-y-2.5 max-h-[55vh] overflow-y-auto hide-scrollbar"></div>
     </section>
 
+    <section id="view-add-transaction" class="tab-view hidden space-y-5">
+      <h2 class="text-[28px] font-black tracking-tight">เพิ่มธุรกรรมใหม่</h2>
+      <div class="bg-zinc-900/40 border border-zinc-800/80 p-5 rounded-3xl space-y-4">
+        <div class="grid grid-cols-3 gap-2 bg-zinc-900 p-1 rounded-xl text-center text-[14px] font-bold">
+          <div class="py-2.5 rounded-lg bg-zinc-800 text-white cursor-pointer">💰 รายรับ</div>
+          <div class="py-2.5 rounded-lg text-zinc-500 cursor-pointer">💸 รายจ่าย</div>
+          <div class="py-2.5 rounded-lg text-zinc-500 cursor-pointer">📈 หุ้น</div>
+        </div>
+        <input type="text" class="w-full bg-zinc-900 border border-zinc-800 text-white rounded-2xl px-4 py-3.5 text-[16px] font-bold" placeholder="เลือกหมวดหมู่หลัก" value="💰 รายได้หลัก">
+        <input type="text" class="w-full bg-zinc-900 border border-zinc-800 text-amber-400 rounded-2xl px-4 py-3.5 text-[21px] font-black" value="฿ 0.00">
+        <input type="text" class="w-full bg-zinc-900 border border-zinc-800 text-white rounded-2xl px-4 py-3.5 text-[16px] font-bold" value="21/06/2026">
+        <button id="btn-save-tx" class="w-full bg-amber-500 text-black font-black py-4 rounded-2xl text-[16px] shadow-lg active:scale-[0.98] transition-transform">บันทึกข้อมูลธุรกรรม</button>
+      </div>
+    </section>
+
     <section id="view-transactions" class="tab-view hidden space-y-5">
       <h2 class="text-[28px] font-black tracking-tight">ประวัติธุรกรรม</h2>
-      <div class="grid grid-cols-2 gap-2 text-[14px]">
+      
+      <div class="grid grid-cols-3 gap-2 text-center text-[14px] font-bold bg-zinc-900 p-1 rounded-xl mb-4">
+        <div class="py-2 rounded-lg text-zinc-400 cursor-pointer">💰 รายรับ</div>
+        <div class="py-2 rounded-lg bg-zinc-800 text-white cursor-pointer">💸 รายจ่าย</div>
+        <div class="py-2 rounded-lg text-zinc-400 cursor-pointer">📈 หุ้น</div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 text-[14px] mb-2">
         <select class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl font-bold text-white"><option>วันที่: ใหม่ -> เก่า</option></select>
         <select class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl font-bold text-white"><option>ทั้งหมด</option></select>
       </div>
       <div id="tx-list-container" class="space-y-3">
-        <div class="bg-zinc-900/80 border border-zinc-800/80 p-4 rounded-2xl flex justify-between items-center">
-          <div>
-            <span class="bg-rose-500/20 text-rose-400 text-[11px] px-2.5 py-1 rounded-full font-black uppercase">ย่อย: ชมพู่</span>
-            <p class="text-[16px] font-bold mt-2">แชร์</p>
-            <p class="text-[12px] text-zinc-500 font-bold mt-0.5">📅 วันที่: 2026-06-15</p>
-          </div>
-          <p class="text-[21px] font-black text-rose-400">฿1,000</p>
         </div>
-      </div>
     </section>
 
     <section id="view-profile" class="tab-view hidden text-center py-10 space-y-4">
-      <div class="w-24 h-24 bg-zinc-800 rounded-full mx-auto border-2 border-amber-500 flex items-center justify-center text-4xl">🤖</div>
+      <div class="w-24 h-24 bg-zinc-800 rounded-full mx-auto border-2 border-amber-500 overflow-hidden flex items-center justify-center text-4xl">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150" id="profile-img" class="w-full h-full object-cover" alt="Profile">
+      </div>
       <h2 class="text-[25px] font-black">ผู้พัฒนา ThaiRide</h2>
       <p class="text-zinc-500 text-[14px] font-bold">ระบบจัดการการเงินส่วนบุคคล v3.0</p>
     </section>
@@ -134,21 +156,22 @@
       </div>
     </section>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-950/95 border-t border-zinc-900 backdrop-blur-md z-40 py-3">
+    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-950/95 border-t border-zinc-900 backdrop-blur-md z-40 py-2">
       <div class="max-w-md mx-auto grid grid-cols-5 text-center items-center">
-        <button id="nav-dashboard" class="nav-btn flex flex-col items-center text-amber-500 font-black text-[13px] transition-all">
+        <button id="nav-dashboard" class="flex flex-col items-center text-amber-500 font-black text-[13px] transition-all">
           <span class="text-2xl mb-0.5">📊</span><span>แดชบอร์ด</span>
         </button>
-        <button id="nav-reports" class="nav-btn flex flex-col items-center text-zinc-500 text-[13px] transition-all">
+        <button id="nav-reports" class="flex flex-col items-center text-zinc-500 text-[13px] transition-all">
           <span class="text-2xl mb-0.5">📈</span><span>รายงาน</span>
         </button>
-        <button id="nav-profile" class="nav-btn flex flex-col items-center text-zinc-500 text-[13px] transition-all">
-          <span class="text-2xl mb-0.5">🤖</span><span>โปรไฟล์</span>
+        <button id="nav-profile" class="flex flex-col items-center text-zinc-500 text-[13px] transition-all">
+          <div class="w-9 h-9 rounded-full border border-zinc-700 overflow-hidden bg-zinc-800 flex items-center justify-center text-base mb-0.5">🤖</div>
+          <span>โปรไฟล์</span>
         </button>
-        <button id="nav-transactions" class="nav-btn flex flex-col items-center text-zinc-500 text-[13px] transition-all">
+        <button id="nav-transactions" class="flex flex-col items-center text-zinc-500 text-[13px] transition-all">
           <span class="text-2xl mb-0.5">📂</span><span>ธุรกรรม</span>
         </button>
-        <button id="nav-settings" class="nav-btn flex flex-col items-center text-zinc-500 text-[13px] transition-all">
+        <button id="nav-settings" class="flex flex-col items-center text-zinc-500 text-[13px] transition-all">
           <span class="text-2xl mb-0.5">⚙️</span><span>ตั้งค่า</span>
         </button>
       </div>
@@ -157,14 +180,14 @@
   </div>
 
   <script type="module">
-    import { bindNavEvents } from "./app.js";
-    import { renderReports } from "./report.js";
+    import { bindAllAppEvents } from "./app.js";
+    import { renderReports, renderRecentTransactions } from "./report.js";
 
-    // ข้อมูลจำลองสำหรับวาดโครงรายงานของพี่ให้สมบูรณ์
+    // ชุดข้อมูลหลักจำลองให้ตรงสกรีนช็อตทุกหน้าจอ
     const mockIncome = { "NUT UDON": [{ date: "2026-06-21", mainCat: "💰 รายได้หลัก", amount: 3600 }] };
     const mockExpense = {
       "ค่าส่วนกลาง": [{ date: "2026-06-05", mainCat: "⚡ สาธารณูปโภค", amount: 621 }],
-      "ชมพู่": [{ date: "2026-06-15", mainCat: "แชร์", amount: 2000 }],
+      "ชมพู่": [{ date: "2026-06-15", mainCat: "แชร์", amount: 2000 }, { date: "2026-06-15", mainCat: "แชร์", amount: 1000 }],
       "ค่าไฟฟ้า": [{ date: "2026-06-07", mainCat: "⚡ สาธารณูปโภค", amount: 1860 }],
       "COWAY": [{ date: "2026-06-07", mainCat: "⚡ สาธารณูปโภค", amount: 790 }],
       "ค่าน้ำประปา": [{ date: "2026-06-05", mainCat: "⚡ สาธารณูปโภค", amount: 118 }]
@@ -172,8 +195,9 @@
     const mockStock = { "Tisco": [{ date: "2026-06-18", mainCat: "📈 สินทรัพย์ & หุ้น", total: 1015 }] };
 
     document.addEventListener('DOMContentLoaded', () => {
-      bindNavEvents(); // ผูกระบบกดจากหลังบ้าน ป้องกันอาการปุ่มกดไม่ติดบนโมบายล์
+      bindAllAppEvents(); // ผูกมัดระบบคลิกทั้งหมดผ่าน JavaScript ป้องกันปุ่มค้าง
       renderReports(mockStock, mockExpense, mockIncome);
+      renderRecentTransactions(mockExpense); // แสดงประวัติหน้าแรกสุด
     });
   </script>
 </body>
