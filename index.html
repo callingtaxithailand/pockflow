@@ -3,42 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PocketFlow</title>
+  <title>PocketFlow DIME EDITION</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* ซ่อนแถบ Scrollbar เพื่อความสวยงามบนมือถือ */
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-black text-white antialiased hide-scrollbar">
+<body class="bg-black text-white antialiased hide-scrollbar select-none">
 
-  <div class="max-w-md mx-auto min-h-screen flex flex-col p-4 pb-24">
+  <div class="max-w-md mx-auto min-h-screen flex flex-col p-4 pb-28">
     
-    <section id="view-reports" class="tab-view space-y-6">
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-2xl font-black">รายงานสรุป</h1>
-          <p class="text-xs text-zinc-500 font-bold">แยกตามหมวดหมู่ย่อย</p>
+    <div class="flex items-center space-x-3 mb-6">
+      <div class="w-14 h-14 bg-gradient-to-tr from-purple-600 to-amber-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-purple-900/20">🪙</div>
+      <div>
+        <h1 class="text-[28px] font-black tracking-tight leading-none bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">PocketFlow</h1>
+        <p class="text-[12px] font-black text-amber-500 tracking-widest uppercase mt-0.5">DIME EDITION</p>
+      </div>
+    </div>
+
+    <section id="view-dashboard" class="tab-view space-y-5">
+      <div class="bg-zinc-900/90 border border-zinc-800 p-6 rounded-3xl text-center space-y-1">
+        <p class="text-[14px] font-bold text-zinc-400">ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</p>
+        <h2 id="dash-net-portfolio" class="text-[41px] font-black tracking-tight text-white">฿-7,420.77</h2>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3.5">
+        <div class="bg-emerald-500/10 border border-emerald-500/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-emerald-400">รายรับทั้งหมด</p>
+          <p class="text-[25px] font-black text-white mt-1">฿3,600</p>
         </div>
-        <button id="btn-trigger-category-mgmt" class="bg-zinc-900 border border-zinc-800 text-amber-400 font-bold text-xs px-3 py-2 rounded-xl">
-          ⚙️ จัดการหมวดหมู่
+        <div class="bg-rose-500/10 border border-rose-500/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-rose-400">ค่าใช้จ่ายในบ้าน</p>
+          <p class="text-[25px] font-black text-white mt-1">฿5,389</p>
+        </div>
+        <div class="bg-amber-500/10 border border-amber-500/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-amber-400">เงินปันผลสะสม</p>
+          <p class="text-[25px] font-black text-white mt-1">฿0</p>
+        </div>
+        <div class="bg-cyan-500/10 border border-cyan-500/20 p-5 rounded-2xl text-center">
+          <p class="text-[14px] font-bold text-cyan-400">ภาษีที่โดนหักรวม</p>
+          <p class="text-[25px] font-black text-white mt-1">฿0</p>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-between items-center">
+        <p class="text-[14px] font-black text-zinc-500 uppercase tracking-wider">รายงานแยกตามรายชื่อหุ้น</p>
+        <button id="btn-go-add-transaction" class="bg-amber-500 text-black font-black text-[15px] px-5 py-3 rounded-2xl shadow-lg shadow-amber-500/10 active:scale-95 transition-transform flex items-center space-x-1">
+          <span>+ เพิ่มธุรกรรม</span>
         </button>
       </div>
+    </section>
+
+    <section id="view-reports" class="tab-view hidden space-y-5">
+      <h2 class="text-[28px] font-black tracking-tight">รายงานแยกประเภท</h2>
 
       <div>
-        <h3 class="text-xs font-black text-emerald-400 mb-2 uppercase tracking-wider">💰 รายรับสุทธิ</h3>
-        <div id="report-income-sub-group" class="space-y-2"></div>
+        <h3 class="text-[14px] font-black text-emerald-400 mb-2 uppercase tracking-wider flex items-center">💰 กลุ่มย่อยรายรับ (INCOME)</h3>
+        <div id="report-income-sub-group" class="space-y-2.5"></div>
       </div>
 
       <div>
-        <h3 class="text-xs font-black text-rose-400 mb-2 uppercase tracking-wider">⚡ รายจ่ายรวม</h3>
-        <div id="report-expense-sub-group" class="space-y-2"></div>
+        <h3 class="text-[14px] font-black text-rose-400 mb-2 uppercase tracking-wider flex items-center">💸 กลุ่มย่อยค่าใช้จ่ายในบ้าน</h3>
+        <div id="report-expense-sub-group" class="space-y-2.5"></div>
       </div>
 
       <div>
-        <h3 class="text-xs font-black text-cyan-400 mb-2 uppercase tracking-wider">📈 หุ้น / สินทรัพย์</h3>
-        <div id="report-stock-sub-group" class="space-y-2"></div>
+        <h3 class="text-[14px] font-black text-cyan-400 mb-2 uppercase tracking-wider flex items-center">📈 กลุ่มย่อยสินทรัพย์ & หุ้น</h3>
+        <div id="report-stock-sub-group" class="space-y-2.5"></div>
       </div>
     </section>
 
@@ -46,102 +78,127 @@
       <div class="flex items-center space-x-3 pb-3 border-b border-zinc-900">
         <button type="button" id="btn-back-report-detail" class="text-zinc-400 text-3xl font-bold p-1 hover:text-white cursor-pointer">←</button>
         <div>
-          <h2 id="report-detail-title" class="text-[20px] font-black text-white leading-tight">รายละเอียดประวัติ</h2>
-          <p id="report-detail-subtitle" class="text-xs text-zinc-500 font-bold uppercase tracking-widest"></p>
+          <h2 id="report-detail-title" class="text-[23px] font-black text-white leading-tight">รายละเอียดประวัติ</h2>
+          <p id="report-detail-subtitle" class="text-[12px] text-zinc-500 font-bold uppercase tracking-widest"></p>
         </div>
       </div>
 
-      <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-2xl p-4 flex justify-between items-center">
+      <div class="bg-zinc-900/50 border border-zinc-800/60 rounded-3xl p-5 flex justify-between items-center">
         <div>
-          <p class="text-[10px] font-black text-zinc-500 uppercase">ยอดรวมเฉพาะรายการนี้</p>
-          <h3 id="report-detail-sum" class="text-2xl font-black">฿0.00</h3>
+          <p class="text-[12px] font-black text-zinc-500 uppercase">ยอดรวมเฉพาะรายการนี้</p>
+          <h3 id="report-detail-sum" class="text-[28px] font-black">฿0.00</h3>
         </div>
         <div class="text-right">
-          <p class="text-[10px] font-black text-zinc-500 uppercase">จำนวนครั้ง</p>
-          <p id="report-detail-count" class="text-lg font-bold text-white">0 รายการ</p>
+          <p class="text-[12px] font-black text-zinc-500 uppercase">จำนวนครั้ง</p>
+          <p id="report-detail-count" class="text-[21px] font-bold text-white">0 รายการ</p>
         </div>
       </div>
 
-      <div id="report-detail-list" class="space-y-2.5 max-h-[60vh] overflow-y-auto hide-scrollbar"></div>
+      <div id="report-detail-list" class="space-y-2.5 max-h-[55vh] overflow-y-auto hide-scrollbar"></div>
     </section>
 
-    <section id="view-category-manager" class="tab-view hidden space-y-4">
-      <div class="flex justify-between items-center border-b border-zinc-900 pb-2">
-        <h2 class="text-lg font-black text-white">ตั้งค่าหมวดหมู่ระบบ</h2>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2 text-center bg-zinc-900 p-1 rounded-xl">
-        <div id="mtype-INCOME" class="py-2 rounded-lg font-black text-[12px] bg-zinc-800 text-white cursor-pointer">รายได้</div>
-        <div id="mtype-EXPENSE" class="py-2 rounded-lg font-bold text-[12px] text-zinc-500 cursor-pointer">รายจ่าย</div>
-        <div id="mtype-STOCK" class="py-2 rounded-lg font-bold text-[12px] text-zinc-500 cursor-pointer">หุ้น/ลงทุน</div>
-      </div>
-
-      <div class="bg-zinc-900/20 border border-zinc-800/60 p-4 rounded-2xl space-y-2">
-        <label class="block text-xs text-zinc-400 font-bold">1. เพิ่มหมวดหมู่หลัก (จิ้มที่รูปเพื่อเปลี่ยนอิโมจิ)</label>
-        <div class="flex space-x-2">
-          <input type="text" id="mgmt-main-icon" value="📁" class="w-14 text-center bg-zinc-900 border border-zinc-800 text-white rounded-xl py-3 font-bold text-lg cursor-pointer" readonly>
-          <input type="text" id="mgmt-new-main" class="flex-1 bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-3 text-sm font-bold" placeholder="ชื่อหมวดหมู่หลัก เช่น โรงแรม/ทริป">
-          <button id="btn-mgmt-add-main" class="bg-amber-500 text-black font-black px-4 rounded-xl text-sm active:bg-amber-600">เพิ่ม</button>
+    <section id="view-add-transaction" class="tab-view hidden space-y-5">
+      <h2 class="text-[28px] font-black tracking-tight">เพิ่มธุรกรรมใหม่</h2>
+      <div class="bg-zinc-900/40 border border-zinc-800/80 p-5 rounded-3xl space-y-4">
+        <div class="grid grid-cols-3 gap-2 bg-zinc-900 p-1 rounded-xl text-center text-[14px] font-bold">
+          <div class="py-2.5 rounded-lg bg-zinc-800 text-white cursor-pointer">💰 รายรับ</div>
+          <div class="py-2.5 rounded-lg text-zinc-500 cursor-pointer">💸 รายจ่าย</div>
+          <div class="py-2.5 rounded-lg text-zinc-500 cursor-pointer">📈 หุ้น</div>
         </div>
+        <input type="text" class="w-full bg-zinc-900 border border-zinc-800 text-white rounded-2xl px-4 py-3.5 text-[16px] font-bold" placeholder="เลือกหมวดหมู่หลัก">
+        <input type="text" id="tx-amount" class="w-full bg-zinc-900 border border-zinc-800 text-amber-400 rounded-2xl px-4 py-3.5 text-[21px] font-black" value="฿ 0.00">
+        <input type="text" class="w-full bg-zinc-900 border border-zinc-800 text-white rounded-2xl px-4 py-3.5 text-[16px] font-bold" value="21/06/2026">
+        <button class="w-full bg-amber-500 text-black font-black py-4 rounded-2xl text-[16px] shadow-lg active:scale-[0.98] transition-transform">บันทึกข้อมูลธุรกรรม</button>
       </div>
-
-      <div class="bg-zinc-900/20 border border-zinc-800/60 p-4 rounded-2xl space-y-3">
-        <label class="block text-xs text-zinc-400 font-bold">2. เลือกหมวดหมู่หลัก เพื่อผูกหมวดหมู่ย่อย</label>
-        <select id="mgmt-select-main" class="w-full bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-3 text-sm font-bold"></select>
-        
-        <div class="flex space-x-2">
-          <input type="text" id="mgmt-sub-icon" value="🔹" class="w-14 text-center bg-zinc-900 border border-zinc-800 text-white rounded-xl py-3 font-bold text-lg cursor-pointer" readonly>
-          <input type="text" id="mgmt-new-sub" class="flex-1 bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-3 text-sm font-bold" placeholder="ชื่อหมวดหมู่ย่อย เช่น รับส่งสนามบิน">
-          <button id="btn-mgmt-add-sub" class="bg-amber-500 text-black font-black px-3 rounded-xl text-sm active:bg-amber-600">เพิ่มย่อย</button>
-        </div>
-      </div>
-
-      <div class="pt-2">
-        <p class="text-xs font-black text-zinc-500 uppercase tracking-wider mb-2">ผังโครงสร้างหมวดหมู่ปัจจุบัน</p>
-        <div id="mgmt-tree-display" class="bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-4 divide-y divide-zinc-800/60"></div>
-      </div>
-      
-      <button id="btn-back-category-mgmt" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-xl text-sm mt-2">ย้อนกลับหน้าหลัก</button>
     </section>
+
+    <section id="view-transactions" class="tab-view hidden space-y-5">
+      <h2 class="text-[28px] font-black tracking-tight">ประวัติธุรกรรม</h2>
+      <div class="grid grid-cols-2 gap-2 text-[14px]">
+        <select class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl font-bold text-white"><option>วันที่: ใหม่ -> เก่า</option></select>
+        <select class="bg-zinc-900 border border-zinc-800 p-3 rounded-xl font-bold text-white"><option>ทั้งหมด</option></select>
+      </div>
+      <div id="tx-list-container" class="space-y-3"></div>
+    </section>
+
+    <section id="view-profile" class="tab-view hidden text-center py-10 space-y-4">
+      <div class="w-24 h-24 bg-zinc-800 rounded-full mx-auto border-2 border-amber-500 overflow-hidden flex items-center justify-center text-4xl">🤖</div>
+      <h2 class="text-[25px] font-black">ผู้พัฒนา ThaiRide</h2>
+      <p class="text-zinc-500 text-[14px] font-bold">ระบบจัดการการเงินส่วนบุคคล v3.0</p>
+    </section>
+
+    <section id="view-settings" class="tab-view hidden space-y-4">
+      <h2 class="text-[28px] font-black tracking-tight">ตั้งค่าหมวดหมู่ระบบ</h2>
+      <div class="grid grid-cols-3 gap-2 text-center bg-zinc-900 p-1 rounded-xl text-[14px] font-bold">
+        <div id="mtype-INCOME" class="py-2 rounded-lg bg-zinc-800 text-white cursor-pointer">รายได้</div>
+        <div id="mtype-EXPENSE" class="py-2 rounded-lg text-zinc-500 cursor-pointer">รายจ่าย</div>
+        <div id="mtype-STOCK" class="py-2 rounded-lg text-zinc-500 cursor-pointer">หุ้น/ลงทุน</div>
+      </div>
+      <div class="bg-zinc-900/40 border border-zinc-800 p-4 rounded-2xl space-y-2">
+        <label class="block text-[14px] text-zinc-400 font-bold">เพิ่มหมวดหมู่หลัก</label>
+        <div class="flex space-x-2">
+          <input type="text" id="mgmt-main-icon" value="📁" class="w-14 text-center bg-zinc-900 border border-zinc-800 text-white rounded-xl py-3 text-[18px] font-bold cursor-pointer" readonly>
+          <input type="text" id="mgmt-new-main" class="flex-1 bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-3 text-[15px] font-bold" placeholder="เช่น รายได้ธุรกิจ">
+          <button id="btn-mgmt-add-main" class="bg-amber-500 text-black font-black px-4 rounded-xl text-[15px]">เพิ่ม</button>
+        </div>
+      </div>
+      <div class="bg-zinc-900/40 border border-zinc-800 p-4 rounded-2xl space-y-2">
+        <label class="block text-[14px] text-zinc-400 font-bold">เลือกหมวดหมู่หลักเพื่อเพิ่มกลุ่มย่อย</label>
+        <select id="mgmt-select-main" class="w-full bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-3 text-[15px] font-bold"></select>
+        <div class="flex space-x-2 mt-2">
+          <input type="text" id="mgmt-sub-icon" value="🔹" class="w-14 text-center bg-zinc-900 border border-zinc-800 text-white rounded-xl py-3 text-[18px] font-bold cursor-pointer" readonly>
+          <input type="text" id="mgmt-new-sub" class="flex-1 bg-zinc-900 border border-zinc-800 text-white rounded-xl px-4 py-3 text-[15px] font-bold" placeholder="เช่น รับส่งสนามบิน">
+          <button id="btn-mgmt-add-sub" class="bg-amber-500 text-black font-black px-3 rounded-xl text-[15px]">เพิ่มย่อย</button>
+        </div>
+      </div>
+      <div id="mgmt-tree-display" class="bg-zinc-900/20 border border-zinc-800/60 rounded-2xl p-4 divide-y divide-zinc-800/60"></div>
+    </section>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-950/90 border-t border-zinc-900 backdrop-blur-md z-40 py-2.5">
+      <div class="max-w-md mx-auto grid grid-cols-5 text-center items-center">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center text-amber-500 font-bold text-[13px]">
+          <span class="text-xl">📊</span><span class="mt-0.5">แดชบอร์ด</span>
+        </button>
+        <button onclick="switchTab('reports')" id="nav-reports" class="flex flex-col items-center text-zinc-500 text-[13px]">
+          <span class="text-xl">📈</span><span class="mt-0.5">รายงาน</span>
+        </button>
+        <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center text-zinc-500 text-[13px]">
+          <div class="w-10 h-10 rounded-full border border-zinc-700 overflow-hidden bg-zinc-800 flex items-center justify-center text-lg">🤖</div>
+          <span class="mt-0.5">โปรไฟล์</span>
+        </button>
+        <button onclick="switchTab('transactions')" id="nav-transactions" class="flex flex-col items-center text-zinc-500 text-[13px]">
+          <span class="text-xl">🗂️</span><span class="mt-0.5">ธุรกรรม</span>
+        </button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center text-zinc-500 text-[13px]">
+          <span class="text-xl">⚙️</span><span class="mt-0.5">ตั้งค่า</span>
+        </button>
+      </div>
+    </nav>
 
   </div>
 
   <script type="module">
     import { initCategoryMgmt } from "./category.js";
     import { renderReports } from "./report.js";
+    import { switchTab } from "./app.js";
 
-    // จำลองข้อมูลเพื่อทดสอบการแสดงผลประวัติในหน้ารายงาน (เมื่อใช้งานจริง ข้อมูลจะถูกส่งมาจาก Firebase ของพี่)
-    const mockIncome = {
-      "🚗 ThaiRide Travel": [
-        { date: "2026-06-21", mainCat: "🚗 ThaiRide Travel", amount: 3500, type: "รับส่งสนามบิน" },
-        { date: "2026-06-19", mainCat: "🚗 ThaiRide Travel", amount: 4800, type: "เช่ารถส่วนบุคคล" },
-        { date: "2026-06-15", mainCat: "🚗 ThaiRide Travel", amount: 3500, type: "รับส่งสนามบิน" }
-      ],
-      "📊 การลงทุน": [
-        { date: "2026-06-20", mainCat: "📊 การลงทุน", amount: 1250, type: "ปันผลหุ้น" }
-      ]
-    };
+    window.switchTab = switchTab; // เปิดให้เรียกจาก HTML ได้
 
+    // ข้อมูลจำลองสำหรับวาดหน้าจอให้ออกมาเหมือนในรูปของพี่เป๊ะๆ
+    const mockIncome = { "🔹 NUT UDON": [{ date: "2026-06-21", mainCat: "💰 รายได้หลัก", amount: 3600, type: "งานเสริม" }] };
     const mockExpense = {
-      "⚡ สาธารณูปโภค": [
-        { date: "2026-06-18", mainCat: "⚡ สาธารณูปโภค", amount: 2400, type: "ค่าไฟฟ้า" },
-        { date: "2026-06-10", mainCat: "⚡ สาธารณูปโภค", amount: 850, type: "COWAY" }
-      ],
-      "🔧 ซ่อมบำรุง": [
-        { date: "2026-06-12", mainCat: "🔧 ซ่อมบำรุง", amount: 1800, type: "เปลี่ยนน้ำมันเครื่อง" }
-      ]
+      "ค่าส่วนกลาง": [{ date: "2026-06-05", mainCat: "⚡ สาธารณูปโภค", amount: 621, type: "รายเดือน" }],
+      "ชมพู่": [{ date: "2026-06-15", mainCat: "แชร์", amount: 2000, type: "เงินออม" }],
+      "ค่าไฟฟ้า": [{ date: "2026-06-07", mainCat: "⚡ สาธารณูปโภค", amount: 1860, type: "รายเดือน" }],
+      "COWAY": [{ date: "2026-06-07", mainCat: "⚡ สาธารณูปโภค", amount: 790, type: "ค่าน้ำดื่ม" }],
+      "ค่าน้ำประปา": [{ date: "2026-06-05", mainCat: "⚡ สาธารณูปโภค", amount: 118, type: "รายเดือน" }]
     };
+    const mockStock = { "Tisco": [{ date: "2026-06-18", mainCat: "📈 สินทรัพย์ & หุ้น", total: 1015, type: "BUY" }] };
 
-    const mockStock = {
-      "🏦 กลุ่มธนาคาร": [
-        { date: "2026-06-14", mainCat: "🇹🇭 หุ้นไทย (SET)", total: 15000, type: "BUY SCB" }
-      ]
-    };
-
-    // รันระบบเมื่อเปิดหน้าจอ
     document.addEventListener('DOMContentLoaded', () => {
       initCategoryMgmt();
       renderReports(mockStock, mockExpense, mockIncome);
+      switchTab('dashboard'); // เริ่มต้นที่หน้าแดชบอร์ด
     });
   </script>
 </body>
