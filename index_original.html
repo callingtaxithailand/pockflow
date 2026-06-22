@@ -651,31 +651,33 @@
 
       document.getElementById('btn-add-sub-cat').addEventListener('click', () => {
         const mainCat = document.getElementById('mgmt-select-main').value;
-        const nameInput = document.getElementById('new-sub-cat-name');
-        const name = nameInput.value.trim();
-        if(!mainCat || !name) return alert("กรุณาเลือกหมวดหลักและกรอกชื่อกลุ่มย่อยด้วยครับ");
-
-        if(!appCategories[selectedConfigType][mainCat].subs.includes(name)) {
-          appCategories[selectedConfigType][mainCat].subs.push(name);
-          localStorage.setItem('PF_Categories', JSON.stringify(appCategories));
-          nameInput.value = '';
-          renderSettingsCategoryTree();
-          updateAddTransactionDropdowns();
-        } else {
-          alert("มีชื่อกลุ่มย่อยนี้อยู่แล้วครับ");
-        }
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-      bindAllAppActions();
-      setupProfilePhotoEngine();
-      
-      // ดึงค่าหน้าล่าสุดที่เปิดค้างไว้จากหน่วยความจำเครื่อง (Anti-F5 เด้ง)
-      const lastTab = localStorage.getItem('PF_CurrentActiveTab') || 'dashboard';
-      switchTab(lastTab);
+// ฟังก์ชันคำนวณยอดรวม (ลบเลข 5642.77 ออกให้เหลือ 0 จริงๆ)
+  function renderDashboard() {
+    let totalIncome = 0, totalExpense = 0;
+    appTransactions.forEach(tx => {
+      if (tx.type === 'INCOME') totalIncome += Number(tx.amount);
+      if (tx.type === 'EXPENSE') totalExpense += Number(tx.amount);
     });
-  </script>
+
+    let netBalance = totalIncome - totalExpense;
+    // แก้ไขตรงนี้: เอา - 5642.77 ออก
+    document.getElementById('dash-net-balance').innerText = `฿${netBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    document.getElementById('dash-total-income').innerText = `฿${totalIncome.toLocaleString()}`;
+    document.getElementById('dash-total-expense').innerText = `฿${totalExpense.toLocaleString()}`;
+    
+    // ... ส่วนที่เหลือของฟังก์ชันเดิมเก็บไว้เหมือนเดิมครับ ...
+  }
+
+  // เพิ่มฟังก์ชันนี้ไว้ใน <script> เพื่อเอาไว้กดล้างข้อมูล
+  window.clearAllData = function() {
+    if(confirm("คุณต้องการล้างข้อมูลทั้งหมดให้เป็น 0 ใช่หรือไม่?")) {
+      localStorage.removeItem('PF_Transactions');
+      localStorage.setItem('PF_Transactions', JSON.stringify([]));
+      appTransactions = [];
+      renderDashboard();
+      renderTransactionsPage();
+      location.reload();
+    }
+  };
 </body>
 </html>
