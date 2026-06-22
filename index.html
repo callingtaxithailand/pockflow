@@ -3,19 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow</title>
+    <title>PocketFlow Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white p-4">
-    <div id="view-dashboard" class="tab-view">ยอดเงินคงเหลือ: <span id="balance">0</span></div>
-    <div id="view-transactions" class="tab-view hidden">ธุรกรรม</div>
-    <div id="view-settings" class="tab-view hidden">ตั้งค่า</div>
+<body class="bg-gray-100 font-sans pb-20">
 
-    <nav class="fixed bottom-0 left-0 w-full bg-zinc-900 grid grid-cols-3 p-4">
-        <button onclick="switchTab('dashboard')">📊</button>
-        <button onclick="switchTab('transactions')">📂</button>
-        <button onclick="switchTab('settings')">⚙️</button>
-    </nav>
-    <script src="app.js"></script>
+    <!-- Header -->
+    <div class="bg-indigo-600 p-6 text-white rounded-b-3xl shadow-lg">
+        <h1 class="text-lg opacity-80">ยอดเงินคงเหลือ</h1>
+        <p class="text-4xl font-bold">฿ 125,450.00</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="p-4 space-y-4">
+        
+        <!-- Summary Card -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-sm text-green-500">รายรับ</p>
+                <p class="font-bold text-xl">฿ 45,000</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow">
+                <p class="text-sm text-red-500">รายจ่าย</p>
+                <p class="font-bold text-xl">฿ 12,300</p>
+            </div>
+        </div>
+
+        <!-- Stock Section -->
+        <h2 class="font-bold text-gray-700 mt-4">พอร์ตหุ้นของคุณ</h2>
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="w-full text-sm">
+                <tr class="border-b bg-gray-50">
+                    <td class="p-3 font-bold">หุ้น</td>
+                    <td class="p-3 text-right">กำไร/ขาดทุน</td>
+                </tr>
+                <tr class="border-b">
+                    <td class="p-3">PTT</td>
+                    <td class="p-3 text-right text-green-600">+1,200</td>
+                </tr>
+                <tr>
+                    <td class="p-3">CPALL</td>
+                    <td class="p-3 text-right text-red-600">-450</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bottom Navbar -->
+    <div class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 shadow-xl">
+        <button class="text-indigo-600 font-bold">หน้าแรก</button>
+        <button class="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow-lg">+</button>
+        <button class="text-gray-500">พอร์ตหุ้น</button>
+    </div>
+
 </body>
 </html>
