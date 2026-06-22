@@ -6,19 +6,16 @@
     <title>PocketFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white">
-    <div id="app-container" class="pb-20">
-        <section id="view-dashboard" class="tab-view p-5">แดชบอร์ด: <span id="balance">0</span></section>
-        <section id="view-transactions" class="tab-view hidden p-5">ธุรกรรม</section>
-        <section id="view-settings" class="tab-view hidden p-5">ตั้งค่า</section>
-    </div>
+<body class="bg-black text-white p-4">
+    <div id="view-dashboard" class="tab-view">ยอดเงินคงเหลือ: <span id="balance">0</span></div>
+    <div id="view-transactions" class="tab-view hidden">ธุรกรรม</div>
+    <div id="view-settings" class="tab-view hidden">ตั้งค่า</div>
 
-    <nav class="fixed bottom-0 w-full bg-zinc-900 grid grid-cols-3 p-4 border-t border-zinc-800">
+    <nav class="fixed bottom-0 left-0 w-full bg-zinc-900 grid grid-cols-3 p-4">
         <button onclick="switchTab('dashboard')">📊</button>
         <button onclick="switchTab('transactions')">📂</button>
         <button onclick="switchTab('settings')">⚙️</button>
     </nav>
-
     <script src="app.js"></script>
 </body>
 </html>
