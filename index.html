@@ -2,61 +2,86 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>PocketFlow - Active App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 pb-24">
+<body class="bg-gray-100 font-sans pb-24">
 
-    <div class="bg-indigo-600 p-6 text-white text-center">
-        <h2 class="text-sm opacity-80">ยอดเงินรวม</h2>
+    <!-- Header: ยอดเงินคงเหลือ -->
+    <div class="bg-indigo-600 p-6 text-white rounded-b-3xl shadow-lg">
+        <h1 class="text-sm opacity-80">ยอดเงินคงเหลือ</h1>
         <p id="totalBalance" class="text-4xl font-bold">฿ 0</p>
     </div>
 
-    <div class="p-4 bg-white m-4 rounded-xl shadow">
-        <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-2 border rounded mb-2">
-        <select id="mainCat" class="w-full p-2 border rounded mb-2">
-            <option>อาหาร</option><option>เดินทาง</option><option>เงินเดือน</option>
-        </select>
-        <input id="subCat" type="text" placeholder="หมวดหมู่ย่อย (เช่น มื้อเที่ยง)" class="w-full p-2 border rounded mb-2">
-        <div class="flex gap-2">
-            <button onclick="addEntry('income')" class="flex-1 bg-green-500 text-white p-2 rounded">รับ (+)</button>
-            <button onclick="addEntry('expense')" class="flex-1 bg-red-500 text-white p-2 rounded">จ่าย (-)</button>
+    <!-- Input Section: สำหรับเพิ่มรายรับ รายจ่าย และหุ้น -->
+    <div class="p-4 space-y-4">
+        <div class="bg-white p-4 rounded-xl shadow">
+            <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-3 border rounded mb-2">
+            <select id="mainCat" class="w-full p-3 border rounded mb-2">
+                <option value="รายได้หลัก">💰 รายได้หลัก</option>
+                <option value="งานพิเศษ">💼 งานพิเศษ</option>
+                <option value="อาหาร">🍜 อาหาร</option>
+                <option value="เดินทาง">🚗 เดินทาง</option>
+                <option value="หุ้น">📈 หุ้น</option>
+            </select>
+            <input id="subCat" type="text" placeholder="ระบุรายละเอียดหรือชื่อหุ้น" class="w-full p-3 border rounded mb-2">
+            
+            <div class="flex gap-2">
+                <button onclick="addEntry('income')" class="flex-1 bg-green-500 text-white py-3 rounded font-bold shadow">รับ (+)</button>
+                <button onclick="addEntry('expense')" class="flex-1 bg-red-500 text-white py-3 rounded font-bold shadow">จ่าย (-)</button>
+            </div>
         </div>
+
+        <!-- รายการที่บันทึก -->
+        <div id="list" class="space-y-2"></div>
     </div>
 
-    <div id="list" class="p-4 space-y-2"></div>
+    <!-- Bottom Navbar -->
+    <div class="fixed bottom-0 w-full bg-white border-t flex justify-around p-4 shadow-xl">
+        <div class="text-center"><span class="block text-2xl">🏠</span><span class="text-xs">หน้าแรก</span></div>
+        <div class="text-center"><span class="block text-2xl">📊</span><span class="text-xs">สรุป</span></div>
+        <div class="text-center"><span class="block text-2xl">⚙️</span><span class="text-xs">ตั้งค่า</span></div>
+    </div>
 
     <script>
-        let transactions = JSON.parse(localStorage.getItem('pflow')) || [];
+        let transactions = JSON.parse(localStorage.getItem('PF_Data')) || [];
 
         function updateUI() {
             const list = document.getElementById('list');
             list.innerHTML = '';
             let total = 0;
+
             transactions.forEach((t, index) => {
                 total += (t.type === 'income' ? t.amount : -t.amount);
                 list.innerHTML += `
-                    <div class="bg-white p-3 rounded-lg flex justify-between items-center shadow-sm">
+                    <div class="bg-white p-3 rounded-lg flex justify-between items-center shadow-sm border-l-4 ${t.type === 'income' ? 'border-green-500' : 'border-red-500'}">
                         <div>
-                            <p class="font-bold">${t.main} > ${t.sub}</p>
-                            <p class="text-xs text-gray-500">${t.type === 'income' ? '+ ' : '- '} ฿${t.amount}</p>
+                            <p class="font-bold text-gray-800">${t.main}: ${t.sub}</p>
+                            <p class="text-sm ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">
+                                ${t.type === 'income' ? '+' : '-'} ฿${t.amount.toLocaleString()}
+                            </p>
                         </div>
-                        <button onclick="deleteEntry(${index})" class="text-red-500 font-bold">ลบ</button>
+                        <button onclick="deleteEntry(${index})" class="bg-gray-100 px-3 py-1 rounded text-gray-500">ลบ</button>
                     </div>
                 `;
             });
+
             document.getElementById('totalBalance').innerText = '฿ ' + total.toLocaleString();
-            localStorage.setItem('pflow', JSON.stringify(transactions));
+            localStorage.setItem('PF_Data', JSON.stringify(transactions));
         }
 
         function addEntry(type) {
             const amount = parseFloat(document.getElementById('amount').value);
             const main = document.getElementById('mainCat').value;
-            const sub = document.getElementById('subCat').value;
-            if(amount) {
-                transactions.push({type, amount, main, sub});
-                updateUI();
-            }
+            const sub = document.getElementById('subCat').value || '-';
+            
+            if (!amount) return alert('กรุณาระบุจำนวนเงิน');
+            
+            transactions.push({ type, amount, main, sub });
+            document.getElementById('amount').value = '';
+            document.getElementById('subCat').value = '';
+            updateUI();
         }
 
         function deleteEntry(index) {
@@ -64,6 +89,7 @@
             updateUI();
         }
 
+        // เริ่มต้นแสดงผล
         updateUI();
     </script>
 </body>
