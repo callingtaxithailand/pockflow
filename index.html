@@ -3,101 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow - ระบบการเงิน</title>
+    <title>PocketFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // --- ตั้งค่า Firebase (นำค่าจากโปรเจกต์ของคุณมาใส่ที่นี่) ---
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
+        const firebaseConfig = { /* ใส่ค่า Firebase ของคุณที่นี่ */ };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- ฟังก์ชันบันทึกข้อมูล ---
+        // ฟังก์ชันบันทึก
         window.saveData = async () => {
-            const stockName = document.getElementById('stockName').value;
+            const market = document.getElementById('market').value; // เช่น หุ้นไทย
+            const asset = document.getElementById('asset').value;   // เช่น TISCO
             const amount = parseFloat(document.getElementById('amount').value);
             const tax = parseFloat(document.getElementById('tax').value) || 0;
             const fee = parseFloat(document.getElementById('fee').value) || 0;
-            const type = document.getElementById('type').value;
 
-            if(!amount) return alert("กรุณากรอกจำนวนเงิน");
+            if(!asset || !amount) return alert("กรุณากรอกข้อมูลให้ครบ");
 
             await addDoc(collection(db, "transactions"), {
-                stockName, amount, tax, fee, type,
-                date: new Date()
+                market, asset, amount, tax, fee,
+                date: new Date().toISOString()
             });
-            alert("บันทึกข้อมูลเรียบร้อย");
+            alert("บันทึกสำเร็จ");
         };
 
-        // --- ฟังก์ชันดึงข้อมูลและสรุปรายงาน ---
+        // แสดงผล
         onSnapshot(collection(db, "transactions"), (snapshot) => {
             const report = {};
-            let totalProfit = 0;
-
             snapshot.forEach((doc) => {
                 const d = doc.data();
-                const key = d.stockName || "ทั่วไป";
-                if (!report[key]) report[key] = { income: 0, tax: 0, fee: 0 };
+                if (!report[d.market]) report[d.market] = {};
+                if (!report[d.market][d.asset]) report[d.market][d.asset] = { income: 0, tax: 0, fee: 0 };
                 
-                report[key].income += d.amount;
-                report[key].tax += d.tax;
-                report[key].fee += d.fee;
-                
-                totalProfit += (d.amount - d.tax - d.fee);
+                report[d.market][d.asset].income += d.amount;
+                report[d.market][d.asset].tax += d.tax;
+                report[d.market][d.asset].fee += d.fee;
             });
 
-            document.getElementById('totalDisplay').innerText = totalProfit.toLocaleString();
-            
             const list = document.getElementById('reportList');
-            list.innerHTML = Object.keys(report).map(stock => `
-                <div class="bg-blue-50 p-4 rounded-xl mb-2">
-                    <p class="text-2xl font-bold">${stock}</p>
-                    <p class="text-xl">รับจริง: ${(report[stock].income - report[stock].tax - report[stock].fee).toLocaleString()}</p>
-                    <p class="text-sm text-gray-600">ภาษีที่ถูกหัก: ${report[stock].tax} | ค่าธรรมเนียม: ${report[stock].fee}</p>
+            list.innerHTML = Object.keys(report).map(mkt => `
+                <div class="mb-6">
+                    <h3 class="text-3xl font-bold text-blue-900 border-b-4 mb-2">${mkt}</h3>
+                    ${Object.keys(report[mkt]).map(ast => `
+                        <div class="bg-white p-4 rounded-xl shadow mb-2 flex justify-between items-center">
+                            <div>
+                                <p class="text-2xl font-bold">${ast}</p>
+                                <p class="text-sm text-gray-500">ภาษี: ${report[mkt][ast].tax} | ค่าธรรมเนียม: ${report[mkt][ast].fee}</p>
+                            </div>
+                            <p class="text-2xl font-bold text-green-600">
+                                ${(report[mkt][ast].income - report[mkt][ast].tax - report[mkt][ast].fee).toLocaleString()}
+                            </p>
+                        </div>
+                    `).join('')}
                 </div>
             `).join('');
         });
     </script>
 </head>
-<body class="bg-gray-100 p-4 font-sans">
-    <h1 class="text-5xl font-extrabold text-center text-blue-900 my-8">PocketFlow</h1>
+<body class="bg-gray-100 p-4">
+    <h1 class="text-5xl font-black text-center text-blue-900 my-8">PocketFlow</h1>
 
-    <!-- Dashboard -->
-    <div class="bg-white p-8 rounded-3xl shadow-xl mb-8 border-t-8 border-blue-500">
-        <p class="text-2xl text-gray-500 text-center">กำไรสุทธิรวม</p>
-        <p id="totalDisplay" class="text-7xl font-black text-center text-green-600">0</p>
-    </div>
-
-    <!-- Form Input -->
-    <div class="bg-white p-6 rounded-3xl shadow-xl space-y-4">
-        <input id="stockName" type="text" placeholder="ชื่อหุ้น / รายการ" class="w-full p-6 text-2xl border-2 rounded-2xl">
-        <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-6 text-2xl border-2 rounded-2xl">
+    <!-- Form -->
+    <div class="bg-white p-6 rounded-3xl shadow-xl space-y-4 mb-8">
+        <select id="market" class="w-full p-6 text-2xl border-2 rounded-2xl">
+            <option value="หุ้นไทย">หุ้นไทย</option>
+            <option value="หุ้นสหรัฐ">หุ้นสหรัฐ</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+        </select>
+        <input id="asset" type="text" placeholder="ชื่อหุ้น (เช่น TISCO, SCB)" class="w-full p-6 text-2xl border-2 rounded-2xl">
+        <input id="amount" type="number" placeholder="จำนวนเงินปันผล" class="w-full p-6 text-2xl border-2 rounded-2xl">
         <div class="grid grid-cols-2 gap-4">
             <input id="tax" type="number" placeholder="ภาษี" class="p-6 text-xl border-2 rounded-2xl">
             <input id="fee" type="number" placeholder="ค่าธรรมเนียม" class="p-6 text-xl border-2 rounded-2xl">
         </div>
-        <select id="type" class="w-full p-6 text-2xl border-2 rounded-2xl">
-            <option value="ปันผล">เงินปันผล</option>
-            <option value="รายรับ">รายรับทั่วไป</option>
-            <option value="รายจ่าย">รายจ่าย</option>
-        </select>
-        <button onclick="saveData()" class="w-full bg-blue-900 text-white py-6 rounded-2xl text-3xl font-bold">บันทึกข้อมูล</button>
+        <button onclick="saveData()" class="w-full bg-blue-600 text-white py-6 rounded-2xl text-3xl font-bold">บันทึกรายการ</button>
     </div>
 
-    <!-- Report -->
-    <div class="mt-10">
-        <h2 class="text-4xl font-bold mb-6">รายงานสรุปรายตัว</h2>
-        <div id="reportList"></div>
-    </div>
+    <div id="reportList"></div>
 </body>
 </html>
