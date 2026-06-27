@@ -3,83 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PocketFlow Full</title>
+    <title>PocketFlow</title>
     <style>
-        /* บังคับเต็มหน้าจอ */
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
-        .page { display: none; width: 100%; height: 100%; overflow-y: auto; padding: 20px; box-sizing: border-box; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; padding: 20px; padding-bottom: 100px; }
+        .page { display: none; }
         .active { display: block; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #333; padding: 12px; text-align: left; }
-        th { background: #1a1a1a; }
-        
-        .btn-add { background: #ffb300; padding: 15px; border-radius: 8px; border: none; font-weight: bold; width: 100%; color: #000; margin-top: 20px; }
-        
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-        .nav-item { cursor: pointer; text-align: center; }
+        .card { background: #1a1a1a; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #333; text-align: center; }
+        input, select { width: 100%; padding: 15px; background: #111; color: #fff; border: 1px solid #444; border-radius: 8px; margin: 10px 0; }
+        button { background: #ffb300; color: #000; padding: 15px; border-radius: 8px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <div id="page-dashboard" class="page">
+    <div id="page-dashboard" class="page active">
         <h2>Dashboard</h2>
-        <div style="background: #1a1a1a; padding: 20px; border-radius: 15px;">
-            <p>เงินปันผลสะสม: ฿<span id="sum-div">0</span></p>
-            <p>ยอดรวม: ฿<span id="sum-all">0</span></p>
+        <div class="card">ยอดรวมพอร์ตสุทธิ<div style="font-size: 2rem; font-weight: bold;">฿0.00</div></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <div class="card">รายรับ<br><b>฿0</b></div>
+            <div class="card">ปันผล<br><b>฿0</b></div>
+            <div class="card">ภาษี<br><b>฿0</b></div>
         </div>
-        <button class="btn-add" onclick="navigate('page-form')">+ บันทึกรายการใหม่</button>
     </div>
 
     <div id="page-form" class="page">
         <h2>บันทึกรายการ</h2>
-        <select id="type" style="width:100%; padding:15px; background:#1a1a1a; color:#fff;"><option>ซื้อหุ้น</option><option>ขายหุ้น</option><option>รับเงินปันผล</option></select>
-        <input type="text" id="stock" placeholder="ชื่อหุ้น" style="width:100%; padding:15px; margin:10px 0; background:#1a1a1a; color:#fff; border:1px solid #333;">
-        <input type="number" id="amount" placeholder="จำนวนเงิน" style="width:100%; padding:15px; background:#1a1a1a; color:#fff; border:1px solid #333;">
-        <button class="btn-add" onclick="saveData()">บันทึกรายการ</button>
+        <select id="type"><option>ซื้อหุ้น</option><option>ขายหุ้น</option><option>รับเงินปันผล</option></select>
+        <input type="text" id="stock" placeholder="ชื่อหุ้น">
+        <input type="number" id="amount" placeholder="จำนวนเงิน">
+        <button onclick="save()">บันทึกรายการ</button>
     </div>
 
     <div id="page-report" class="page">
-        <h2>รายงาน</h2>
-        <table><thead><tr><th>ประเภท</th><th>หุ้น</th><th>ยอดเงิน</th></tr></thead><tbody id="reportTable"></tbody></table>
+        <h2>รายงานการซื้อขาย</h2>
+        <table><thead><tr><th>ประเภท</th><th>หุ้น</th><th>ยอดเงิน</th></tr></thead><tbody id="tbl"></tbody></table>
     </div>
 
     <div class="nav-bar">
-        <div class="nav-item" onclick="navigate('page-dashboard')">📊<br>แดชบอร์ด</div>
-        <div class="nav-item" onclick="navigate('page-form')">📝<br>บันทึก</div>
-        <div class="nav-item" onclick="navigate('page-report')">📈<br>รายงาน</div>
+        <div onclick="show('page-dashboard')">📊</div>
+        <div onclick="show('page-form')">📝</div>
+        <div onclick="show('page-report')">📈</div>
     </div>
 
     <script>
-        // จดจำหน้าล่าสุดที่เปิดอยู่
-        function navigate(id) {
+        let list = JSON.parse(localStorage.getItem('data')) || [];
+        function show(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            localStorage.setItem('lastPage', id);
+            localStorage.setItem('page', id);
         }
-
-        function saveData() {
-            let data = JSON.parse(localStorage.getItem('myStocks')) || [];
-            data.push({
-                type: document.getElementById('type').value,
-                stock: document.getElementById('stock').value,
-                amount: document.getElementById('amount').value
-            });
-            localStorage.setItem('myStocks', JSON.stringify(data));
-            renderTable();
-            navigate('page-report');
+        function save() {
+            list.push({type: document.getElementById('type').value, stock: document.getElementById('stock').value, amount: document.getElementById('amount').value});
+            localStorage.setItem('data', JSON.stringify(list));
+            location.reload();
         }
-
-        function renderTable() {
-            let data = JSON.parse(localStorage.getItem('myStocks')) || [];
-            const tbody = document.getElementById('reportTable');
-            tbody.innerHTML = data.map(t => `<tr><td>${t.type}</td><td>${t.stock}</td><td>${t.amount}</td></tr>`).join('');
-        }
-
-        // เริ่มต้น: โหลดหน้าล่าสุด หรือหน้าแรก
-        const lastPage = localStorage.getItem('lastPage') || 'page-dashboard';
-        navigate(lastPage);
-        renderTable();
+        document.getElementById('tbl').innerHTML = list.map(i => `<tr><td>${i.type}</td><td>${i.stock}</td><td>${i.amount}</td></tr>`).join('');
+        show(localStorage.getItem('page') || 'page-dashboard');
     </script>
 </body>
 </html>
