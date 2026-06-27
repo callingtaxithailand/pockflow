@@ -2,98 +2,31 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>PocketFlow - Custom Categories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="app.js"></script>
 </head>
-<body class="bg-gray-100 pb-24">
-
-    <div class="bg-indigo-600 p-6 text-white shadow-lg">
-        <h1 class="text-sm opacity-80">ยอดเงินคงเหลือ</h1>
-        <p id="totalBalance" class="text-4xl font-bold">฿ 0</p>
+<body class="bg-gray-100 p-4">
+    <h1 class="text-5xl font-bold text-center my-6 text-blue-900">PocketFlow</h1>
+    
+    <!-- ส่วนสรุปยอด -->
+    <div class="grid grid-cols-1 gap-4 mb-6">
+        <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-green-500">
+            <p class="text-xl text-gray-500">กำไรสะสม</p>
+            <p id="totalProfit" class="text-6xl font-bold text-green-600">0.00</p>
+        </div>
     </div>
 
-    <div class="p-4 space-y-4">
-        <div class="bg-white p-4 rounded-xl shadow">
-            <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-2 border rounded mb-2">
-            
-            <div class="flex gap-2 mb-2">
-                <select id="mainCat" onchange="renderSubCats()" class="flex-1 p-2 border rounded"></select>
-                <select id="subCat" class="flex-1 p-2 border rounded"></select>
-            </div>
-
-            <div class="flex gap-2">
-                <button onclick="addEntry('income')" class="flex-1 bg-green-500 text-white p-2 rounded">รับ (+)</button>
-                <button onclick="addEntry('expense')" class="flex-1 bg-red-500 text-white p-2 rounded">จ่าย (-)</button>
-            </div>
+    <!-- ฟอร์มบันทึก -->
+    <div class="bg-white p-6 rounded-2xl shadow-lg">
+        <input id="desc" type="text" placeholder="รายการ" class="w-full p-4 mb-2 border rounded-xl text-2xl">
+        <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-4 mb-4 border rounded-xl text-2xl">
+        <div class="grid grid-cols-3 gap-2">
+            <button onclick="saveData('รายรับ')" class="bg-green-500 text-white py-4 rounded-xl text-xl font-bold">รับ</button>
+            <button onclick="saveData('รายจ่าย')" class="bg-red-500 text-white py-4 rounded-xl text-xl font-bold">จ่าย</button>
+            <button onclick="saveData('ปันผล')" class="bg-blue-500 text-white py-4 rounded-xl text-xl font-bold">ปันผล</button>
         </div>
-
-        <div class="bg-white p-4 rounded-xl shadow">
-            <h2 class="text-sm font-bold text-gray-600 mb-2">จัดการหมวดหมู่</h2>
-            <input id="newMain" type="text" placeholder="ชื่อหมวดหลัก + อีโมจิ" class="w-full p-2 border rounded mb-2">
-            <button onclick="addMainCategory()" class="w-full bg-indigo-500 text-white p-2 rounded">บันทึกหมวดหลัก</button>
-        </div>
-
-        <div id="list" class="space-y-2"></div>
     </div>
-
-    <script>
-        let categories = JSON.parse(localStorage.getItem('PF_Cats')) || { "💰 รายรับ": ["เงินเดือน"], "🍜 อาหาร": ["มื้อเที่ยง"] };
-        let transactions = JSON.parse(localStorage.getItem('PF_Trans')) || [];
-
-        function renderSubCats() {
-            const main = document.getElementById('mainCat').value;
-            const subSelect = document.getElementById('subCat');
-            subSelect.innerHTML = '';
-            categories[main].forEach(sub => {
-                subSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
-            });
-        }
-
-        function addMainCategory() {
-            const name = document.getElementById('newMain').value;
-            if(name) {
-                categories[name] = ["ทั่วไป"];
-                localStorage.setItem('PF_Cats', JSON.stringify(categories));
-                initDropdowns();
-            }
-        }
-
-        function initDropdowns() {
-            const mainSelect = document.getElementById('mainCat');
-            mainSelect.innerHTML = '';
-            for (let main in categories) {
-                mainSelect.innerHTML += `<option value="${main}">${main}</option>`;
-            }
-            renderSubCats();
-        }
-
-        function addEntry(type) {
-            const amount = parseFloat(document.getElementById('amount').value);
-            const main = document.getElementById('mainCat').value;
-            const sub = document.getElementById('subCat').value;
-            if(amount) {
-                transactions.push({type, amount, main, sub});
-                localStorage.setItem('PF_Trans', JSON.stringify(transactions));
-                updateUI();
-            }
-        }
-
-        function updateUI() {
-            const list = document.getElementById('list');
-            list.innerHTML = '';
-            let total = 0;
-            transactions.forEach((t, i) => {
-                total += (t.type === 'income' ? t.amount : -t.amount);
-                list.innerHTML += `<div class="bg-white p-3 rounded flex justify-between">
-                    <div><b>${t.main}</b> - ${t.sub}</div>
-                    <div class="${t.type === 'income' ? 'text-green-500' : 'text-red-500'}">฿${t.amount}</div>
-                </div>`;
-            });
-            document.getElementById('totalBalance').innerText = '฿ ' + total.toLocaleString();
-        }
-
-        initDropdowns();
-        updateUI();
-    </script>
 </body>
 </html>
