@@ -3,61 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow - ระบบบันทึกธุรกรรม</title>
+    <title>PocketFlow - All-in-One</title>
     <style>
         body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; }
         .page { display: none; }
         .active { display: block; }
-        
-        /* Dashboard */
-        .total-card { background: #1a1a1a; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .card { padding: 15px; border-radius: 12px; background: #1a1a1a; border: 1px solid #333; text-align: center; }
-
-        /* Form */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; color: #aaa; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; }
         .btn-save { background: #ffb300; width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; color: #000; margin-top: 10px; }
-        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; color: #ccc; }
+        th, td { border-bottom: 1px solid #333; padding: 10px; text-align: left; }
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-item { cursor: pointer; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="page-home" class="page active">
         <h2>Dashboard</h2>
-        <div class="total-card"><div>มูลค่าพอร์ตสุทธิ</div><div style="font-size: 2rem; font-weight: bold;">฿0.00</div></div>
-        <div class="grid">
-            <div class="card">เงินปันผล<br><b>฿0</b></div><div class="card">กำไรขายหุ้น<br><b>฿0</b></div>
-        </div>
+        <div style="background: #1a1a1a; padding: 20px; border-radius: 15px;">ยอดรวมพอร์ต: ฿0.00</div>
         <button class="btn-save" onclick="showPage('page-form')">+ บันทึกรายการใหม่</button>
     </div>
 
     <div id="page-form" class="page">
         <h2>บันทึกธุรกรรม</h2>
-        <div class="form-group"><label>ประเภทรายการ</label>
-            <select>
-                <option>ซื้อหุ้น</option>
-                <option>ขายหุ้น</option>
-                <option>รับเงินปันผล</option>
-            </select>
-        </div>
-        <div class="form-group"><label>วันที่</label><input type="date"></div>
-        <div class="form-group"><label>ชื่อหุ้น</label><input type="text" placeholder="เช่น TISCO, VOO"></div>
-        <div class="form-group"><label>จำนวนเงิน</label><input type="number" placeholder="0.00"></div>
-        <button class="btn-save" onclick="showPage('page-home')">บันทึกข้อมูล</button>
+        <select id="type"><option>ซื้อหุ้น</option><option>ขายหุ้น</option><option>รับเงินปันผล</option></select>
+        <input type="date" style="margin: 10px 0; width: 100%; padding: 10px;">
+        <input type="text" placeholder="ชื่อหุ้น" style="width: 100%; padding: 10px;">
+        <input type="number" placeholder="ราคา" style="margin-top: 10px; width: 100%; padding: 10px;">
+        <button class="btn-save" onclick="saveData()">บันทึก</button>
+    </div>
+
+    <div id="page-report" class="page">
+        <h2>รายงานการซื้อขาย/ปันผล</h2>
+        <table>
+            <thead><tr><th>ประเภท</th><th>หุ้น</th><th>ราคา</th></tr></thead>
+            <tbody id="report-body"></tbody>
+        </table>
     </div>
 
     <div class="nav-bar">
-        <div onclick="showPage('page-home')">📊 แดชบอร์ด</div>
-        <div onclick="showPage('page-form')">📝 บันทึก</div>
+        <div class="nav-item" onclick="showPage('page-home')">📊 แดชบอร์ด</div>
+        <div class="nav-item" onclick="showPage('page-report')">📈 รายงาน</div>
     </div>
 
     <script>
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+        }
+        function saveData() {
+            alert("บันทึกสำเร็จ!");
+            showPage('page-report');
         }
     </script>
 </body>
