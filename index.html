@@ -3,46 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow - All-in-One</title>
+    <title>PocketFlow - Portfolio Manager</title>
     <style>
-        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; }
+        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; padding-bottom: 70px; }
         .page { display: none; }
         .active { display: block; }
-        .btn-save { background: #ffb300; width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; color: #000; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; color: #ccc; }
-        th, td { border-bottom: 1px solid #333; padding: 10px; text-align: left; }
+        
+        /* สไตล์ตารางและฟอร์ม */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        th { background: #1a1a1a; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; color: #aaa; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
+        
+        .btn-add { background: #ffb300; padding: 12px; border-radius: 8px; border: none; font-weight: bold; width: 100%; color: #000; margin-top: 10px; }
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-        .nav-item { cursor: pointer; text-align: center; }
+        .nav-item { cursor: pointer; text-align: center; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <div id="page-home" class="page active">
+    <div id="page-dashboard" class="page active">
         <h2>Dashboard</h2>
-        <div style="background: #1a1a1a; padding: 20px; border-radius: 15px;">ยอดรวมพอร์ต: ฿0.00</div>
-        <button class="btn-save" onclick="showPage('page-form')">+ บันทึกรายการใหม่</button>
+        <div style="background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <p>เงินปันผลสะสม: ฿0.00</p>
+            <p>มูลค่าพอร์ต: ฿0.00</p>
+        </div>
+        <button class="btn-add" onclick="showPage('page-form')">+ บันทึกรายการใหม่</button>
     </div>
 
     <div id="page-form" class="page">
-        <h2>บันทึกธุรกรรม</h2>
-        <select id="type"><option>ซื้อหุ้น</option><option>ขายหุ้น</option><option>รับเงินปันผล</option></select>
-        <input type="date" style="margin: 10px 0; width: 100%; padding: 10px;">
-        <input type="text" placeholder="ชื่อหุ้น" style="width: 100%; padding: 10px;">
-        <input type="number" placeholder="ราคา" style="margin-top: 10px; width: 100%; padding: 10px;">
-        <button class="btn-save" onclick="saveData()">บันทึก</button>
+        <h2>บันทึกรายการ</h2>
+        <div class="form-group"><label>ประเภท</label>
+            <select id="type">
+                <option value="ซื้อหุ้น">ซื้อหุ้น</option>
+                <option value="ขายหุ้น">ขายหุ้น</option>
+                <option value="รับเงินปันผล">รับเงินปันผล</option>
+            </select>
+        </div>
+        <div class="form-group"><label>วันที่</label><input type="date" id="date"></div>
+        <div class="form-group"><label>หุ้น</label><input type="text" id="stock" placeholder="เช่น TISCO, VOO"></div>
+        <div class="form-group"><label>จำนวนเงิน</label><input type="number" id="amount" placeholder="0.00"></div>
+        <button class="btn-add" onclick="saveData()">บันทึกรายการ</button>
     </div>
 
     <div id="page-report" class="page">
-        <h2>รายงานการซื้อขาย/ปันผล</h2>
+        <h2>รายงานการซื้อขาย</h2>
+        <select id="stockFilter" onchange="filterStock()">
+            <option value="all">ทั้งหมด</option>
+            <option value="TISCO">TISCO</option>
+            <option value="SCB">SCB</option>
+            <option value="VOO">VOO</option>
+        </select>
         <table>
-            <thead><tr><th>ประเภท</th><th>หุ้น</th><th>ราคา</th></tr></thead>
-            <tbody id="report-body"></tbody>
+            <thead><tr><th>ประเภท</th><th>หุ้น</th><th>ยอดเงิน</th></tr></thead>
+            <tbody id="reportTable"></tbody>
         </table>
     </div>
 
     <div class="nav-bar">
-        <div class="nav-item" onclick="showPage('page-home')">📊 แดชบอร์ด</div>
-        <div class="nav-item" onclick="showPage('page-report')">📈 รายงาน</div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">📊<br>แดชบอร์ด</div>
+        <div class="nav-item" onclick="showPage('page-form')">📝<br>บันทึก</div>
+        <div class="nav-item" onclick="showPage('page-report')">📈<br>รายงาน</div>
     </div>
 
     <script>
@@ -51,8 +75,11 @@
             document.getElementById(id).classList.add('active');
         }
         function saveData() {
-            alert("บันทึกสำเร็จ!");
+            alert("บันทึกข้อมูลเรียบร้อย!");
             showPage('page-report');
+        }
+        function filterStock() {
+            console.log("กรองข้อมูล: " + document.getElementById('stockFilter').value);
         }
     </script>
 </body>
