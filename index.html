@@ -2,74 +2,45 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PocketFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        const firebaseConfig = { /* ใส่ค่า Config ของคุณ */ };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // ใส่ Config ของคุณที่นี่
+        const firebaseConfig = { apiKey: "YOUR_API_KEY", projectId: "YOUR_PROJECT_ID", authDomain: "YOUR_PROJECT_ID.firebaseapp.com", storageBucket: "YOUR_PROJECT_ID.appspot.com", messagingSenderId: "YOUR_SENDER_ID", appId: "YOUR_APP_ID" };
+        const db = getFirestore(initializeApp(firebaseConfig));
 
-        // บันทึกข้อมูล
         window.saveData = async () => {
-            const asset = document.getElementById('asset').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-            const type = document.getElementById('type').value;
-            const date = document.getElementById('date').value || new Date().toISOString().split('T')[0];
-
-            if(!asset || isNaN(amount)) return alert("กรุณากรอกข้อมูลให้ครบ");
-            await addDoc(collection(db, "transactions"), { asset, amount, type, date });
-            alert("บันทึกสำเร็จ!");
+            await addDoc(collection(db, "transactions"), {
+                asset: document.getElementById('asset').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                type: document.getElementById('type').value,
+                date: document.getElementById('date').value || new Date().toISOString().split('T')[0]
+            });
+            alert("บันทึกสำเร็จ");
         };
 
-        // ลบข้อมูล
-        window.deleteTransaction = async (id) => {
-            if(confirm("ยืนยันการลบรายการนี้?")) {
-                await deleteDoc(doc(db, "transactions", id));
-            }
-        };
+        window.del = async (id) => { await deleteDoc(doc(db, "transactions", id)); };
 
-        // แสดงผล
-        onSnapshot(query(collection(db, "transactions"), orderBy("date", "desc")), (snapshot) => {
-            const board = document.getElementById('reportBoard');
-            board.innerHTML = '';
-            
-            snapshot.forEach((d) => {
+        onSnapshot(query(collection(db, "transactions"), orderBy("date", "desc")), (snap) => {
+            const list = document.getElementById('report');
+            list.innerHTML = '';
+            snap.forEach(d => {
                 const data = d.data();
-                const color = data.type === 'buy' ? 'text-red-400' : data.type === 'sell' ? 'text-blue-400' : 'text-green-400';
-                
-                board.innerHTML += `
-                    <div class="bg-gray-800 p-4 rounded-2xl mb-3 border border-gray-700 flex justify-between items-center">
-                        <div>
-                            <p class="text-xl font-bold">${data.asset} (${data.date})</p>
-                            <p class="${color} font-bold text-2xl">${data.amount.toLocaleString()} บาท</p>
-                        </div>
-                        <button onclick="deleteTransaction('${d.id}')" class="bg-red-900 text-white px-4 py-2 rounded-lg font-bold">ลบ</button>
-                    </div>
-                `;
+                list.innerHTML += `<div class="bg-gray-800 p-4 mb-2 flex justify-between"><div>${data.asset} (${data.date})<br><b>${data.amount} (${data.type})</b></div><button onclick="del('${d.id}')" class="bg-red-900 p-2">ลบ</button></div>`;
             });
         });
     </script>
 </head>
 <body class="bg-black text-white p-4">
-    <h1 class="text-5xl font-black text-center text-blue-500 my-8">PocketFlow</h1>
-
-    <div class="bg-gray-900 p-6 rounded-3xl border border-gray-700 space-y-4 mb-8">
-        <input id="date" type="date" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
-        <input id="asset" type="text" placeholder="ชื่อหุ้น" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
-        <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
-        <select id="type" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
-            <option value="buy">ซื้อ</option>
-            <option value="sell">ขาย</option>
-            <option value="div">ปันผล</option>
-        </select>
-        <button onclick="saveData()" class="w-full bg-blue-600 text-white py-6 rounded-2xl text-3xl font-bold">บันทึกข้อมูล</button>
-    </div>
-
-    <h2 class="text-3xl font-bold mb-4 text-gray-300">ประวัติรายการ</h2>
-    <div id="reportBoard"></div>
+    <h1 class="text-4xl font-bold text-center">PocketFlow</h1>
+    <input id="date" type="date" class="w-full p-4 mb-2 bg-black border text-white">
+    <input id="asset" type="text" placeholder="ชื่อหุ้น" class="w-full p-4 mb-2 bg-black border text-white">
+    <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-4 mb-2 bg-black border text-white">
+    <select id="type" class="w-full p-4 mb-2 bg-black border text-white"><option value="ซื้อ">ซื้อ</option><option value="ขาย">ขาย</option><option value="ปันผล">ปันผล</option></select>
+    <button onclick="saveData()" class="w-full bg-blue-600 p-4 font-bold">บันทึกข้อมูล</button>
+    <div id="report" class="mt-4"></div>
 </body>
 </html>
