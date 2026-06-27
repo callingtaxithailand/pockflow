@@ -3,76 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เพิ่มธุรกรรม - PocketFlow</title>
+    <title>PocketFlow</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; padding: 20px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: #aaa; }
+        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; }
+        .page { display: none; }
+        .active { display: block; }
+        
+        /* สไตล์หน้า Dashboard (เหมือนเดิม) */
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .logo { width: 50px; height: 50px; background: linear-gradient(to bottom right, #ff9900, #ffcc00); border-radius: 12px; }
+        .total-card { background: #1a1a1a; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .card { padding: 15px; border-radius: 12px; text-align: center; background: #1a1a1a; }
+        
+        /* สไตล์ฟอร์ม */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; color: #aaa; margin-bottom: 5px; }
         input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; }
-        .input-group { display: flex; gap: 10px; }
-        .add-btn { background: #333; border: none; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; }
-        .submit-btn { width: 100%; background: #ffb300; border: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 20px; }
+        .btn-add { background: #ffb300; width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; margin-top: 10px; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align: center;">เพิ่มธุรกรรม</h2>
-
-    <form id="transactionForm">
-        <div class="form-group">
-            <label>วันที่</label>
-            <input type="date" required>
+    <div id="page-dashboard" class="page active">
+        <div class="header">
+            <div class="logo"></div>
+            <div><div style="font-size: 1.2rem; font-weight: bold;">PocketFlow</div><div style="color: #ffb300;">DIME EDITION</div></div>
         </div>
-
-        <div class="form-group">
-            <label>หมวดหมู่หลัก</label>
-            <div class="input-group">
-                <select id="mainCategory">
-                    <option value="">เลือกหมวดหมู่หลัก</option>
-                </select>
-                <button type="button" class="add-btn" onclick="addOption('mainCategory')">+</button>
-            </div>
+        <div class="total-card"><div>ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</div><div style="font-size: 2rem; font-weight: bold;">฿0.00</div></div>
+        <div class="grid">
+            <div class="card">รายรับ<br><b>฿0</b></div>
+            <div class="card">ค่าใช้จ่าย<br><b>฿0</b></div>
+            <div class="card">เงินปันผล<br><b>฿0</b></div>
+            <div class="card">ภาษี<br><b>฿0</b></div>
         </div>
+        <button class="btn-add" onclick="showPage('page-form')">+ เพิ่มธุรกรรม</button>
+    </div>
 
-        <div class="form-group">
-            <label>หมวดหมู่ย่อย</label>
-            <div class="input-group">
-                <select id="subCategory">
-                    <option value="">เลือกหมวดหมู่ย่อย</option>
-                </select>
-                <button type="button" class="add-btn" onclick="addOption('subCategory')">+</button>
-            </div>
-        </div>
+    <div id="page-form" class="page">
+        <h2 style="text-align: center;">เพิ่มธุรกรรม</h2>
+        <div class="form-group"><label>วันที่</label><input type="date"></div>
+        <div class="form-group"><label>หมวดหมู่หลัก</label><select id="mainCat"><option>เลือก...</option></select></div>
+        <div class="form-group"><label>หมวดหมู่ย่อย</label><select id="subCat"><option>เลือก...</option></select></div>
+        <div class="form-group"><label>ซื้อให้ใคร</label><input type="text"></div>
+        <div class="form-group"><label>ราคา</label><input type="number"></div>
+        <button class="btn-add" onclick="showPage('page-dashboard')">บันทึกธุรกรรม</button>
+    </div>
 
-        <div class="form-group">
-            <label>ซื้อให้ใคร</label>
-            <input type="text" placeholder="ระบุชื่อผู้รับ">
-        </div>
-
-        <div class="form-group">
-            <label>ราคา</label>
-            <input type="number" placeholder="0.00">
-        </div>
-
-        <button type="submit" class="submit-btn">บันทึกธุรกรรม</button>
-    </form>
+    <div class="nav-bar">
+        <div onclick="showPage('page-dashboard')">📊 แดชบอร์ด</div>
+        <div onclick="showPage('page-dashboard')">📁 ธุรกรรม</div>
+    </div>
 
     <script>
-        function addOption(selectId) {
-            const val = prompt("เพิ่มชื่อหมวดหมู่ใหม่:");
-            if (val) {
-                const select = document.getElementById(selectId);
-                const option = document.createElement("option");
-                option.text = val;
-                option.value = val;
-                select.add(option);
-            }
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
         }
-
-        document.getElementById('transactionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('บันทึกข้อมูลเรียบร้อย!');
-        });
     </script>
 </body>
 </html>
