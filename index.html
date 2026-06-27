@@ -2,35 +2,40 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>PocketFlow - Pro Version</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PocketFlow Full</title>
     <style>
-        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; padding-bottom: 80px; }
-        .page { display: none; }
+        /* บังคับเต็มหน้าจอ */
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
+        .page { display: none; width: 100%; height: 100%; overflow-y: auto; padding: 20px; box-sizing: border-box; }
         .active { display: block; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
-        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #333; padding: 12px; text-align: left; }
         th { background: #1a1a1a; }
-        .btn-add { background: #ffb300; padding: 12px; border-radius: 8px; border: none; font-weight: bold; width: 100%; color: #000; margin-top: 10px; }
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-        .nav-item { cursor: pointer; text-align: center; font-size: 0.8rem; }
+        
+        .btn-add { background: #ffb300; padding: 15px; border-radius: 8px; border: none; font-weight: bold; width: 100%; color: #000; margin-top: 20px; }
+        
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-item { cursor: pointer; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="page-dashboard" class="page active">
+    <div id="page-dashboard" class="page">
         <h2>Dashboard</h2>
-        <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
+        <div style="background: #1a1a1a; padding: 20px; border-radius: 15px;">
             <p>เงินปันผลสะสม: ฿<span id="sum-div">0</span></p>
-            <p>ยอดรวมธุรกรรม: ฿<span id="sum-all">0</span></p>
+            <p>ยอดรวม: ฿<span id="sum-all">0</span></p>
         </div>
-        <button class="btn-add" onclick="showPage('page-form')">+ บันทึกรายการใหม่</button>
+        <button class="btn-add" onclick="navigate('page-form')">+ บันทึกรายการใหม่</button>
     </div>
 
     <div id="page-form" class="page">
         <h2>บันทึกรายการ</h2>
-        <select id="type"><option>ซื้อหุ้น</option><option>ขายหุ้น</option><option>รับเงินปันผล</option></select>
-        <input type="text" id="stock" placeholder="ชื่อหุ้น" style="width:100%; padding:10px; margin:10px 0; background:#1a1a1a; color:#fff; border:1px solid #333;">
-        <input type="number" id="amount" placeholder="จำนวนเงิน" style="width:100%; padding:10px; background:#1a1a1a; color:#fff; border:1px solid #333;">
+        <select id="type" style="width:100%; padding:15px; background:#1a1a1a; color:#fff;"><option>ซื้อหุ้น</option><option>ขายหุ้น</option><option>รับเงินปันผล</option></select>
+        <input type="text" id="stock" placeholder="ชื่อหุ้น" style="width:100%; padding:15px; margin:10px 0; background:#1a1a1a; color:#fff; border:1px solid #333;">
+        <input type="number" id="amount" placeholder="จำนวนเงิน" style="width:100%; padding:15px; background:#1a1a1a; color:#fff; border:1px solid #333;">
         <button class="btn-add" onclick="saveData()">บันทึกรายการ</button>
     </div>
 
@@ -40,42 +45,40 @@
     </div>
 
     <div class="nav-bar">
-        <div class="nav-item" onclick="showPage('page-dashboard')">📊<br>แดชบอร์ด</div>
-        <div class="nav-item" onclick="showPage('page-form')">📝<br>บันทึก</div>
-        <div class="nav-item" onclick="showPage('page-report')">📈<br>รายงาน</div>
+        <div class="nav-item" onclick="navigate('page-dashboard')">📊<br>แดชบอร์ด</div>
+        <div class="nav-item" onclick="navigate('page-form')">📝<br>บันทึก</div>
+        <div class="nav-item" onclick="navigate('page-report')">📈<br>รายงาน</div>
     </div>
 
     <script>
-        let transactions = JSON.parse(localStorage.getItem('myStocks')) || [];
-
-        function showPage(id) {
+        // จดจำหน้าล่าสุดที่เปิดอยู่
+        function navigate(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'page-report') renderTable();
+            localStorage.setItem('lastPage', id);
         }
 
         function saveData() {
-            const data = {
+            let data = JSON.parse(localStorage.getItem('myStocks')) || [];
+            data.push({
                 type: document.getElementById('type').value,
                 stock: document.getElementById('stock').value,
                 amount: document.getElementById('amount').value
-            };
-            transactions.push(data);
-            localStorage.setItem('myStocks', JSON.stringify(transactions));
-            alert("บันทึกแล้ว!");
+            });
+            localStorage.setItem('myStocks', JSON.stringify(data));
             renderTable();
-            showPage('page-report');
+            navigate('page-report');
         }
 
         function renderTable() {
+            let data = JSON.parse(localStorage.getItem('myStocks')) || [];
             const tbody = document.getElementById('reportTable');
-            tbody.innerHTML = '';
-            transactions.forEach(t => {
-                tbody.innerHTML += `<tr><td>${t.type}</td><td>${t.stock}</td><td>${t.amount}</td></tr>`;
-            });
+            tbody.innerHTML = data.map(t => `<tr><td>${t.type}</td><td>${t.stock}</td><td>${t.amount}</td></tr>`).join('');
         }
-        
-        // โหลดข้อมูลทันทีเมื่อเปิดหน้า
+
+        // เริ่มต้น: โหลดหน้าล่าสุด หรือหน้าแรก
+        const lastPage = localStorage.getItem('lastPage') || 'page-dashboard';
+        navigate(lastPage);
         renderTable();
     </script>
 </body>
