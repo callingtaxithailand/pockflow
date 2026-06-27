@@ -3,68 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow - Dashboard</title>
+    <title>PocketFlow - Portfolio Manager</title>
     <style>
         body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; }
         .page { display: none; }
         .active { display: block; }
-        /* สไตล์หน้าหลัก */
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .logo { width: 50px; height: 50px; background: linear-gradient(to bottom right, #ff9900, #ffcc00); border-radius: 12px; }
-        .total-card { background: #1a1a1a; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .card { padding: 15px; border-radius: 12px; text-align: center; background: #1a1a1a; border: 1px solid #333; }
-        /* สไตล์ฟอร์ม */
-        .form-container { padding-top: 10px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; color: #aaa; margin-bottom: 5px; font-size: 0.9rem; }
-        input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; }
-        .input-row { display: flex; gap: 5px; }
-        .add-btn { background: #333; border: 1px solid #555; color: #fff; padding: 0 15px; border-radius: 8px; cursor: pointer; }
-        .save-btn { background: #ffb300; width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; margin-top: 20px; color: #000; }
-        /* แถบเมนูด้านล่าง */
+        /* สไตล์ตารางรายงาน */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        th { background: #1a1a1a; }
+        /* สไตล์ปุ่ม */
+        .btn-add { background: #ffb300; padding: 10px; border-radius: 8px; border: none; font-weight: bold; width: 100%; }
+        /* ส่วนประกอบอื่นๆ */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-        .nav-item { text-align: center; font-size: 0.75rem; color: #888; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="page-home" class="page active">
-        <div class="header">
-            <div class="logo"></div>
-            <div><div style="font-size: 1.2rem; font-weight: bold;">PocketFlow</div><div style="color: #ffb300;">DIME EDITION</div></div>
+    <div id="page-dashboard" class="page active">
+        <h2>Dashboard</h2>
+        <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
+            <p>เงินปันผลสะสม: ฿0.00</p>
+            <p>มูลค่าพอร์ต: ฿0.00</p>
         </div>
-        <div class="total-card"><div>ยอดรวมกำไร/ขาดทุนพอร์ตสุทธิ</div><div style="font-size: 2.5rem; font-weight: bold;">฿0.00</div></div>
-        <div class="grid">
-            <div class="card">รายรับทั้งหมด<br><b>฿0</b></div><div class="card">ค่าใช้จ่ายในบ้าน<br><b>฿0</b></div>
-            <div class="card">เงินปันผลสะสม<br><b>฿0</b></div><div class="card">ภาษีที่โดนหักรวม<br><b>฿0</b></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span>รายงานแยกตามรายชื่อหุ้น</span>
-            <button class="add-btn" onclick="showPage('page-form')">+ เพิ่มธุรกรรม</button>
-        </div>
+        <button class="btn-add" onclick="showPage('page-report')">ดูรายงานแยกประเภทหุ้น</button>
     </div>
 
-    <div id="page-form" class="page">
-        <h2 style="text-align: center;">เพิ่มธุรกรรม</h2>
-        <div class="form-group"><label>วันที่</label><input type="date"></div>
-        <div class="form-group"><label>หมวดหมู่หลัก</label>
-            <div class="input-row"><select id="mainCat"><option>เลือกหมวดหมู่หลัก</option></select><button class="add-btn" onclick="addCustom('mainCat')">+</button></div>
-        </div>
-        <div class="form-group"><label>หมวดหมู่ย่อย</label>
-            <div class="input-row"><select id="subCat"><option>เลือกหมวดหมู่ย่อย</option></select><button class="add-btn" onclick="addCustom('subCat')">+</button></div>
-        </div>
-        <div class="form-group"><label>ซื้อให้ใคร</label><input type="text" placeholder="ระบุชื่อ"></div>
-        <div class="form-group"><label>ราคา</label><input type="number" placeholder="0.00"></div>
-        <button class="save-btn" onclick="showPage('page-home')">บันทึกธุรกรรม</button>
+    <div id="page-report" class="page">
+        <h2>รายงานแยกประเภทหุ้น</h2>
+        <select id="stockFilter" onchange="filterStock()">
+            <option value="all">ทั้งหมด</option>
+            <option value="TISCO">TISCO</option>
+            <option value="SCB">SCB</option>
+            <option value="VOO">VOO</option>
+        </select>
+        <table>
+            <thead><tr><th>วันที่</th><th>ประเภท</th><th>หุ้น</th><th>จำนวนเงิน</th></tr></thead>
+            <tbody id="reportTable"></tbody>
+        </table>
+        <button class="btn-add" style="margin-top:20px;" onclick="showPage('page-dashboard')">กลับหน้าหลัก</button>
     </div>
 
     <div class="nav-bar">
-        <div class="nav-item" onclick="showPage('page-home')">📊<br>แดชบอร์ด</div>
-        <div class="nav-item" onclick="showPage('page-home')">📈<br>รายงาน</div>
-        <div class="nav-item" onclick="showPage('page-home')">👤<br>โปรไฟล์</div>
-        <div class="nav-item" onclick="showPage('page-form')">📁<br>ธุรกรรม</div>
-        <div class="nav-item" onclick="showPage('page-home')">⚙️<br>ตั้งค่า</div>
+        <div onclick="showPage('page-dashboard')">📊 แดชบอร์ด</div>
+        <div onclick="showPage('page-report')">📈 รายงานหุ้น</div>
     </div>
 
     <script>
@@ -72,9 +54,9 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-        function addCustom(selectId) {
-            let val = prompt("เพิ่มหมวดหมู่:");
-            if(val) { let s = document.getElementById(selectId); let o = document.createElement("option"); o.text = val; s.add(o); }
+        function filterStock() {
+            // ฟังก์ชันสำหรับกรองข้อมูลตามหุ้นที่เลือก
+            console.log("กรองข้อมูลตามหุ้น: " + document.getElementById('stockFilter').value);
         }
     </script>
 </body>
