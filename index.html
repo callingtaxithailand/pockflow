@@ -3,33 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow - Report</title>
+    <title>PocketFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // --- ตั้งค่า Firebase ---
+        // --- จุดสำคัญ: นำค่าจาก Firebase Project ของคุณมาใส่ที่นี่ ---
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
             projectId: "YOUR_PROJECT_ID",
             storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
+            messagingSenderId: "YOUR_ID",
             appId: "YOUR_APP_ID"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         window.saveData = async () => {
-            const market = document.getElementById('market').value || "ทั่วไป";
             const asset = document.getElementById('asset').value;
             const amount = parseFloat(document.getElementById('amount').value);
             const type = document.getElementById('type').value;
 
-            if(!asset || !amount) return alert("กรุณากรอกข้อมูลให้ครบ");
+            if(!asset || isNaN(amount)) return alert("กรุณากรอกชื่อหุ้นและจำนวนเงินให้ครบ");
 
-            await addDoc(collection(db, "transactions"), { market, asset, amount, type, date: new Date().toISOString() });
-            alert("บันทึกข้อมูลเรียบร้อย");
+            try {
+                await addDoc(collection(db, "transactions"), { asset, amount, type, date: new Date().toISOString() });
+                alert("บันทึกสำเร็จ!");
+                document.getElementById('amount').value = ''; // เคลียร์ช่องจำนวนเงิน
+            } catch (e) {
+                alert("เกิดข้อผิดพลาดในการบันทึก: " + e.message);
+            }
         };
 
         onSnapshot(collection(db, "transactions"), (snapshot) => {
@@ -41,26 +47,26 @@
             });
 
             const board = document.getElementById('reportBoard');
-            board.innerHTML = Object.keys(data).map(ast => `
+            board.innerHTML = Object.keys(data).length === 0 ? '<p class="text-gray-500 text-center">ยังไม่มีข้อมูล</p>' : Object.keys(data).map(ast => `
                 <div class="bg-gray-800 p-5 rounded-2xl mb-4 border border-gray-700">
-                    <h3 class="text-3xl font-bold text-white mb-2">${ast}</h3>
+                    <h3 class="text-3xl font-bold text-white mb-3">${ast}</h3>
                     <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-black p-2 rounded-lg"><p class="text-xs text-gray-400">ซื้อ</p><p class="text-xl text-red-400">${data[ast].buy.toLocaleString()}</p></div>
-                        <div class="bg-black p-2 rounded-lg"><p class="text-xs text-gray-400">ขาย</p><p class="text-xl text-blue-400">${data[ast].sell.toLocaleString()}</p></div>
-                        <div class="bg-black p-2 rounded-lg"><p class="text-xs text-gray-400">ปันผล</p><p class="text-xl text-green-400">${data[ast].div.toLocaleString()}</p></div>
+                        <div class="bg-black p-2 rounded-lg"><p class="text-xs text-gray-400">ซื้อ</p><p class="text-xl text-red-400 font-bold">${data[ast].buy.toLocaleString()}</p></div>
+                        <div class="bg-black p-2 rounded-lg"><p class="text-xs text-gray-400">ขาย</p><p class="text-xl text-blue-400 font-bold">${data[ast].sell.toLocaleString()}</p></div>
+                        <div class="bg-black p-2 rounded-lg"><p class="text-xs text-gray-400">ปันผล</p><p class="text-xl text-green-400 font-bold">${data[ast].div.toLocaleString()}</p></div>
                     </div>
                 </div>
             `).join('');
         });
     </script>
 </head>
-<body class="bg-black text-white p-4 min-h-screen">
-    <h1 class="text-5xl font-black text-center text-blue-500 my-6">PocketFlow</h1>
+<body class="bg-black text-white p-4">
+    <h1 class="text-5xl font-black text-center text-blue-500 my-8">PocketFlow</h1>
 
     <div class="bg-gray-900 p-6 rounded-3xl border border-gray-700 space-y-4 mb-8">
-        <input id="asset" type="text" placeholder="ชื่อหุ้น (เช่น TISCO)" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl">
-        <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl">
-        <select id="type" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl">
+        <input id="asset" type="text" placeholder="ชื่อหุ้น" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
+        <input id="amount" type="number" placeholder="จำนวนเงิน" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
+        <select id="type" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
             <option value="buy">ซื้อ</option>
             <option value="sell">ขาย</option>
             <option value="div">ปันผล</option>
@@ -68,7 +74,7 @@
         <button onclick="saveData()" class="w-full bg-blue-600 text-white py-6 rounded-2xl text-3xl font-bold">บันทึกข้อมูล</button>
     </div>
 
-    <h2 class="text-3xl font-bold mb-4">สรุปแยกรายหุ้น</h2>
+    <h2 class="text-3xl font-bold mb-4 text-gray-300">สรุปแยกรายหุ้น</h2>
     <div id="reportBoard"></div>
 </body>
 </html>
