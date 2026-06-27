@@ -3,41 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PocketFlow</title>
+    <title>PocketFlow - Dark Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        const firebaseConfig = { /* ใส่ค่า Firebase ของคุณที่นี่ */ };
+        // --- ตั้งค่า Firebase (ใส่ค่าของคุณที่นี่) ---
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ฟังก์ชันบันทึก
+        // --- บันทึกข้อมูล ---
         window.saveData = async () => {
-            const market = document.getElementById('market').value; // เช่น หุ้นไทย
-            const asset = document.getElementById('asset').value;   // เช่น TISCO
+            const market = document.getElementById('market').value || "ทั่วไป";
+            const asset = document.getElementById('asset').value;
             const amount = parseFloat(document.getElementById('amount').value);
             const tax = parseFloat(document.getElementById('tax').value) || 0;
             const fee = parseFloat(document.getElementById('fee').value) || 0;
 
-            if(!asset || !amount) return alert("กรุณากรอกข้อมูลให้ครบ");
+            if(!asset || !amount) return alert("กรุณากรอกชื่อและจำนวนเงิน");
 
             await addDoc(collection(db, "transactions"), {
-                market, asset, amount, tax, fee,
-                date: new Date().toISOString()
+                market, asset, amount, tax, fee, date: new Date().toISOString()
             });
-            alert("บันทึกสำเร็จ");
+            alert("บันทึกสำเร็จ!");
         };
 
-        // แสดงผล
-        onSnapshot(collection(db, "transactions"), (snapshot) => {
+        // --- ดึงข้อมูลและแสดงผล ---
+        onSnapshot(query(collection(db, "transactions"), orderBy("date", "desc")), (snapshot) => {
             const report = {};
             snapshot.forEach((doc) => {
                 const d = doc.data();
                 if (!report[d.market]) report[d.market] = {};
                 if (!report[d.market][d.asset]) report[d.market][d.asset] = { income: 0, tax: 0, fee: 0 };
-                
                 report[d.market][d.asset].income += d.amount;
                 report[d.market][d.asset].tax += d.tax;
                 report[d.market][d.asset].fee += d.fee;
@@ -45,43 +51,47 @@
 
             const list = document.getElementById('reportList');
             list.innerHTML = Object.keys(report).map(mkt => `
-                <div class="mb-6">
-                    <h3 class="text-3xl font-bold text-blue-900 border-b-4 mb-2">${mkt}</h3>
-                    ${Object.keys(report[mkt]).map(ast => `
-                        <div class="bg-white p-4 rounded-xl shadow mb-2 flex justify-between items-center">
+                <div class="mb-8">
+                    <h3 class="text-3xl font-bold text-blue-400 mb-4 border-b border-gray-700 pb-2">${mkt}</h3>
+                    ${Object.keys(report[mkt]).map(ast => {
+                        const net = report[mkt][ast].income - report[mkt][ast].tax - report[mkt][ast].fee;
+                        return `
+                        <div class="bg-gray-800 p-5 rounded-2xl mb-3 flex justify-between items-center border border-gray-700">
                             <div>
-                                <p class="text-2xl font-bold">${ast}</p>
-                                <p class="text-sm text-gray-500">ภาษี: ${report[mkt][ast].tax} | ค่าธรรมเนียม: ${report[mkt][ast].fee}</p>
+                                <p class="text-2xl font-bold text-white">${ast}</p>
+                                <p class="text-sm text-gray-400">ภาษี: ${report[mkt][ast].tax} | ค่าธรรมเนียม: ${report[mkt][ast].fee}</p>
                             </div>
-                            <p class="text-2xl font-bold text-green-600">
-                                ${(report[mkt][ast].income - report[mkt][ast].tax - report[mkt][ast].fee).toLocaleString()}
-                            </p>
-                        </div>
-                    `).join('')}
+                            <p class="text-2xl font-bold text-green-400">${net.toLocaleString()}</p>
+                        </div>`;
+                    }).join('')}
                 </div>
             `).join('');
         });
     </script>
 </head>
-<body class="bg-gray-100 p-4">
-    <h1 class="text-5xl font-black text-center text-blue-900 my-8">PocketFlow</h1>
+<body class="bg-black text-white p-4 min-h-screen">
+    <h1 class="text-6xl font-black text-center text-blue-500 my-8">PocketFlow</h1>
 
-    <!-- Form -->
-    <div class="bg-white p-6 rounded-3xl shadow-xl space-y-4 mb-8">
-        <select id="market" class="w-full p-6 text-2xl border-2 rounded-2xl">
-            <option value="หุ้นไทย">หุ้นไทย</option>
-            <option value="หุ้นสหรัฐ">หุ้นสหรัฐ</option>
-            <option value="อื่นๆ">อื่นๆ</option>
-        </select>
-        <input id="asset" type="text" placeholder="ชื่อหุ้น (เช่น TISCO, SCB)" class="w-full p-6 text-2xl border-2 rounded-2xl">
-        <input id="amount" type="number" placeholder="จำนวนเงินปันผล" class="w-full p-6 text-2xl border-2 rounded-2xl">
+    <!-- ฟอร์มบันทึก -->
+    <div class="bg-gray-900 p-6 rounded-3xl shadow-2xl space-y-4 mb-10 border border-gray-700">
+        <input list="marketList" id="market" placeholder="พิมพ์/เลือก หมวดหมู่หลัก (เช่น หุ้นไทย)" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
+        <datalist id="marketList">
+            <option value="หุ้นไทย">
+            <option value="หุ้นสหรัฐ">
+        </datalist>
+
+        <input id="asset" type="text" placeholder="ชื่อสินทรัพย์ (เช่น TISCO, SCB)" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
+        <input id="amount" type="number" placeholder="จำนวนเงินปันผล" class="w-full p-6 text-2xl bg-black border-2 border-gray-600 rounded-2xl text-white">
+        
         <div class="grid grid-cols-2 gap-4">
-            <input id="tax" type="number" placeholder="ภาษี" class="p-6 text-xl border-2 rounded-2xl">
-            <input id="fee" type="number" placeholder="ค่าธรรมเนียม" class="p-6 text-xl border-2 rounded-2xl">
+            <input id="tax" type="number" placeholder="ภาษี" class="p-6 text-xl bg-black border-2 border-gray-600 rounded-2xl text-white">
+            <input id="fee" type="number" placeholder="ค่าธรรมเนียม" class="p-6 text-xl bg-black border-2 border-gray-600 rounded-2xl text-white">
         </div>
-        <button onclick="saveData()" class="w-full bg-blue-600 text-white py-6 rounded-2xl text-3xl font-bold">บันทึกรายการ</button>
+        
+        <button onclick="saveData()" class="w-full bg-blue-600 text-white py-6 rounded-2xl text-3xl font-bold hover:bg-blue-500 transition">บันทึกข้อมูล</button>
     </div>
 
+    <!-- รายงาน -->
     <div id="reportList"></div>
 </body>
 </html>
