@@ -2,13 +2,14 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PocketFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // ใส่ Config ของคุณที่นี่
+        // --- ใส่ CONFIG ของคุณที่นี่ ---
         const firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", storageBucket: "...", messagingSenderId: "...", appId: "..." };
         const db = getFirestore(initializeApp(firebaseConfig));
 
@@ -21,47 +22,52 @@
                 amount: parseFloat(document.getElementById('amount').value),
                 type: document.getElementById('type').value
             };
-            if(!data.date || !data.amount) return alert("กรอกข้อมูลให้ครบ");
+            if(!data.date || !data.amount) return alert("กรุณากรอกข้อมูลให้ครบ");
             await addDoc(collection(db, "data"), data);
             alert("บันทึกสำเร็จ");
         };
 
-        window.del = async (id) => { await deleteDoc(doc(db, "data", id)); };
+        window.del = async (id) => { if(confirm('ลบรายการนี้?')) await deleteDoc(doc(db, "data", id)); };
 
         onSnapshot(query(collection(db, "data"), orderBy("date", "desc")), (snap) => {
             const list = document.getElementById('report');
             list.innerHTML = '';
             snap.forEach(d => {
                 const v = d.data();
-                const color = v.type === 'ซื้อ' ? 'bg-green-900' : v.type === 'ขาย' ? 'bg-red-900' : 'bg-blue-900';
-                list.innerHTML += `<div class="${color} p-4 mb-2 rounded-xl flex justify-between">
-                    <div><b>${v.mSub}</b> (${v.type})<br>${v.date} | ซื้อให้: ${v.owner}<br>ยอด: ${v.amount.toFixed(2)}</div>
-                    <button onclick="del('${d.id}')" class="text-white font-bold">ลบ</button>
+                const colors = { 'ซื้อ': 'border-green-500', 'ขาย': 'border-red-500', 'ปันผล': 'border-blue-500' };
+                list.innerHTML += `<div class="border-l-8 ${colors[v.type]} bg-gray-900 p-6 mb-4 rounded-r-xl flex justify-between items-center shadow-lg">
+                    <div class="text-lg">
+                        <b class="text-2xl">${v.mSub}</b><br>
+                        ${v.date} | ${v.type}<br>
+                        ซื้อให้: ${v.owner}<br>
+                        <span class="text-3xl font-bold">ยอด: ${v.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <button onclick="del('${d.id}')" class="bg-gray-700 p-4 rounded-xl text-xl font-bold">ลบ</button>
                 </div>`;
             });
         });
     </script>
 </head>
-<body class="bg-black text-white p-4">
-    <h1 class="text-4xl font-bold text-center mb-6">PocketFlow</h1>
+<body class="bg-black text-white p-2">
+    <h1 class="text-5xl font-black text-center py-8 text-blue-500">PocketFlow</h1>
     
     <div class="space-y-4">
-        <input id="date" type="date" class="w-full p-4 bg-gray-900 rounded-xl">
-        <input id="mMain" type="text" placeholder="หมวดหมู่หลัก" class="w-full p-4 bg-gray-900 rounded-xl">
-        <input id="mSub" type="text" placeholder="หมวดหมู่ย่อย (เช่น TISCO)" class="w-full p-4 bg-gray-900 rounded-xl">
-        <input id="owner" type="text" placeholder="ซื้อให้ใคร" class="w-full p-4 bg-gray-900 rounded-xl">
-        <input id="amount" type="number" step="0.01" placeholder="จำนวนเงิน" class="w-full p-4 bg-gray-900 rounded-xl">
+        <input id="date" type="date" class="w-full p-6 text-2xl bg-gray-800 rounded-2xl border-2 border-gray-600">
+        <input id="mMain" type="text" placeholder="หมวดหมู่หลัก" class="w-full p-6 text-2xl bg-gray-800 rounded-2xl border-2 border-gray-600">
+        <input id="mSub" type="text" placeholder="หมวดหมู่ย่อย (หุ้น)" class="w-full p-6 text-2xl bg-gray-800 rounded-2xl border-2 border-gray-600">
+        <input id="owner" type="text" placeholder="ซื้อให้ใคร" class="w-full p-6 text-2xl bg-gray-800 rounded-2xl border-2 border-gray-600">
+        <input id="amount" type="number" step="0.01" placeholder="จำนวนเงิน" class="w-full p-6 text-2xl bg-gray-800 rounded-2xl border-2 border-gray-600">
         
-        <select id="type" class="w-full p-4 bg-gray-900 rounded-xl font-bold">
-            <option value="ซื้อ" class="text-green-500">ซื้อ (เขียว)</option>
-            <option value="ขาย" class="text-red-500">ขาย (แดง)</option>
-            <option value="ปันผล" class="text-blue-500">ปันผล (น้ำเงิน)</option>
+        <select id="type" class="w-full p-6 text-2xl bg-gray-800 rounded-2xl border-2 border-gray-600 font-bold">
+            <option value="ซื้อ">ซื้อ (เขียว)</option>
+            <option value="ขาย">ขาย (แดง)</option>
+            <option value="ปันผล">ปันผล (น้ำเงิน)</option>
         </select>
 
-        <button onclick="saveData()" class="w-full bg-blue-600 p-4 rounded-xl font-bold text-xl">บันทึกข้อมูล</button>
+        <button onclick="saveData()" class="w-full bg-blue-600 p-8 rounded-2xl font-black text-3xl">บันทึกข้อมูล</button>
     </div>
 
-    <h2 class="text-2xl mt-8 mb-4">รายงานสรุป</h2>
+    <h2 class="text-4xl mt-10 mb-6 font-bold">รายงานสรุป</h2>
     <div id="report"></div>
 </body>
 </html>
