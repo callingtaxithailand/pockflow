@@ -1,31 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
+    <meta charset="UTF-8">
+    <title>Investment Tracker</title>
     <style>
-        .card { border: 3px solid; padding: 10px; margin: 10px; border-radius: 8px; }
-        .buy { border-color: green; }
-        .sell { border-color: red; }
-        .dividend { border-color: blue; }
+        body { background-color: #121212; color: #e0e0e0; font-family: sans-serif; padding: 20px; }
+        .form-container { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        input, select { background: #333; color: white; border: 1px solid #555; padding: 8px; margin: 5px; border-radius: 4px; }
+        button { padding: 8px 15px; cursor: pointer; background: #555; color: white; border: none; border-radius: 4px; }
+        
+        .card { border: 3px solid; padding: 15px; margin: 10px 0; border-radius: 8px; background: #1e1e1e; }
+        .buy { border-color: #4caf50; color: #a5d6a7; }
+        .sell { border-color: #f44336; color: #ef9a9a; }
+        .dividend { border-color: #2196f3; color: #90caf9; }
     </style>
 </head>
 <body>
-    <h2>บันทึกรายการลงทุน</h2>
-    <form id="transactionForm">
-        <input type="date" id="date" required>
-        <select id="type">
-            <option value="buy">ซื้อ</option>
-            <option value="sell">ขาย</option>
-            <option value="dividend">ปันผล</option>
-        </select>
-        <input type="text" id="mainCat" placeholder="หมวดหมู่หลัก" required>
-        <input type="text" id="subCat" placeholder="หมวดหมู่ย่อย" required>
-        <input type="text" id="owner" placeholder="ซื้อให้ใคร" required>
-        <input type="number" id="price" placeholder="ราคา" required>
-        <button type="submit">บันทึก</button>
-    </form>
+
+    <div class="form-container">
+        <h2>บันทึกรายการลงทุน</h2>
+        <form id="transactionForm">
+            <input type="date" id="date" required>
+            <select id="type">
+                <option value="buy">ซื้อ</option>
+                <option value="sell">ขาย</option>
+                <option value="dividend">ปันผล</option>
+            </select>
+            <input type="text" id="mainCat" placeholder="หมวดหมู่หลัก" required>
+            <input type="text" id="subCat" placeholder="หมวดหมู่ย่อย" required>
+            <input type="text" id="owner" placeholder="ซื้อให้ใคร" required>
+            <input type="number" id="price" placeholder="ราคา" required>
+            <button type="submit">บันทึกรายการ</button>
+        </form>
+    </div>
 
     <div id="displayArea"></div>
 
-    <script type="module" src="app.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            // นำค่าจาก Screenshot_20260627_103035_Chrome.jpg มาวางที่นี่
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // บันทึกข้อมูล
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "transactions"), {
+                date: document.getElementById('date').value,
+                type: document.getElementById('type').value,
+                mainCat: document.getElementById('mainCat').value,
+                subCat: document.getElementById('subCat').value,
+                owner: document.getElementById('owner').value,
+                price: parseFloat(document.getElementById('price').value)
+            });
+            e.target.reset();
+        });
+
+        // แสดงผล
+        const q = query(collection(db, "transactions"), orderBy("date", "desc"));
+        onSnapshot(q, (snapshot) => {
+            const display = document.getElementById('displayArea');
+            display.innerHTML = '<h3>รายการล่าสุด</h3>';
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const div = document.createElement('div');
+                div.className = `card ${data.type}`;
+                div.innerHTML = `
+                    <strong>${data.type.toUpperCase()}</strong> | 
+                    วันที่: ${data.date} | หมวด: ${data.mainCat} > ${data.subCat} | 
+                    ผู้ซื้อ: ${data.owner} | ราคา: ${data.price}
+                `;
+                display.appendChild(div);
+            });
+        });
+    </script>
 </body>
 </html>
