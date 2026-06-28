@@ -14,11 +14,11 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { border-bottom: 1px solid #333; padding: 12px 8px; text-align: left; }
         th { color: #888; font-size: 0.8rem; }
-        .del-btn { color: #ff4444; cursor: pointer; font-weight: bold; }
+        .del-btn { color: #ff4444; cursor: pointer; font-weight: bold; padding-left: 10px; }
         #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; color: white; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; z-index: 100; }
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
-        input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
+        input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -40,12 +40,13 @@
 
 <div id="modal">
     <h2 style="text-align:center;">เพิ่มรายการใหม่</h2>
+    <div class="form-group"><label>วันที่</label><input type="date" id="date"></div>
     <div class="form-group"><label>ประเภท</label>
         <select id="type"><option value="thai">หุ้นไทย</option><option value="foreign">หุ้นต่างประเทศ</option><option value="gold">เทรดทอง</option></select>
     </div>
     <div class="form-group"><label>ชื่อหุ้น</label><input type="text" id="name" placeholder="PTT, SCB, VOO..."></div>
-    <div class="form-group"><label>จำนวน</label><input type="number" id="qty"></div>
-    <div class="form-group"><label>จำนวนเงิน</label><input type="number" id="price"></div>
+    <div class="form-group"><label>จำนวนหุ้น</label><input type="number" id="qty" placeholder="ระบุจำนวน"></div>
+    <div class="form-group"><label>จำนวนเงิน</label><input type="number" id="price" placeholder="ระบุจำนวนเงิน"></div>
     <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff; margin-bottom:10px;">บันทึก</button>
     <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; background:#444;">ยกเลิก</button>
 </div>
@@ -57,7 +58,7 @@
         ['thai', 'foreign', 'gold'].forEach(type => {
             const tbody = document.getElementById('tbody-' + type);
             tbody.innerHTML = '';
-            data.filter(item => item.type === type).forEach((item, index) => {
+            data.filter(item => item.type === type).forEach((item) => {
                 tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.qty}</td><td>${item.price}</td><td class="del-btn" onclick="deleteItem('${item.id}')">✕</td></tr>`;
             });
         });
@@ -66,6 +67,7 @@
     function saveData() {
         const newItem = {
             id: Date.now().toString(),
+            date: document.getElementById('date').value,
             type: document.getElementById('type').value,
             name: document.getElementById('name').value,
             qty: document.getElementById('qty').value,
@@ -78,9 +80,11 @@
     }
 
     function deleteItem(id) {
-        data = data.filter(item => item.id !== id);
-        localStorage.setItem('stocks', JSON.stringify(data));
-        renderTable();
+        if(confirm('คุณต้องการลบรายการนี้ใช่ไหม?')) {
+            data = data.filter(item => item.id !== id);
+            localStorage.setItem('stocks', JSON.stringify(data));
+            renderTable();
+        }
     }
 
     function showSection(id) {
