@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Manager</title>
+    <title>Portfolio Tracker</title>
     <style>
         body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 15px; font-weight: 600; }
         h1 { color: #00d4ff; font-weight: 800; }
@@ -23,20 +23,18 @@
 
 <div class="container">
     <h1 id="page-title">พอร์ตการลงทุน</h1>
-    <div class="summary-box" id="main-summary">รวมยอดซื้อ: <span id="sum-buy" style="color:#fff;">0</span></div>
+    <div class="summary-box">รวมยอดซื้อทั้งหมด: <span id="sum-buy" style="color:#fff;">0</span></div>
     <div id="content-area"></div>
 </div>
 
 <button id="add-btn" onclick="openModal()">+</button>
 
 <div id="modal" class="modal">
-    <h3 id="modal-title" style="color:#00d4ff;">จัดการรายการ</h3>
+    <h3 id="modal-title" style="color:#00d4ff;">เพิ่มธุรกรรม</h3>
     <input type="hidden" id="edit-id">
     <input type="date" id="date">
     <select id="type-select">
-        <option value="buy">ซื้อ</option>
-        <option value="sell">ขาย</option>
-        <option value="dividend">ปันผล</option>
+        <option value="buy">ซื้อ</option><option value="sell">ขาย</option><option value="dividend">ปันผล</option>
     </select>
     <input type="text" id="name" placeholder="ชื่อหุ้น">
     <input type="number" id="price" placeholder="จำนวนเงิน">
@@ -46,38 +44,19 @@
 
 <script>
     let data = JSON.parse(localStorage.getItem('myPortfolio')) || [];
-    let currentView = 'main'; // สถานะว่าอยู่หน้าหลักหรือหน้าย่อย
 
     function render() {
-        if (currentView === 'main') {
-            document.getElementById('page-title').innerText = "พอร์ตการลงทุน";
-            document.getElementById('main-summary').style.display = "block";
-            let groups = {};
-            data.forEach(i => {
-                if(!groups[i.name]) groups[i.name] = 0;
-                if(i.type === 'buy') groups[i.name] += Number(i.price);
-            });
-            let html = `<table><tr><th>ชื่อหุ้น</th><th>ยอดซื้อรวม</th></tr>`;
-            for(let name in groups) {
-                html += `<tr><td class="clickable" onclick="viewDetail('${name}')">${name}</td><td>${groups[name]}</td></tr>`;
-            }
-            document.getElementById('content-area').innerHTML = html + `</table>`;
-            document.getElementById('sum-buy').innerText = data.filter(i => i.type === 'buy').reduce((s, i) => s + Number(i.price), 0);
-        }
-    }
-
-    function viewDetail(name) {
-        currentView = name;
-        document.getElementById('page-title').innerText = "ประวัติ: " + name;
-        document.getElementById('main-summary').style.display = "none";
-        let filtered = data.filter(i => i.name === name);
-        let html = `<button onclick="currentView='main'; render()" style="background:#333; color:#fff; border:none; padding:8px; border-radius:5px;">← ย้อนกลับ</button>
-                    <table><tr><th>วันที่</th><th>ประเภท</th><th>เงิน</th><th>จัดการ</th></tr>`;
-        filtered.forEach(i => {
-            html += `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.price}</td>
+        let html = `<table><tr><th>วันที่</th><th>ชื่อหุ้น</th><th>เงิน</th><th>จัดการ</th></tr>`;
+        let total = 0;
+        data.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
+            if(i.type === 'buy') total += Number(i.price);
+            html += `<tr><td>${i.date}</td>
+                     <td class="clickable" onclick="alert('รายละเอียดหุ้น: ${i.name}\\nประเภท: ${i.type}\\nยอดเงิน: ${i.price}')">${i.name}</td>
+                     <td>${i.price}</td>
                      <td><span class="btn-edit" onclick="editItem('${i.id}')">✏️</span><span class="btn-del" onclick="deleteItem('${i.id}')">❌</span></td></tr>`;
         });
         document.getElementById('content-area').innerHTML = html + `</table>`;
+        document.getElementById('sum-buy').innerText = total;
     }
 
     function saveData() {
@@ -104,7 +83,7 @@
         if(confirm('ยืนยันการลบ?')) {
             data = data.filter(i => i.id !== id);
             localStorage.setItem('myPortfolio', JSON.stringify(data));
-            viewDetail(currentView);
+            render();
         }
     }
 
