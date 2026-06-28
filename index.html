@@ -14,20 +14,10 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { border-bottom: 1px solid #333; padding: 12px 8px; text-align: left; }
         th { color: #888; font-size: 0.8rem; }
-        .content-section { display: none; }
-
-        /* ปุ่มบวกสีน้ำเงิน */
-        #add-btn {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 60px; height: 60px; background-color: #007bff; color: white;
-            border-radius: 50%; border: none; font-size: 30px; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 100;
-        }
-
-        /* ฟอร์ม Modal */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); padding: 20px; box-sizing: border-box; }
+        .del-btn { color: #ff4444; cursor: pointer; font-weight: bold; }
+        #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; color: white; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; z-index: 100; }
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
         input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
     </style>
 </head>
@@ -41,41 +31,58 @@
         <button class="nav-btn" id="btn-gold" onclick="showSection('gold')">เทรดทอง</button>
     </nav>
 
-    <div id="thai" class="content-section">
-        <h2>หุ้นไทย</h2>
-        <table><tr><th>ชื่อหุ้น</th><th>จำนวน</th><th>ราคารวม</th></tr><tr><td>PTT</td><td>100</td><td>3,500</td></tr></table>
-    </div>
-
-    <div id="foreign" class="content-section">
-        <h2>หุ้นต่างประเทศ</h2>
-        <table><tr><th>ชื่อหุ้น</th><th>จำนวน</th><th>ราคารวม</th></tr><tr><td>AAPL</td><td>10</td><td>7,000</td></tr></table>
-    </div>
-
-    <div id="gold" class="content-section">
-        <h2>เทรดทอง</h2>
-        <table><tr><th>ชื่อรายการ</th><th>จำนวน</th><th>ราคารวม</th></tr><tr><td>Gold Spot</td><td>1</td><td>65,000</td></tr></table>
-    </div>
+    <div id="thai" class="content-section"><h2>หุ้นไทย</h2><table><thead><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th></th></tr></thead><tbody id="tbody-thai"></tbody></table></div>
+    <div id="foreign" class="content-section"><h2>หุ้นต่างประเทศ</h2><table><thead><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th></th></tr></thead><tbody id="tbody-foreign"></tbody></table></div>
+    <div id="gold" class="content-section"><h2>เทรดทอง</h2><table><thead><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th></th></tr></thead><tbody id="tbody-gold"></tbody></table></div>
 </div>
 
 <button id="add-btn" onclick="toggleModal(true)">+</button>
 
 <div id="modal">
     <h2 style="text-align:center;">เพิ่มรายการใหม่</h2>
-    <div class="form-group"><label>วันที่</label><input type="date" id="date"></div>
     <div class="form-group"><label>ประเภท</label>
-        <select id="type">
-            <option>หุ้นไทย</option><option>หุ้นต่างประเทศ</option><option>เทรดทอง</option>
-        </select>
+        <select id="type"><option value="thai">หุ้นไทย</option><option value="foreign">หุ้นต่างประเทศ</option><option value="gold">เทรดทอง</option></select>
     </div>
-    <div class="form-group"><label>ชื่อหุ้น</label><input type="text" placeholder="เช่น PTT, SCB, TISCO, VOO"></div>
-    <div class="form-group"><label>จำนวนหุ้น</label><input type="number"></div>
-    <div class="form-group"><label>จำนวนเงิน</label><input type="number"></div>
-    <div class="form-group"><label>หมายเหตุ</label><input type="text"></div>
-    <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; background:#007bff;">บันทึก</button>
-    <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; margin-top:10px; background:#444;">ยกเลิก</button>
+    <div class="form-group"><label>ชื่อหุ้น</label><input type="text" id="name" placeholder="PTT, SCB, VOO..."></div>
+    <div class="form-group"><label>จำนวน</label><input type="number" id="qty"></div>
+    <div class="form-group"><label>จำนวนเงิน</label><input type="number" id="price"></div>
+    <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff; margin-bottom:10px;">บันทึก</button>
+    <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; background:#444;">ยกเลิก</button>
 </div>
 
 <script>
+    let data = JSON.parse(localStorage.getItem('stocks')) || [];
+
+    function renderTable() {
+        ['thai', 'foreign', 'gold'].forEach(type => {
+            const tbody = document.getElementById('tbody-' + type);
+            tbody.innerHTML = '';
+            data.filter(item => item.type === type).forEach((item, index) => {
+                tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.qty}</td><td>${item.price}</td><td class="del-btn" onclick="deleteItem('${item.id}')">✕</td></tr>`;
+            });
+        });
+    }
+
+    function saveData() {
+        const newItem = {
+            id: Date.now().toString(),
+            type: document.getElementById('type').value,
+            name: document.getElementById('name').value,
+            qty: document.getElementById('qty').value,
+            price: document.getElementById('price').value
+        };
+        data.push(newItem);
+        localStorage.setItem('stocks', JSON.stringify(data));
+        renderTable();
+        toggleModal(false);
+    }
+
+    function deleteItem(id) {
+        data = data.filter(item => item.id !== id);
+        localStorage.setItem('stocks', JSON.stringify(data));
+        renderTable();
+    }
+
     function showSection(id) {
         document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -84,15 +91,12 @@
         localStorage.setItem('activePage', id);
     }
 
-    function toggleModal(show) {
-        document.getElementById('modal').style.display = show ? 'block' : 'none';
-    }
+    function toggleModal(show) { document.getElementById('modal').style.display = show ? 'block' : 'none'; }
 
     window.onload = () => {
-        const savedPage = localStorage.getItem('activePage') || 'thai';
-        showSection(savedPage);
+        showSection(localStorage.getItem('activePage') || 'thai');
+        renderTable();
     };
 </script>
-
 </body>
 </html>
