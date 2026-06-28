@@ -16,6 +16,8 @@
         #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; border-radius: 50%; border: none; color: white; font-size: 30px; z-index: 100; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; z-index: 200; }
         input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        .tx-buy { color: #fff; }
+        .tx-dividend { color: #28a745; } /* สีเขียวสำหรับปันผล */
     </style>
 </head>
 <body>
@@ -39,14 +41,16 @@
 <button id="add-btn" onclick="openModal('modal-add')">+</button>
 
 <div id="modal-add" class="modal">
-    <h3>เพิ่มรายการ</h3>
+    <h3>บันทึกรายการ</h3>
     <input type="date" id="date">
     <select id="type-select">
-        <option value="buy">ซื้อ</option><option value="sell">ขาย</option><option value="dividend">ปันผล</option>
+        <option value="buy">ซื้อหุ้น</option>
+        <option value="sell">ขายหุ้น</option>
+        <option value="dividend">รับเงินปันผล</option>
     </select>
     <input type="text" id="name" placeholder="ชื่อหุ้น">
-    <input type="number" id="qty" placeholder="จำนวน">
-    <input type="number" id="price" placeholder="เงิน">
+    <input type="number" id="qty" placeholder="จำนวน (ถ้ามี)">
+    <input type="number" id="price" placeholder="จำนวนเงิน">
     <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff;">บันทึก</button>
     <button class="nav-btn" onclick="closeModal('modal-add')" style="width:100%; margin-top:10px;">ปิด</button>
 </div>
@@ -54,7 +58,7 @@
 <div id="modal-detail" class="modal">
     <h3 id="detail-title"></h3>
     <div id="detail-content"></div>
-    <button class="nav-btn" onclick="closeModal('modal-detail')" style="width:100%; background:#444;">ปิด</button>
+    <button class="nav-btn" onclick="closeModal('modal-detail')" style="width:100%; margin-top:20px; background:#444;">ปิด</button>
 </div>
 
 <script>
@@ -66,29 +70,33 @@
         document.getElementById('btn-' + type).classList.add('active');
         
         let filtered = data.filter(i => i.category === type);
-        let html = `<table><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th>ลบ</th></tr>`;
-        
-        // จัดกลุ่มข้อมูลเพื่อแสดงผล
         let grouped = {};
+        
         filtered.forEach(i => {
             if(!grouped[i.name]) grouped[i.name] = { buy: 0, profit: 0 };
             if(i.txType === 'buy') grouped[i.name].buy += Number(i.price);
             else grouped[i.name].profit += Number(i.price);
         });
 
+        let html = `<table><tr><th>ชื่อหุ้น</th><th>ยอดซื้อ</th><th>ปันผล/กำไร</th></tr>`;
         for(let name in grouped) {
-            html += `<tr><td class="clickable" onclick="showDetail('${name}')">${name}</td><td>-</td><td>${grouped[name].buy}</td><td onclick="deleteItem('${name}')">✕</td></tr>`;
+            html += `<tr>
+                <td class="clickable" onclick="showDetail('${name}')">${name}</td>
+                <td>${grouped[name].buy}</td>
+                <td class="tx-dividend">${grouped[name].profit > 0 ? '+'+grouped[name].profit : 0}</td>
+            </tr>`;
         }
         
         document.getElementById('content-area').innerHTML = html + `</table>`;
         document.getElementById('sum-buy').innerText = filtered.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
-        document.getElementById('sum-profit').innerText = filtered.filter(i => i.txType !== 'buy').reduce((s, i) => s + Number(i.price), 0);
+        document.getElementById('sum-profit').innerText = filtered.filter(i => i.txType === 'dividend' || i.txType === 'sell').reduce((s, i) => s + Number(i.price), 0);
     }
 
     function showDetail(name) {
         let items = data.filter(i => i.name === name);
-        document.getElementById('detail-title').innerText = "สรุปของ: " + name;
-        let html = `<ul>` + items.map(i => `<li>${i.date} | ${i.txType} | ${i.price}</li>`).join('') + `</ul>`;
+        document.getElementById('detail-title').innerText = "ประวัติ: " + name;
+        let html = `<table><tr><th>วันที่</th><th>ประเภท</th><th>เงิน</th></tr>` + 
+            items.map(i => `<tr><td>${i.date}</td><td>${i.txType}</td><td>${i.price}</td></tr>`).join('') + `</table>`;
         document.getElementById('detail-content').innerHTML = html;
         openModal('modal-detail');
     }
@@ -111,14 +119,6 @@
 
     function openModal(id) { document.getElementById(id).style.display = 'block'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function deleteItem(name) {
-        if(confirm('ลบข้อมูล '+name+' ทั้งหมด?')) {
-            data = data.filter(i => i.name !== name);
-            localStorage.setItem('myPortfolio', JSON.stringify(data));
-            showSection(localStorage.getItem('activePage'));
-        }
-    }
-
     window.onload = () => showSection(localStorage.getItem('activePage') || 'thai');
 </script>
 </body>
