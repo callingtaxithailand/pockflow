@@ -3,114 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Manager</title>
+    <title>Portfolio Pro</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 15px; }
-        .container { max-width: 600px; margin: auto; }
-        .summary-box { background: #111; padding: 15px; border-radius: 8px; border: 2px solid #007bff; color: #00d4ff; margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border-bottom: 1px solid #333; padding: 12px 5px; text-align: left; }
-        .btn-action { cursor: pointer; padding: 5px; }
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 15px; }
+        .summary-box { background: #111; padding: 15px; border: 2px solid #007bff; border-radius: 8px; margin-bottom: 15px; }
+        .clickable { color: #00d4ff; text-decoration: underline; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border-bottom: 1px solid #333; padding: 10px 5px; text-align: left; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; padding: 20px; overflow-y: auto; z-index: 1000; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; background: #222; color: #fff; border: 1px solid #555; border-radius: 5px; }
+        .btn-action { cursor: pointer; padding: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>พอร์ตการลงทุน</h1>
-    <div class="summary-box">รวมยอดซื้อ: <span id="sum-buy">0</span></div>
+    
+    <div class="summary-box">
+        <h3>สรุปผลรวม</h3>
+        <div id="total-summary"></div>
+        <button onclick="openSummaryModal()">ดูสรุปแยกรายหุ้น/ช่วงเวลา</button>
+    </div>
+
     <div id="main-table"></div>
 </div>
 
-<button onclick="openForm()" style="position:fixed; bottom:20px; right:20px; width:55px; height:55px; border-radius:50%; border:none; background:#ff007f; color:white; font-size:24px;">+</button>
+<div id="stock-detail-modal" class="modal">
+    <h2 id="stock-name-title" style="color:#00d4ff;"></h2>
+    <div id="stock-detail-content"></div>
+    <button onclick="closeModal('stock-detail-modal')">ปิดหน้าต่าง</button>
+</div>
 
-<div id="form-modal" class="modal">
-    <h2 id="modal-title" style="color:#00d4ff;">จัดการรายการ</h2>
-    <input type="hidden" id="edit-id">
-    <input type="date" id="date">
-    <select id="type">
-        <option value="ซื้อ">ซื้อ</option>
-        <option value="ขาย">ขาย</option>
-        <option value="ปันผล">ปันผล</option>
-    </select>
-    <input type="text" id="name" placeholder="ชื่อหุ้น">
-    <input type="number" id="price" placeholder="จำนวนเงิน">
-    <button onclick="saveData()" style="width:100%; padding:15px; background:#007bff; border:none; color:white;">บันทึก</button>
-    <button onclick="closeForm()" style="width:100%; padding:15px; margin-top:10px; background:#444; border:none; color:white;">ปิด</button>
+<div id="summary-modal" class="modal">
+    <h2>สรุปรายการ</h2>
+    <div id="summary-content"></div>
+    <button onclick="closeModal('summary-modal')">ปิดหน้าต่าง</button>
 </div>
 
 <script>
     let data = JSON.parse(localStorage.getItem('myPortfolio')) || [];
 
-    function render() {
-        let html = `<table><tr><th>วันที่</th><th>ชื่อหุ้น</th><th>ประเภท</th><th>เงิน</th><th>จัด</th></tr>`;
-        let totalBuy = 0;
-        
-        data.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
-            if(i.type === 'ซื้อ') totalBuy += Number(i.price);
-            html += `<tr>
-                <td>${i.date}</td>
-                <td>${i.name}</td>
-                <td>${i.type}</td>
-                <td>${i.price}</td>
-                <td>
-                    <span class="btn-action" onclick="editItem('${i.id}')">✏️</span>
-                    <span class="btn-action" onclick="deleteItem('${i.id}')">❌</span>
-                </td>
-            </tr>`;
+    // ฟังก์ชันเปิดหน้ารายหุ้น
+    function showStockDetail(name) {
+        let items = data.filter(i => i.name === name);
+        let html = `<table><tr><th>วันที่</th><th>ประเภท</th><th>เงิน</th></tr>`;
+        items.forEach(i => html += `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.price}</td></tr>`);
+        document.getElementById('stock-name-title').innerText = "หุ้น: " + name;
+        document.getElementById('stock-detail-content').innerHTML = html + `</table>`;
+        document.getElementById('stock-detail-modal').style.display = 'block';
+    }
+
+    // ฟังก์ชันสรุปแยก (รายหุ้น/ช่วงเวลา)
+    function openSummaryModal() {
+        let summary = {};
+        data.forEach(i => {
+            if(!summary[i.name]) summary[i.name] = {ซื้อ:0, ขาย:0, ปันผล:0};
+            summary[i.name][i.type] += Number(i.price);
         });
-        
+
+        let html = `<table><tr><th>ชื่อหุ้น</th><th>ซื้อ</th><th>ขาย</th><th>ปันผล</th></tr>`;
+        for(let n in summary) {
+            html += `<tr><td>${n}</td><td>${summary[n].ซื้อ}</td><td>${summary[n].ขาย}</td><td>${summary[n].ปันผล}</td></tr>`;
+        }
+        document.getElementById('summary-content').innerHTML = html + `</table>`;
+        document.getElementById('summary-modal').style.display = 'block';
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    // หน้ารายการหลัก
+    function renderMain() {
+        let html = `<table><tr><th>วันที่</th><th>ชื่อหุ้น</th><th>ประเภท</th><th>เงิน</th><th>จัด</th></tr>`;
+        data.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
+            html += `<tr><td>${i.date}</td>
+                     <td class="clickable" onclick="showStockDetail('${i.name}')">${i.name}</td>
+                     <td>${i.type}</td><td>${i.price}</td>
+                     <td><span class="btn-action" onclick="deleteItem('${i.id}')">❌</span></td></tr>`;
+        });
         document.getElementById('main-table').innerHTML = html + `</table>`;
-        document.getElementById('sum-buy').innerText = totalBuy;
-        localStorage.setItem('myPortfolio', JSON.stringify(data));
     }
 
-    function saveData() {
-        const id = document.getElementById('edit-id').value;
-        const newItem = {
-            id: id || Date.now().toString(),
-            date: document.getElementById('date').value,
-            type: document.getElementById('type').value,
-            name: document.getElementById('name').value,
-            price: document.getElementById('price').value
-        };
-
-        if(id) {
-            data = data.map(item => item.id === id ? newItem : item);
-        } else {
-            data.push(newItem);
-        }
-        
-        closeForm();
-        render();
-    }
-
-    function deleteItem(id) {
-        if(confirm('ยืนยันการลบรายการนี้?')) {
-            data = data.filter(item => item.id !== id);
-            render();
-        }
-    }
-
-    function editItem(id) {
-        const item = data.find(i => i.id === id);
-        if(!item) return;
-        document.getElementById('edit-id').value = item.id;
-        document.getElementById('date').value = item.date;
-        document.getElementById('type').value = item.type;
-        document.getElementById('name').value = item.name;
-        document.getElementById('price').value = item.price;
-        document.getElementById('form-modal').style.display = 'block';
-    }
-
-    function openForm() { document.getElementById('form-modal').style.display = 'block'; }
-    function closeForm() { 
-        document.getElementById('edit-id').value = ''; 
-        document.getElementById('form-modal').style.display = 'none'; 
-    }
-    
-    window.onload = render;
+    window.onload = renderMain;
 </script>
 </body>
 </html>
