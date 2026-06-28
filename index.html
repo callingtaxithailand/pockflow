@@ -8,17 +8,27 @@
         body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 15px; }
         .container { max-width: 600px; margin: auto; }
         h1 { font-size: 1.5rem; text-align: center; }
+        
+        /* Navigation */
         nav { display: flex; gap: 5px; margin-bottom: 20px; }
         .nav-btn { flex: 1; padding: 12px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
         .active { background: #007bff; border-color: #007bff; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        
+        /* Table */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
         th, td { border-bottom: 1px solid #333; padding: 12px 8px; text-align: left; }
         th { color: #888; font-size: 0.8rem; }
-        .del-btn { color: #ff4444; cursor: pointer; font-weight: bold; padding-left: 10px; }
-        #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; color: white; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; z-index: 100; }
+        .del-btn { color: #ff4444; cursor: pointer; font-weight: bold; text-align: center; }
+        
+        /* Floating Button */
+        #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; color: white; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        /* Modal Form */
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #aaa; }
         input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
+        .content-section { display: none; }
     </style>
 </head>
 <body>
@@ -44,9 +54,10 @@
     <div class="form-group"><label>ประเภท</label>
         <select id="type"><option value="thai">หุ้นไทย</option><option value="foreign">หุ้นต่างประเทศ</option><option value="gold">เทรดทอง</option></select>
     </div>
-    <div class="form-group"><label>ชื่อหุ้น</label><input type="text" id="name" placeholder="PTT, SCB, VOO..."></div>
-    <div class="form-group"><label>จำนวนหุ้น</label><input type="number" id="qty" placeholder="ระบุจำนวน"></div>
-    <div class="form-group"><label>จำนวนเงิน</label><input type="number" id="price" placeholder="ระบุจำนวนเงิน"></div>
+    <div class="form-group"><label>ชื่อหุ้น</label><input type="text" id="name" placeholder="เช่น PTT, SCB, VOO"></div>
+    <div class="form-group"><label>จำนวนหุ้น</label><input type="number" id="qty"></div>
+    <div class="form-group"><label>จำนวนเงิน</label><input type="number" id="price"></div>
+    <div class="form-group"><label>หมายเหตุ</label><input type="text" id="note"></div>
     <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff; margin-bottom:10px;">บันทึก</button>
     <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; background:#444;">ยกเลิก</button>
 </div>
@@ -71,7 +82,8 @@
             type: document.getElementById('type').value,
             name: document.getElementById('name').value,
             qty: document.getElementById('qty').value,
-            price: document.getElementById('price').value
+            price: document.getElementById('price').value,
+            note: document.getElementById('note').value
         };
         data.push(newItem);
         localStorage.setItem('stocks', JSON.stringify(data));
@@ -80,7 +92,7 @@
     }
 
     function deleteItem(id) {
-        if(confirm('คุณต้องการลบรายการนี้ใช่ไหม?')) {
+        if(confirm('ต้องการลบรายการนี้ใช่ไหม?')) {
             data = data.filter(item => item.id !== id);
             localStorage.setItem('stocks', JSON.stringify(data));
             renderTable();
@@ -91,7 +103,7 @@
         document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).style.display = 'block';
-        if(document.getElementById('btn-' + id)) document.getElementById('btn-' + id).classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
         localStorage.setItem('activePage', id);
     }
 
