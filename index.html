@@ -2,21 +2,33 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Dashboard</title>
     <style>
         body {
             background-color: #000;
             color: #fff;
-            font-family: sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
         }
-        .container { max-width: 800px; margin: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #333; padding: 12px; text-align: left; }
-        th { background-color: #111; }
-        .nav-btn { cursor: pointer; padding: 10px 20px; margin-right: 10px; background: #333; color: white; border: none; }
-        .active { background: #007bff; }
+        .container { max-width: 600px; margin: auto; }
+        h1 { font-size: 1.5rem; text-align: center; }
+        
+        /* ปรับปุ่มให้กดง่ายขึ้นบนมือถือ */
+        nav { display: flex; gap: 5px; margin-bottom: 20px; }
+        .nav-btn { 
+            flex: 1; padding: 12px; background: #222; color: #fff; 
+            border: 1px solid #444; border-radius: 8px; cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .active { background: #007bff; border-color: #007bff; }
+        
+        /* ปรับตารางให้ขยายเต็มความกว้าง */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { border-bottom: 1px solid #333; padding: 12px 8px; text-align: left; }
+        th { color: #888; font-size: 0.8rem; }
+        
         .content-section { display: none; }
     </style>
 </head>
@@ -25,9 +37,9 @@
 <div class="container">
     <h1>พอร์ตการลงทุน</h1>
     <nav>
-        <button class="nav-btn" onclick="showSection('thai')">หุ้นไทย</button>
-        <button class="nav-btn" onclick="showSection('foreign')">หุ้นต่างประเทศ</button>
-        <button class="nav-btn" onclick="showSection('gold')">เทรดทอง</button>
+        <button class="nav-btn" id="btn-thai" onclick="showSection('thai')">หุ้นไทย</button>
+        <button class="nav-btn" id="btn-foreign" onclick="showSection('foreign')">หุ้นต่างประเทศ</button>
+        <button class="nav-btn" id="btn-gold" onclick="showSection('gold')">เทรดทอง</button>
     </nav>
 
     <div id="thai" class="content-section">
@@ -57,15 +69,15 @@
 
 <script>
     function showSection(id) {
-        // ซ่อนทุกส่วน
         document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-        // แสดงส่วนที่เลือก
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        
         document.getElementById(id).style.display = 'block';
-        // บันทึกสถานะลง LocalStorage
+        document.getElementById('btn-' + id).classList.add('active');
+        
         localStorage.setItem('activePage', id);
     }
 
-    // ฟังก์ชันเช็คหน้าเมื่อโหลดหน้าเว็บ (แก้ปัญหา F5)
     window.onload = () => {
         const savedPage = localStorage.getItem('activePage') || 'thai';
         showSection(savedPage);
