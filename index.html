@@ -2,66 +2,75 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PocketFlow</title>
+    <title>Stock Dashboard</title>
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; padding: 20px; padding-bottom: 100px; }
-        .page { display: none; }
-        .active { display: block; }
-        .card { background: #1a1a1a; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #333; text-align: center; }
-        input, select { width: 100%; padding: 15px; background: #111; color: #fff; border: 1px solid #444; border-radius: 8px; margin: 10px 0; }
-        button { background: #ffb300; color: #000; padding: 15px; border-radius: 8px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 12px; text-align: left; }
+        th { background-color: #111; }
+        .nav-btn { cursor: pointer; padding: 10px 20px; margin-right: 10px; background: #333; color: white; border: none; }
+        .active { background: #007bff; }
+        .content-section { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="page-dashboard" class="page active">
-        <h2>Dashboard</h2>
-        <div class="card">ยอดรวมพอร์ตสุทธิ<div style="font-size: 2rem; font-weight: bold;">฿0.00</div></div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-            <div class="card">รายรับ<br><b>฿0</b></div>
-            <div class="card">ปันผล<br><b>฿0</b></div>
-            <div class="card">ภาษี<br><b>฿0</b></div>
-        </div>
+<div class="container">
+    <h1>พอร์ตการลงทุน</h1>
+    <nav>
+        <button class="nav-btn" onclick="showSection('thai')">หุ้นไทย</button>
+        <button class="nav-btn" onclick="showSection('foreign')">หุ้นต่างประเทศ</button>
+        <button class="nav-btn" onclick="showSection('gold')">เทรดทอง</button>
+    </nav>
+
+    <div id="thai" class="content-section">
+        <h2>หุ้นไทย</h2>
+        <table>
+            <tr><th>ชื่อหุ้น</th><th>จำนวน</th><th>ราคารวม</th></tr>
+            <tr><td>PTT</td><td>100</td><td>3,500</td></tr>
+        </table>
     </div>
 
-    <div id="page-form" class="page">
-        <h2>บันทึกรายการ</h2>
-        <select id="type"><option>ซื้อหุ้น</option><option>ขายหุ้น</option><option>รับเงินปันผล</option></select>
-        <input type="text" id="stock" placeholder="ชื่อหุ้น">
-        <input type="number" id="amount" placeholder="จำนวนเงิน">
-        <button onclick="save()">บันทึกรายการ</button>
+    <div id="foreign" class="content-section">
+        <h2>หุ้นต่างประเทศ</h2>
+        <table>
+            <tr><th>ชื่อหุ้น</th><th>จำนวน</th><th>ราคารวม</th></tr>
+            <tr><td>AAPL</td><td>10</td><td>7,000</td></tr>
+        </table>
     </div>
 
-    <div id="page-report" class="page">
-        <h2>รายงานการซื้อขาย</h2>
-        <table><thead><tr><th>ประเภท</th><th>หุ้น</th><th>ยอดเงิน</th></tr></thead><tbody id="tbl"></tbody></table>
+    <div id="gold" class="content-section">
+        <h2>เทรดทอง</h2>
+        <table>
+            <tr><th>ชื่อรายการ</th><th>จำนวน</th><th>ราคารวม</th></tr>
+            <tr><td>Gold Spot</td><td>1</td><td>65,000</td></tr>
+        </table>
     </div>
+</div>
 
-    <div class="nav-bar">
-        <div onclick="show('page-dashboard')">📊</div>
-        <div onclick="show('page-form')">📝</div>
-        <div onclick="show('page-report')">📈</div>
-    </div>
+<script>
+    function showSection(id) {
+        // ซ่อนทุกส่วน
+        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+        // แสดงส่วนที่เลือก
+        document.getElementById(id).style.display = 'block';
+        // บันทึกสถานะลง LocalStorage
+        localStorage.setItem('activePage', id);
+    }
 
-    <script>
-        let list = JSON.parse(localStorage.getItem('data')) || [];
-        function show(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            localStorage.setItem('page', id);
-        }
-        function save() {
-            list.push({type: document.getElementById('type').value, stock: document.getElementById('stock').value, amount: document.getElementById('amount').value});
-            localStorage.setItem('data', JSON.stringify(list));
-            location.reload();
-        }
-        document.getElementById('tbl').innerHTML = list.map(i => `<tr><td>${i.type}</td><td>${i.stock}</td><td>${i.amount}</td></tr>`).join('');
-        show(localStorage.getItem('page') || 'page-dashboard');
-    </script>
+    // ฟังก์ชันเช็คหน้าเมื่อโหลดหน้าเว็บ (แก้ปัญหา F5)
+    window.onload = () => {
+        const savedPage = localStorage.getItem('activePage') || 'thai';
+        showSection(savedPage);
+    };
+</script>
+
 </body>
 </html>
