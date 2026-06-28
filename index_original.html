@@ -52,10 +52,18 @@
         document.getElementById('btn-' + type).classList.add('active');
         
         let filtered = data.filter(i => i.category === type);
-        // แสดงรายการเรียงตามวันที่ล่าสุด
-        let html = `<table><tr><th>วันที่</th><th>ชื่อหุ้น</th><th>เงิน</th></tr>`;
+        // คงรูปแบบตารางเดิม: วันที่ ชื่อหุ้น เงิน จัดการ
+        let html = `<table><tr><th>วันที่</th><th>ชื่อ</th><th>เงิน</th><th>จัดการ</th></tr>`;
         filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
-            html += `<tr><td>${i.date}</td><td class="clickable" onclick="openDetail('${i.name}')">${i.name}</td><td>${i.price}</td></tr>`;
+            html += `<tr>
+                <td>${i.date}</td>
+                <td class="clickable" onclick="openDetail('${i.name}')">${i.name}</td>
+                <td>${i.price}</td>
+                <td>
+                    <span class="clickable" onclick="editItem('${i.id}')" style="color:#00ff00; margin-right:8px;">[แก้]</span>
+                    <span class="clickable" onclick="deleteItem('${i.id}')" style="color:red;">[ลบ]</span>
+                </td>
+            </tr>`;
         });
         document.getElementById('content-area').innerHTML = html + `</table>`;
         document.getElementById('sum-buy').innerText = filtered.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
@@ -74,17 +82,24 @@
                     <p>ปันผลรวม: ${summary.dividend || 0}</p>
                     <hr><h3>ประวัติรายการ</h3><ul>`;
         items.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
-            html += `<li>${i.date} | ${i.txType} | ${i.price} บาท <span class="clickable" onclick="deleteItem('${i.id}')" style="color:red; font-size:0.8rem;">[ลบ]</span></li>`;
+            html += `<li>${i.date} | ${i.txType} | ${i.price} บาท</li>`;
         });
         document.getElementById('modal-body').innerHTML = html + `</ul>`;
         document.getElementById('modal').style.display = 'block';
     }
 
-    function openModal() {
-        document.getElementById('modal-body').innerHTML = `<h3>เพิ่มธุรกรรม</h3>
-            <input type="date" id="date"><select id="type-select"><option value="buy">ซื้อ</option><option value="sell">ขาย</option><option value="dividend">ปันผล</option></select>
-            <input type="text" id="name" placeholder="ชื่อหุ้น"><input type="number" id="price" placeholder="จำนวนเงิน">
-            <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff; font-weight:800;">บันทึก</button>`;
+    function openModal(item = null) {
+        let isEdit = !!item;
+        document.getElementById('modal-body').innerHTML = `<h3>${isEdit ? 'แก้ไขรายการ' : 'เพิ่มธุรกรรม'}</h3>
+            <input type="date" id="date" value="${isEdit ? item.date : ''}">
+            <select id="type-select">
+                <option value="buy" ${isEdit && item.txType === 'buy' ? 'selected' : ''}>ซื้อ</option>
+                <option value="sell" ${isEdit && item.txType === 'sell' ? 'selected' : ''}>ขาย</option>
+                <option value="dividend" ${isEdit && item.txType === 'dividend' ? 'selected' : ''}>ปันผล</option>
+            </select>
+            <input type="text" id="name" placeholder="ชื่อหุ้น" value="${isEdit ? item.name : ''}">
+            <input type="number" id="price" placeholder="จำนวนเงิน" value="${isEdit ? item.price : ''}">
+            <button class="nav-btn" onclick="${isEdit ? `updateData('${item.id}')` : 'saveData()'}" style="width:100%; background:#007bff; font-weight:800;">${isEdit ? 'บันทึกการแก้ไข' : 'บันทึก'}</button>`;
         document.getElementById('modal').style.display = 'block';
     }
 
@@ -96,11 +111,24 @@
         showSection(item.category);
     }
 
+    function editItem(id) {
+        let item = data.find(i => i.id === id);
+        openModal(item);
+    }
+
+    function updateData(id) {
+        let index = data.findIndex(i => i.id === id);
+        data[index] = { id: id, category: localStorage.getItem('activePage'), txType: document.getElementById('type-select').value, date: document.getElementById('date').value, name: document.getElementById('name').value, price: document.getElementById('price').value };
+        localStorage.setItem('myPortfolio', JSON.stringify(data));
+        closeModal();
+        showSection(data[index].category);
+    }
+
     function deleteItem(id) {
-        if(confirm('ยืนยันการลบ?')) {
+        if(confirm('ยืนยันการลบรายการนี้?')) {
             data = data.filter(i => i.id !== id);
             localStorage.setItem('myPortfolio', JSON.stringify(data));
-            closeModal();
+            // เรียกใช้ showSection ทันทีเพื่อ re-render หน้าจอ
             showSection(localStorage.getItem('activePage'));
         }
     }
