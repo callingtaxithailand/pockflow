@@ -35,6 +35,11 @@
     <h3 style="color:#00d4ff;">จัดการรายการ</h3>
     <input type="hidden" id="edit-id">
     <input type="date" id="date">
+    <select id="type-select">
+        <option value="buy">ซื้อ</option>
+        <option value="sell">ขาย</option>
+        <option value="dividend">ปันผล</option>
+    </select>
     <input type="text" id="name" placeholder="ชื่อหุ้น">
     <input type="number" id="price" placeholder="จำนวนเงิน">
     <button onclick="saveData()" style="width:100%; padding:12px; background:#007bff; color:white; border:none; border-radius:8px; font-weight:800;">บันทึก</button>
@@ -48,7 +53,7 @@
         let html = `<table><tr><th>วันที่</th><th>ชื่อหุ้น</th><th>เงิน</th><th>จัดการ</th></tr>`;
         let total = 0;
         data.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
-            total += Number(i.price);
+            if(i.type === 'buy') total += Number(i.price);
             html += `<tr><td>${i.date}</td><td>${i.name}</td><td>${i.price}</td>
                      <td class="action-btns">
                         <span class="btn-edit" onclick="editItem('${i.id}')">✏️</span>
@@ -64,6 +69,7 @@
         const item = { 
             id: id || Date.now().toString(), 
             date: document.getElementById('date').value, 
+            type: document.getElementById('type-select').value,
             name: document.getElementById('name').value, 
             price: document.getElementById('price').value 
         };
@@ -78,6 +84,7 @@
         const item = data.find(i => i.id === id);
         document.getElementById('edit-id').value = item.id;
         document.getElementById('date').value = item.date;
+        document.getElementById('type-select').value = item.type;
         document.getElementById('name').value = item.name;
         document.getElementById('price').value = item.price;
         document.getElementById('modal').style.display = 'block';
