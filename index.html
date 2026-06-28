@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Portfolio Pro</title>
+    <title>Portfolio Tracker</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 15px; }
+        body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 15px; }
         .container { max-width: 600px; margin: auto; }
         .summary-box { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
         .nav-btn { flex: 1; padding: 12px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; cursor: pointer; }
         .active { background: #007bff; border-color: #007bff; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { border-bottom: 1px solid #333; padding: 10px 5px; text-align: left; }
+        .clickable { color: #007bff; text-decoration: underline; cursor: pointer; }
         #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; border-radius: 50%; border: none; color: white; font-size: 30px; z-index: 100; }
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; z-index: 200; }
         input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
@@ -21,13 +22,13 @@
 
 <div class="container">
     <h1>พอร์ตการลงทุน</h1>
-    <div id="nav-menu" style="display: flex; gap: 5px; margin-bottom: 15px;">
+    <div style="display: flex; gap: 5px; margin-bottom: 15px;">
         <button class="nav-btn" id="btn-thai" onclick="showSection('thai')">หุ้นไทย</button>
         <button class="nav-btn" id="btn-foreign" onclick="showSection('foreign')">ตปท</button>
         <button class="nav-btn" id="btn-gold" onclick="showSection('gold')">ทอง</button>
     </div>
 
-    <div class="summary-box" id="summary-section">
+    <div class="summary-box">
         <div>รวมยอดซื้อ: <span id="sum-buy">0</span></div>
         <div>ยอดปันผล/กำไร: <span id="sum-profit">0</span></div>
     </div>
@@ -35,21 +36,25 @@
     <div id="content-area"></div>
 </div>
 
-<button id="add-btn" onclick="toggleModal(true)">+</button>
+<button id="add-btn" onclick="openModal('modal-add')">+</button>
 
-<div id="modal">
-    <h3>เพิ่มรายการ/ธุรกรรม</h3>
+<div id="modal-add" class="modal">
+    <h3>เพิ่มรายการ</h3>
     <input type="date" id="date">
     <select id="type-select">
-        <option value="buy">ซื้อหุ้น</option>
-        <option value="sell">ขายหุ้น</option>
-        <option value="dividend">รับปันผล</option>
+        <option value="buy">ซื้อ</option><option value="sell">ขาย</option><option value="dividend">ปันผล</option>
     </select>
     <input type="text" id="name" placeholder="ชื่อหุ้น">
     <input type="number" id="qty" placeholder="จำนวน">
-    <input type="number" id="price" placeholder="ราคา/ยอดเงิน">
+    <input type="number" id="price" placeholder="เงิน">
     <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff;">บันทึก</button>
-    <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; margin-top:10px;">ปิด</button>
+    <button class="nav-btn" onclick="closeModal('modal-add')" style="width:100%; margin-top:10px;">ปิด</button>
+</div>
+
+<div id="modal-detail" class="modal">
+    <h3 id="detail-title"></h3>
+    <div id="detail-content"></div>
+    <button class="nav-btn" onclick="closeModal('modal-detail')" style="width:100%; background:#444;">ปิด</button>
 </div>
 
 <script>
@@ -60,25 +65,38 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + type).classList.add('active');
         
-        let filtered = data.filter(item => item.category === type);
-        let html = `<table><tr><th>วันที่</th><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th>ลบ</th></tr>`;
-        filtered.forEach(i => {
-            html += `<tr><td>${i.date}</td><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td onclick="deleteItem('${i.id}')">✕</td></tr>`;
-        });
-        html += `</table>`;
-        document.getElementById('content-area').innerHTML = html;
+        let filtered = data.filter(i => i.category === type);
+        let html = `<table><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th>ลบ</th></tr>`;
         
-        // คำนวณสรุป
-        let totalBuy = filtered.filter(i => i.txType === 'buy').reduce((sum, i) => sum + Number(i.price), 0);
-        let totalGain = filtered.filter(i => i.txType !== 'buy').reduce((sum, i) => sum + Number(i.price), 0);
-        document.getElementById('sum-buy').innerText = totalBuy;
-        document.getElementById('sum-profit').innerText = totalGain;
+        // จัดกลุ่มข้อมูลเพื่อแสดงผล
+        let grouped = {};
+        filtered.forEach(i => {
+            if(!grouped[i.name]) grouped[i.name] = { buy: 0, profit: 0 };
+            if(i.txType === 'buy') grouped[i.name].buy += Number(i.price);
+            else grouped[i.name].profit += Number(i.price);
+        });
+
+        for(let name in grouped) {
+            html += `<tr><td class="clickable" onclick="showDetail('${name}')">${name}</td><td>-</td><td>${grouped[name].buy}</td><td onclick="deleteItem('${name}')">✕</td></tr>`;
+        }
+        
+        document.getElementById('content-area').innerHTML = html + `</table>`;
+        document.getElementById('sum-buy').innerText = filtered.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
+        document.getElementById('sum-profit').innerText = filtered.filter(i => i.txType !== 'buy').reduce((s, i) => s + Number(i.price), 0);
+    }
+
+    function showDetail(name) {
+        let items = data.filter(i => i.name === name);
+        document.getElementById('detail-title').innerText = "สรุปของ: " + name;
+        let html = `<ul>` + items.map(i => `<li>${i.date} | ${i.txType} | ${i.price}</li>`).join('') + `</ul>`;
+        document.getElementById('detail-content').innerHTML = html;
+        openModal('modal-detail');
     }
 
     function saveData() {
         const item = {
             id: Date.now(),
-            category: document.getElementById('btn-thai').classList.contains('active') ? 'thai' : (document.getElementById('btn-foreign').classList.contains('active') ? 'foreign' : 'gold'),
+            category: localStorage.getItem('activePage') || 'thai',
             txType: document.getElementById('type-select').value,
             date: document.getElementById('date').value,
             name: document.getElementById('name').value,
@@ -87,17 +105,19 @@
         };
         data.push(item);
         localStorage.setItem('myPortfolio', JSON.stringify(data));
-        toggleModal(false);
+        closeModal('modal-add');
         showSection(item.category);
     }
 
-    function deleteItem(id) {
-        data = data.filter(i => i.id != id);
-        localStorage.setItem('myPortfolio', JSON.stringify(data));
-        showSection(localStorage.getItem('activePage'));
+    function openModal(id) { document.getElementById(id).style.display = 'block'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function deleteItem(name) {
+        if(confirm('ลบข้อมูล '+name+' ทั้งหมด?')) {
+            data = data.filter(i => i.name !== name);
+            localStorage.setItem('myPortfolio', JSON.stringify(data));
+            showSection(localStorage.getItem('activePage'));
+        }
     }
-
-    function toggleModal(s) { document.getElementById('modal').style.display = s ? 'block' : 'none'; }
 
     window.onload = () => showSection(localStorage.getItem('activePage') || 'thai');
 </script>
