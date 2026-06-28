@@ -3,36 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Tracker</title>
+    <title>Portfolio Manager</title>
     <style>
         body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 15px; font-weight: 600; }
         h1 { color: #00d4ff; font-weight: 800; }
         .container { max-width: 600px; margin: auto; }
         .summary-box { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #007bff; color: #00d4ff; }
-        
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border-bottom: 1px solid #333; padding: 12px 8px; text-align: left; }
-        .action-btns { display: flex; gap: 10px; }
-        .btn-edit { color: #ffc107; cursor: pointer; }
+        .clickable { color: #00d4ff; text-decoration: underline; cursor: pointer; }
+        .btn-edit { color: #ffc107; cursor: pointer; margin-right: 10px; }
         .btn-del { color: #ff4444; cursor: pointer; }
-        
         #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background-color: #ff007f; border-radius: 50%; border: none; color: white; font-size: 35px; cursor: pointer; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; }
         input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 2px solid #555; color: #fff; margin-bottom: 15px; border-radius: 8px; font-weight: 700; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>พอร์ตการลงทุน</h1>
-    <div class="summary-box">รวมยอดซื้อทั้งหมด: <span id="sum-buy" style="color:#fff;">0</span></div>
+    <h1 id="page-title">พอร์ตการลงทุน</h1>
+    <div class="summary-box" id="main-summary">รวมยอดซื้อ: <span id="sum-buy" style="color:#fff;">0</span></div>
     <div id="content-area"></div>
 </div>
 
 <button id="add-btn" onclick="openModal()">+</button>
 
 <div id="modal" class="modal">
-    <h3 style="color:#00d4ff;">จัดการรายการ</h3>
+    <h3 id="modal-title" style="color:#00d4ff;">จัดการรายการ</h3>
     <input type="hidden" id="edit-id">
     <input type="date" id="date">
     <select id="type-select">
@@ -48,31 +46,43 @@
 
 <script>
     let data = JSON.parse(localStorage.getItem('myPortfolio')) || [];
+    let currentView = 'main'; // สถานะว่าอยู่หน้าหลักหรือหน้าย่อย
 
     function render() {
-        let html = `<table><tr><th>วันที่</th><th>ชื่อหุ้น</th><th>เงิน</th><th>จัดการ</th></tr>`;
-        let total = 0;
-        data.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
-            if(i.type === 'buy') total += Number(i.price);
-            html += `<tr><td>${i.date}</td><td>${i.name}</td><td>${i.price}</td>
-                     <td class="action-btns">
-                        <span class="btn-edit" onclick="editItem('${i.id}')">✏️</span>
-                        <span class="btn-del" onclick="deleteItem('${i.id}')">❌</span>
-                     </td></tr>`;
+        if (currentView === 'main') {
+            document.getElementById('page-title').innerText = "พอร์ตการลงทุน";
+            document.getElementById('main-summary').style.display = "block";
+            let groups = {};
+            data.forEach(i => {
+                if(!groups[i.name]) groups[i.name] = 0;
+                if(i.type === 'buy') groups[i.name] += Number(i.price);
+            });
+            let html = `<table><tr><th>ชื่อหุ้น</th><th>ยอดซื้อรวม</th></tr>`;
+            for(let name in groups) {
+                html += `<tr><td class="clickable" onclick="viewDetail('${name}')">${name}</td><td>${groups[name]}</td></tr>`;
+            }
+            document.getElementById('content-area').innerHTML = html + `</table>`;
+            document.getElementById('sum-buy').innerText = data.filter(i => i.type === 'buy').reduce((s, i) => s + Number(i.price), 0);
+        }
+    }
+
+    function viewDetail(name) {
+        currentView = name;
+        document.getElementById('page-title').innerText = "ประวัติ: " + name;
+        document.getElementById('main-summary').style.display = "none";
+        let filtered = data.filter(i => i.name === name);
+        let html = `<button onclick="currentView='main'; render()" style="background:#333; color:#fff; border:none; padding:8px; border-radius:5px;">← ย้อนกลับ</button>
+                    <table><tr><th>วันที่</th><th>ประเภท</th><th>เงิน</th><th>จัดการ</th></tr>`;
+        filtered.forEach(i => {
+            html += `<tr><td>${i.date}</td><td>${i.type}</td><td>${i.price}</td>
+                     <td><span class="btn-edit" onclick="editItem('${i.id}')">✏️</span><span class="btn-del" onclick="deleteItem('${i.id}')">❌</span></td></tr>`;
         });
         document.getElementById('content-area').innerHTML = html + `</table>`;
-        document.getElementById('sum-buy').innerText = total;
     }
 
     function saveData() {
         const id = document.getElementById('edit-id').value;
-        const item = { 
-            id: id || Date.now().toString(), 
-            date: document.getElementById('date').value, 
-            type: document.getElementById('type-select').value,
-            name: document.getElementById('name').value, 
-            price: document.getElementById('price').value 
-        };
+        const item = { id: id || Date.now().toString(), date: document.getElementById('date').value, type: document.getElementById('type-select').value, name: document.getElementById('name').value, price: document.getElementById('price').value };
         if(id) data = data.map(i => i.id === id ? item : i);
         else data.push(item);
         localStorage.setItem('myPortfolio', JSON.stringify(data));
@@ -94,7 +104,7 @@
         if(confirm('ยืนยันการลบ?')) {
             data = data.filter(i => i.id !== id);
             localStorage.setItem('myPortfolio', JSON.stringify(data));
-            render();
+            viewDetail(currentView);
         }
     }
 
