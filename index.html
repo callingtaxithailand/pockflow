@@ -3,116 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Dashboard</title>
+    <title>Stock Portfolio Pro</title>
     <style>
         body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 15px; }
         .container { max-width: 600px; margin: auto; }
-        h1 { font-size: 1.5rem; text-align: center; }
-        
-        /* Navigation */
-        nav { display: flex; gap: 5px; margin-bottom: 20px; }
-        .nav-btn { flex: 1; padding: 12px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+        .summary-box { background: #111; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #333; }
+        .nav-btn { flex: 1; padding: 12px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; cursor: pointer; }
         .active { background: #007bff; border-color: #007bff; }
-        
-        /* Table */
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #333; padding: 12px 8px; text-align: left; }
-        th { color: #888; font-size: 0.8rem; }
-        .del-btn { color: #ff4444; cursor: pointer; font-weight: bold; text-align: center; }
-        
-        /* Floating Button */
-        #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; color: white; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        
-        /* Modal Form */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        th, td { border-bottom: 1px solid #333; padding: 10px 5px; text-align: left; }
+        #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background-color: #007bff; border-radius: 50%; border: none; color: white; font-size: 30px; z-index: 100; }
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #aaa; }
-        input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
-        .content-section { display: none; }
+        input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>พอร์ตการลงทุน</h1>
-    <nav>
+    <div id="nav-menu" style="display: flex; gap: 5px; margin-bottom: 15px;">
         <button class="nav-btn" id="btn-thai" onclick="showSection('thai')">หุ้นไทย</button>
-        <button class="nav-btn" id="btn-foreign" onclick="showSection('foreign')">หุ้นต่างประเทศ</button>
-        <button class="nav-btn" id="btn-gold" onclick="showSection('gold')">เทรดทอง</button>
-    </nav>
+        <button class="nav-btn" id="btn-foreign" onclick="showSection('foreign')">ตปท</button>
+        <button class="nav-btn" id="btn-gold" onclick="showSection('gold')">ทอง</button>
+    </div>
 
-    <div id="thai" class="content-section"><h2>หุ้นไทย</h2><table><thead><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th></th></tr></thead><tbody id="tbody-thai"></tbody></table></div>
-    <div id="foreign" class="content-section"><h2>หุ้นต่างประเทศ</h2><table><thead><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th></th></tr></thead><tbody id="tbody-foreign"></tbody></table></div>
-    <div id="gold" class="content-section"><h2>เทรดทอง</h2><table><thead><tr><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th></th></tr></thead><tbody id="tbody-gold"></tbody></table></div>
+    <div class="summary-box" id="summary-section">
+        <div>รวมยอดซื้อ: <span id="sum-buy">0</span></div>
+        <div>ยอดปันผล/กำไร: <span id="sum-profit">0</span></div>
+    </div>
+
+    <div id="content-area"></div>
 </div>
 
 <button id="add-btn" onclick="toggleModal(true)">+</button>
 
 <div id="modal">
-    <h2 style="text-align:center;">เพิ่มรายการใหม่</h2>
-    <div class="form-group"><label>วันที่</label><input type="date" id="date"></div>
-    <div class="form-group"><label>ประเภท</label>
-        <select id="type"><option value="thai">หุ้นไทย</option><option value="foreign">หุ้นต่างประเทศ</option><option value="gold">เทรดทอง</option></select>
-    </div>
-    <div class="form-group"><label>ชื่อหุ้น</label><input type="text" id="name" placeholder="เช่น PTT, SCB, VOO"></div>
-    <div class="form-group"><label>จำนวนหุ้น</label><input type="number" id="qty"></div>
-    <div class="form-group"><label>จำนวนเงิน</label><input type="number" id="price"></div>
-    <div class="form-group"><label>หมายเหตุ</label><input type="text" id="note"></div>
-    <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff; margin-bottom:10px;">บันทึก</button>
-    <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; background:#444;">ยกเลิก</button>
+    <h3>เพิ่มรายการ/ธุรกรรม</h3>
+    <input type="date" id="date">
+    <select id="type-select">
+        <option value="buy">ซื้อหุ้น</option>
+        <option value="sell">ขายหุ้น</option>
+        <option value="dividend">รับปันผล</option>
+    </select>
+    <input type="text" id="name" placeholder="ชื่อหุ้น">
+    <input type="number" id="qty" placeholder="จำนวน">
+    <input type="number" id="price" placeholder="ราคา/ยอดเงิน">
+    <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff;">บันทึก</button>
+    <button class="nav-btn" onclick="toggleModal(false)" style="width:100%; margin-top:10px;">ปิด</button>
 </div>
 
 <script>
-    let data = JSON.parse(localStorage.getItem('stocks')) || [];
+    let data = JSON.parse(localStorage.getItem('myPortfolio')) || [];
 
-    function renderTable() {
-        ['thai', 'foreign', 'gold'].forEach(type => {
-            const tbody = document.getElementById('tbody-' + type);
-            tbody.innerHTML = '';
-            data.filter(item => item.type === type).forEach((item) => {
-                tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.qty}</td><td>${item.price}</td><td class="del-btn" onclick="deleteItem('${item.id}')">✕</td></tr>`;
-            });
+    function showSection(type) {
+        localStorage.setItem('activePage', type);
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + type).classList.add('active');
+        
+        let filtered = data.filter(item => item.category === type);
+        let html = `<table><tr><th>วันที่</th><th>ชื่อ</th><th>จำนวน</th><th>เงิน</th><th>ลบ</th></tr>`;
+        filtered.forEach(i => {
+            html += `<tr><td>${i.date}</td><td>${i.name}</td><td>${i.qty}</td><td>${i.price}</td><td onclick="deleteItem('${i.id}')">✕</td></tr>`;
         });
+        html += `</table>`;
+        document.getElementById('content-area').innerHTML = html;
+        
+        // คำนวณสรุป
+        let totalBuy = filtered.filter(i => i.txType === 'buy').reduce((sum, i) => sum + Number(i.price), 0);
+        let totalGain = filtered.filter(i => i.txType !== 'buy').reduce((sum, i) => sum + Number(i.price), 0);
+        document.getElementById('sum-buy').innerText = totalBuy;
+        document.getElementById('sum-profit').innerText = totalGain;
     }
 
     function saveData() {
-        const newItem = {
-            id: Date.now().toString(),
+        const item = {
+            id: Date.now(),
+            category: document.getElementById('btn-thai').classList.contains('active') ? 'thai' : (document.getElementById('btn-foreign').classList.contains('active') ? 'foreign' : 'gold'),
+            txType: document.getElementById('type-select').value,
             date: document.getElementById('date').value,
-            type: document.getElementById('type').value,
             name: document.getElementById('name').value,
             qty: document.getElementById('qty').value,
-            price: document.getElementById('price').value,
-            note: document.getElementById('note').value
+            price: document.getElementById('price').value
         };
-        data.push(newItem);
-        localStorage.setItem('stocks', JSON.stringify(data));
-        renderTable();
+        data.push(item);
+        localStorage.setItem('myPortfolio', JSON.stringify(data));
         toggleModal(false);
+        showSection(item.category);
     }
 
     function deleteItem(id) {
-        if(confirm('ต้องการลบรายการนี้ใช่ไหม?')) {
-            data = data.filter(item => item.id !== id);
-            localStorage.setItem('stocks', JSON.stringify(data));
-            renderTable();
-        }
+        data = data.filter(i => i.id != id);
+        localStorage.setItem('myPortfolio', JSON.stringify(data));
+        showSection(localStorage.getItem('activePage'));
     }
 
-    function showSection(id) {
-        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).style.display = 'block';
-        document.getElementById('btn-' + id).classList.add('active');
-        localStorage.setItem('activePage', id);
-    }
+    function toggleModal(s) { document.getElementById('modal').style.display = s ? 'block' : 'none'; }
 
-    function toggleModal(show) { document.getElementById('modal').style.display = show ? 'block' : 'none'; }
-
-    window.onload = () => {
-        showSection(localStorage.getItem('activePage') || 'thai');
-        renderTable();
-    };
+    window.onload = () => showSection(localStorage.getItem('activePage') || 'thai');
 </script>
 </body>
 </html>
