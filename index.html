@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Portfolio Pro</title>
+    <title>Portfolio Manager</title>
     <style>
         body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 15px; font-weight: 500; }
         h1, h2, h3, th { color: #00d4ff; font-weight: 800; }
@@ -14,10 +14,9 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
         th, td { border-bottom: 1px solid #333; padding: 10px 5px; text-align: left; }
         .clickable { color: #00d4ff; text-decoration: underline; cursor: pointer; font-weight: 700; }
-        .btn-del { color: #ff4444; cursor: pointer; }
         #add-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background-color: #ff007f; border-radius: 50%; border: none; color: white; font-size: 35px; z-index: 100; cursor: pointer; box-shadow: 0 0 15px #ff007f; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); padding: 20px; box-sizing: border-box; overflow-y: auto; z-index: 200; }
-        input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 2px solid #555; color: #fff; margin-bottom: 15px; border-radius: 8px; font-weight: 700; }
+        input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 2px solid #555; color: #fff; margin-bottom: 15px; border-radius: 8px; font-weight: 700; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -31,7 +30,7 @@
     </div>
 
     <div class="summary-box">
-        <div style="color: #00d4ff;">รวมยอดซื้อ: <span id="sum-buy" style="color: #fff;">0</span></div>
+        <div style="color: #00d4ff;">รวมยอดซื้อทั้งหมด: <span id="sum-buy" style="color: #fff;">0</span></div>
     </div>
 
     <div id="content-area"></div>
@@ -40,7 +39,7 @@
 <button id="add-btn" onclick="openModal()">+</button>
 
 <div id="modal" class="modal">
-    <div id="modal-content"></div>
+    <div id="modal-body"></div>
     <button class="nav-btn" onclick="closeModal()" style="width:100%; margin-top:20px; background:#444;">ปิด</button>
 </div>
 
@@ -53,41 +52,39 @@
         document.getElementById('btn-' + type).classList.add('active');
         
         let filtered = data.filter(i => i.category === type);
-        let grouped = {};
-        filtered.forEach(i => {
-            if(!grouped[i.name]) grouped[i.name] = { buy: 0 };
-            if(i.txType === 'buy') grouped[i.name].buy += Number(i.price);
+        // แสดงรายการเรียงตามวันที่ล่าสุด
+        let html = `<table><tr><th>วันที่</th><th>ชื่อหุ้น</th><th>เงิน</th></tr>`;
+        filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
+            html += `<tr><td>${i.date}</td><td class="clickable" onclick="openDetail('${i.name}')">${i.name}</td><td>${i.price}</td></tr>`;
         });
-
-        let html = `<table><tr><th>ชื่อหุ้น</th><th>ยอดซื้อรวม</th></tr>`;
-        for(let name in grouped) {
-            html += `<tr><td class="clickable" onclick="openDetail('${name}')">${name}</td><td>${grouped[name].buy}</td></tr>`;
-        }
         document.getElementById('content-area').innerHTML = html + `</table>`;
         document.getElementById('sum-buy').innerText = filtered.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
     }
 
     function openDetail(name) {
         let items = data.filter(i => i.name === name);
-        let buy = items.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
-        let div = items.filter(i => i.txType === 'dividend').reduce((s, i) => s + Number(i.price), 0);
-        let sell = items.filter(i => i.txType === 'sell').reduce((s, i) => s + Number(i.price), 0);
+        let summary = items.reduce((acc, i) => {
+            acc[i.txType] = (acc[i.txType] || 0) + Number(i.price);
+            return acc;
+        }, {});
 
-        let html = `<h2 style="color:#00d4ff;">สรุป: ${name}</h2>
-                    <p>ยอดซื้อรวม: ${buy}</p>
-                    <p>รับปันผลรวม: ${div}</p>
-                    <p>ยอดขายรวม: ${sell}</p>
-                    <hr><h3>รายการประวัติ</h3><ul>`;
-        items.forEach(i => html += `<li>${i.date} | ${i.txType} | ${i.price}</li>`);
-        document.getElementById('modal-content').innerHTML = html + `</ul>`;
+        let html = `<h2 style="color:#00d4ff;">${name}</h2>
+                    <p>ซื้อรวม: ${summary.buy || 0}</p>
+                    <p>ขายรวม: ${summary.sell || 0}</p>
+                    <p>ปันผลรวม: ${summary.dividend || 0}</p>
+                    <hr><h3>ประวัติรายการ</h3><ul>`;
+        items.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
+            html += `<li>${i.date} | ${i.txType} | ${i.price} บาท <span class="clickable" onclick="deleteItem('${i.id}')" style="color:red; font-size:0.8rem;">[ลบ]</span></li>`;
+        });
+        document.getElementById('modal-body').innerHTML = html + `</ul>`;
         document.getElementById('modal').style.display = 'block';
     }
 
     function openModal() {
-        document.getElementById('modal-content').innerHTML = `<h3>เพิ่มธุรกรรม</h3>
+        document.getElementById('modal-body').innerHTML = `<h3>เพิ่มธุรกรรม</h3>
             <input type="date" id="date"><select id="type-select"><option value="buy">ซื้อ</option><option value="sell">ขาย</option><option value="dividend">ปันผล</option></select>
             <input type="text" id="name" placeholder="ชื่อหุ้น"><input type="number" id="price" placeholder="จำนวนเงิน">
-            <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff;">บันทึก</button>`;
+            <button class="nav-btn" onclick="saveData()" style="width:100%; background:#007bff; font-weight:800;">บันทึก</button>`;
         document.getElementById('modal').style.display = 'block';
     }
 
@@ -97,6 +94,15 @@
         localStorage.setItem('myPortfolio', JSON.stringify(data));
         closeModal();
         showSection(item.category);
+    }
+
+    function deleteItem(id) {
+        if(confirm('ยืนยันการลบ?')) {
+            data = data.filter(i => i.id !== id);
+            localStorage.setItem('myPortfolio', JSON.stringify(data));
+            closeModal();
+            showSection(localStorage.getItem('activePage'));
+        }
     }
 
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
