@@ -30,7 +30,15 @@
     </div>
 
     <div class="summary-box">
-        <div style="color: #00d4ff;">รวมยอดซื้อทั้งหมด: <span id="sum-buy" style="color: #fff;">0</span></div>
+        <div style="color: #00d4ff;">ยอดซื้อรวมทั้งหมด: <span id="sum-all" style="color: #fff;">0</span></div>
+        <div style="margin-top: 10px; border-top: 1px solid #333; padding-top: 10px;">
+            <select id="period-select" onchange="renderTable()" style="padding: 5px; font-size: 0.9rem;">
+                <option value="all">ทั้งหมด</option>
+                <option value="month">สรุปรายเดือนนี้</option>
+                <option value="year">สรุปรายปีนี้</option>
+            </select>
+            <div style="margin-top: 10px;">ยอดในรอบที่เลือก: <span id="sum-period" style="color: #00ff00;">0</span></div>
+        </div>
     </div>
 
     <div id="content-area"></div>
@@ -50,56 +58,62 @@
         localStorage.setItem('activePage', type);
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-' + type).classList.add('active');
+        renderTable();
+    }
+
+    function renderTable() {
+        const type = localStorage.getItem('activePage') || 'thai';
+        const period = document.getElementById('period-select').value;
+        const now = new Date();
         
         let filtered = data.filter(i => i.category === type);
-        // คงรูปแบบตารางเดิม: วันที่ ชื่อหุ้น เงิน จัดการ
+        
+        // คำนวณสรุป
+        let sumAll = filtered.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
+        document.getElementById('sum-all').innerText = sumAll;
+
+        // กรองตาม period
+        let periodFiltered = filtered.filter(i => {
+            let itemDate = new Date(i.date);
+            if (period === 'month') return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+            if (period === 'year') return itemDate.getFullYear() === now.getFullYear();
+            return true;
+        });
+
+        let sumPeriod = periodFiltered.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
+        document.getElementById('sum-period').innerText = sumPeriod;
+
+        // แสดงตาราง
         let html = `<table><tr><th>วันที่</th><th>ชื่อ</th><th>เงิน</th><th>จัดการ</th></tr>`;
-        filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
-            html += `<tr>
-                <td>${i.date}</td>
-                <td class="clickable" onclick="openDetail('${i.name}')">${i.name}</td>
-                <td>${i.price}</td>
+        periodFiltered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
+            html += `<tr><td>${i.date}</td><td class="clickable" onclick="openDetail('${i.name}')">${i.name}</td><td>${i.price}</td>
                 <td>
                     <span class="clickable" onclick="editItem('${i.id}')" style="color:#00ff00; margin-right:8px;">[แก้]</span>
                     <span class="clickable" onclick="deleteItem('${i.id}')" style="color:red;">[ลบ]</span>
-                </td>
-            </tr>`;
+                </td></tr>`;
         });
         document.getElementById('content-area').innerHTML = html + `</table>`;
-        document.getElementById('sum-buy').innerText = filtered.filter(i => i.txType === 'buy').reduce((s, i) => s + Number(i.price), 0);
     }
 
     function openDetail(name) {
         let items = data.filter(i => i.name === name);
-        let summary = items.reduce((acc, i) => {
-            acc[i.txType] = (acc[i.txType] || 0) + Number(i.price);
-            return acc;
-        }, {});
-
-        let html = `<h2 style="color:#00d4ff;">${name}</h2>
-                    <p>ซื้อรวม: ${summary.buy || 0}</p>
-                    <p>ขายรวม: ${summary.sell || 0}</p>
-                    <p>ปันผลรวม: ${summary.dividend || 0}</p>
-                    <hr><h3>ประวัติรายการ</h3><ul>`;
-        items.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => {
-            html += `<li>${i.date} | ${i.txType} | ${i.price} บาท</li>`;
-        });
+        let summary = items.reduce((acc, i) => { acc[i.txType] = (acc[i.txType] || 0) + Number(i.price); return acc; }, {});
+        let html = `<h2 style="color:#00d4ff;">${name}</h2><p>ซื้อรวม: ${summary.buy || 0}</p><p>ขายรวม: ${summary.sell || 0}</p><p>ปันผล: ${summary.dividend || 0}</p><hr><h3>ประวัติ</h3><ul>`;
+        items.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(i => html += `<li>${i.date} | ${i.txType} | ${i.price}</li>`);
         document.getElementById('modal-body').innerHTML = html + `</ul>`;
         document.getElementById('modal').style.display = 'block';
     }
 
     function openModal(item = null) {
         let isEdit = !!item;
-        document.getElementById('modal-body').innerHTML = `<h3>${isEdit ? 'แก้ไขรายการ' : 'เพิ่มธุรกรรม'}</h3>
-            <input type="date" id="date" value="${isEdit ? item.date : ''}">
-            <select id="type-select">
-                <option value="buy" ${isEdit && item.txType === 'buy' ? 'selected' : ''}>ซื้อ</option>
-                <option value="sell" ${isEdit && item.txType === 'sell' ? 'selected' : ''}>ขาย</option>
-                <option value="dividend" ${isEdit && item.txType === 'dividend' ? 'selected' : ''}>ปันผล</option>
-            </select>
-            <input type="text" id="name" placeholder="ชื่อหุ้น" value="${isEdit ? item.name : ''}">
+        document.getElementById('modal-body').innerHTML = `<h3>${isEdit ? 'แก้ไข' : 'เพิ่ม'}</h3>
+            <input type="date" id="date" value="${isEdit ? item.date : new Date().toISOString().split('T')[0]}">
+            <select id="type-select"><option value="buy" ${isEdit && item.txType === 'buy' ? 'selected' : ''}>ซื้อ</option>
+            <option value="sell" ${isEdit && item.txType === 'sell' ? 'selected' : ''}>ขาย</option>
+            <option value="dividend" ${isEdit && item.txType === 'dividend' ? 'selected' : ''}>ปันผล</option></select>
+            <input type="text" id="name" placeholder="ชื่อ" value="${isEdit ? item.name : ''}">
             <input type="number" id="price" placeholder="จำนวนเงิน" value="${isEdit ? item.price : ''}">
-            <button class="nav-btn" onclick="${isEdit ? `updateData('${item.id}')` : 'saveData()'}" style="width:100%; background:#007bff; font-weight:800;">${isEdit ? 'บันทึกการแก้ไข' : 'บันทึก'}</button>`;
+            <button class="nav-btn" onclick="${isEdit ? `updateData('${item.id}')` : 'saveData()'}" style="width:100%; background:#007bff;">บันทึก</button>`;
         document.getElementById('modal').style.display = 'block';
     }
 
@@ -108,12 +122,7 @@
         data.push(item);
         localStorage.setItem('myPortfolio', JSON.stringify(data));
         closeModal();
-        showSection(item.category);
-    }
-
-    function editItem(id) {
-        let item = data.find(i => i.id === id);
-        openModal(item);
+        renderTable();
     }
 
     function updateData(id) {
@@ -121,15 +130,14 @@
         data[index] = { id: id, category: localStorage.getItem('activePage'), txType: document.getElementById('type-select').value, date: document.getElementById('date').value, name: document.getElementById('name').value, price: document.getElementById('price').value };
         localStorage.setItem('myPortfolio', JSON.stringify(data));
         closeModal();
-        showSection(data[index].category);
+        renderTable();
     }
 
     function deleteItem(id) {
-        if(confirm('ยืนยันการลบรายการนี้?')) {
+        if(confirm('ยืนยันการลบ?')) {
             data = data.filter(i => i.id !== id);
             localStorage.setItem('myPortfolio', JSON.stringify(data));
-            // เรียกใช้ showSection ทันทีเพื่อ re-render หน้าจอ
-            showSection(localStorage.getItem('activePage'));
+            renderTable();
         }
     }
 
