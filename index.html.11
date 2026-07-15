@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Ledger & Stock Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">สมุดบัญชีส่วนตัว</h1>
+        
+        <!-- Tabs -->
+        <div class="flex space-x-4 mb-6">
+            <button onclick="showTab('add')" class="px-4 py-2 bg-blue-500 text-white rounded">บันทึกรายการ</button>
+            <button onclick="showTab('portfolio')" class="px-4 py-2 bg-green-500 text-white rounded">พอร์ตหุ้น</button>
+            <button onclick="showTab('report')" class="px-4 py-2 bg-purple-500 text-white rounded">รายงาน & ภาษี</button>
+        </div>
+
+        <!-- Add Section -->
+        <div id="tab-add" class="tab-content">
+            <h2 class="text-xl mb-4">บันทึกรายการ</h2>
+            <select id="type" onchange="updateForm()" class="w-full p-2 border mb-4">
+                <option value="รายรับ">รายรับ</option>
+                <option value="รายจ่าย">รายจ่าย</option>
+                <option value="ซื้อหุ้น">ซื้อหุ้น</option>
+                <option value="ขายหุ้น">ขายหุ้น</option>
+                <option value="เงินปันผล">เงินปันผล</option>
+            </select>
+            <div id="dynamic-form" class="space-y-2">
+                <!-- Dynamic Content -->
+            </div>
+            <button onclick="saveEntry()" class="mt-4 w-full bg-blue-600 text-white p-2 rounded">บันทึก</button>
+        </div>
+
+        <!-- Portfolio Section -->
+        <div id="tab-portfolio" class="tab-content hidden">
+            <h2 class="text-xl mb-4">พอร์ตหุ้น</h2>
+            <div id="portfolio-list" class="overflow-x-auto"></div>
+        </div>
+
+        <!-- Report Section -->
+        <div id="tab-report" class="tab-content hidden">
+            <h2 class="text-xl mb-4">รายงานและภาษี</h2>
+            <canvas id="myChart"></canvas>
+            <div id="tax-report" class="mt-6"></div>
+        </div>
+    </div>
+
+    <script>
+        let data = JSON.parse(localStorage.getItem('ledgerData')) || [];
+        let taxRate = 0.10;
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            if(tab === 'portfolio') renderPortfolio();
+            if(tab === 'report') renderReport();
+        }
+
+        function updateForm() {
+            const type = document.getElementById('type').value;
+            let html = `<input type="date" id="date" class="w-full p-2 border" required>`;
+            
+            if (['ซื้อหุ้น', 'ขายหุ้น'].includes(type)) {
+                html += `
+                    <input type="text" id="symbol" placeholder="ชื่อหุ้น (เช่น PTT)" class="w-full p-2 border">
+                    <input type="number" id="qty" placeholder="จำนวนหุ้น" class="w-full p-2 border">
+                    <input type="number" id="price" placeholder="ราคาต่อหุ้น" class="w-full p-2 border">
+                    <input type="number" id="fee" placeholder="ค่าธรรมเนียม" class="w-full p-2 border">
+                `;
+            } else if (type === 'เงินปันผล') {
+                html += `
+                    <input type="text" id="symbol" placeholder="ชื่อหุ้น" class="w-full p-2 border">
+                    <input type="number" id="gross" placeholder="ยอดก่อนภาษี" class="w-full p-2 border">
+                    <input type="number" id="tax" value="${taxRate * 100}" placeholder="อัตราภาษี (%)" class="w-full p-2 border">
+                `;
+            } else {
+                html += `<input type="text" id="desc" placeholder="รายละเอียด" class="w-full p-2 border">
+                         <input type="number" id="amount" placeholder="จำนวนเงิน" class="w-full p-2 border">`;
+            }
+            document.getElementById('dynamic-form').innerHTML = html;
+        }
+
+        function saveEntry() {
+            const type = document.getElementById('type').value;
+            const entry = { type, date: document.getElementById('date').value, ...getFormValues() };
+            data.push(entry);
+            localStorage.setItem('ledgerData', JSON.stringify(data));
+            alert('บันทึกสำเร็จ!');
+            updateForm();
+        }
+
+        function getFormValues() {
+            const inputs = document.querySelectorAll('#dynamic-form input, #dynamic-form select');
+            let obj = {};
+            inputs.forEach(i => obj[i.id] = i.value);
+            return obj;
+        }
+
+        function renderPortfolio() {
+            // Logic สำหรับคำนวณต้นทุนเฉลี่ยถ่วงน้ำหนัก (WAC)
+            const portfolio = {};
+            data.filter(i => ['ซื้อหุ้น', 'ขายหุ้น'].includes(i.type)).forEach(t => {
+                const sym = t.symbol;
+                if(!portfolio[sym]) portfolio[sym] = { qty: 0, cost: 0 };
+                const qty = parseInt(t.qty);
+                const price = parseFloat(t.price);
+                if(t.type === 'ซื้อหุ้น') {
+                    portfolio[sym].cost = ((portfolio[sym].cost * portfolio[sym].qty) + (qty * price)) / (portfolio[sym].qty + qty);
+                    portfolio[sym].qty += qty;
+                } else {
+                    portfolio[sym].qty -= qty;
+                }
+            });
+            
+            let html = `<table class="w-full border"><tr><th>หุ้น</th><th>จำนวน</th><th>ต้นทุนเฉลี่ย</th></tr>`;
+            for(let s in portfolio) {
+                html += `<tr><td>${s}</td><td>${portfolio[s].qty}</td><td>${portfolio[s].cost.toFixed(2)}</td></tr>`;
+            }
+            document.getElementById('portfolio-list').innerHTML = html + `</table>`;
+        }
+
+        function renderReport() {
+            // สรุปภาษีเงินปันผล
+            const dividends = data.filter(i => i.type === 'เงินปันผล');
+            let html = `<h3 class="font-bold">สรุปภาษีเงินปันผล</h3><table class="w-full border mt-2"><tr><th>หุ้น</th><th>ยอดเงิน</th><th>ภาษีหัก (10%)</th></tr>`;
+            dividends.forEach(d => {
+                html += `<tr><td>${d.symbol}</td><td>${d.gross}</td><td>${(d.gross * 0.1).toFixed(2)}</td></tr>`;
+            });
+            document.getElementById('tax-report').innerHTML = html + `</table>`;
+        }
+
+        // Initialize
+        updateForm();
+    </script>
+</body>
+</html>
