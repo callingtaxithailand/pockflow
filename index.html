@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Shop & Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Top Navigation Switcher -->
+    <nav class="bg-black text-white px-4 py-3 shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto w-full flex justify-between items-center">
+            <span class="font-bold tracking-wider flex items-center gap-2 text-sm md:text-base">
+                <i class="fa-brands fa-tiktok text-red-500"></i> TikTok Store Manager
+            </span>
+            <div class="flex gap-1.5">
+                <button onclick="switchTab('store')" id="btn-store" class="px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-red-600 text-white transition">หน้าร้านค้า</button>
+                <button onclick="switchTab('admin')" id="btn-admin" class="px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition">หลังบ้าน & สถิติ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== VIEW 1: STOREFRONT ==================== -->
+    <div id="view-store" class="flex flex-col flex-grow">
+        <!-- Hero Section -->
+        <header class="bg-gradient-to-r from-gray-900 to-black text-white py-12 px-4 text-center">
+            <div class="max-w-2xl mx-auto">
+                <h1 class="text-2xl md:text-3xl font-bold mb-3">สินค้าฮิต รีวิวแน่นจาก TikTok</h1>
+                <p class="text-gray-400 text-xs md:text-sm">กดสั่งซื้อสินค้าง่ายๆ ส่งตรงจาก TikTok Shop ของแท้ 100%</p>
+            </div>
+        </header>
+
+        <!-- Product Grid -->
+        <main class="max-w-5xl mx-auto px-4 py-10 flex-grow w-full">
+            <h2 class="text-lg md:text-xl font-bold mb-6 text-gray-900 border-b pb-2 flex items-center justify-between">
+                <span>รายการสินค้าทั้งหมด</span>
+                <span id="product-count" class="text-xs bg-red-100 text-red-600 px-2.5 py-1 rounded-full font-medium">0 รายการ</span>
+            </h2>
+
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="text-center py-12">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-red-500 mb-2"></i>
+                <p class="text-gray-500 text-sm">กำลังโหลดข้อมูลสินค้าจาก Firebase...</p>
+            </div>
+
+            <!-- Dynamic Product Container -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300 p-8 mt-4">
+                <i class="fa-solid fa-box-open text-4xl text-gray-300 mb-3"></i>
+                <p class="text-gray-500 font-medium">ยังไม่มีสินค้าในระบบ</p>
+                <p class="text-gray-400 text-xs mt-1">ไปที่แท็บ "หลังบ้าน & สถิติ" เพื่อเพิ่มสินค้าชิ้นแรกของคุณได้เลย</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== VIEW 2: ADMIN PANEL & ANALYTICS ==================== -->
+    <div id="view-admin" class="hidden flex-col flex-grow max-w-4xl mx-auto px-4 py-8 w-full space-y-8">
+        
+        <!-- SECTION A: Analytics Overview (สถิติภาพรวม) -->
+        <div class="bg-gradient-to-br from-gray-900 to-black text-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-red-500"></i> สถิติยอดคลิกภาพรวม
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-800/80 border border-gray-700 rounded-xl p-4 text-center">
+                    <p class="text-xs text-gray-400 mb-1">จำนวนสินค้าทั้งหมด</p>
+                    <p id="stat-total-products" class="text-2xl font-bold text-white">0</p>
+                </div>
+                <div class="bg-gray-800/80 border border-gray-700 rounded-xl p-4 text-center">
+                    <p class="text-xs text-gray-400 mb-1">ยอดคนคลิกดูสินค้าสะสม</p>
+                    <p id="stat-total-clicks" class="text-2xl font-bold text-red-400">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION B: Add Product Form (ฟอร์มเพิ่มสินค้า) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-red-500"></i> เพิ่มสินค้าใหม่เข้าร้าน
+            </h2>
+            <form id="product-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อสินค้า</label>
+                    <input type="text" id="prod-name" required placeholder="เช่น เสื้อกันหนาวสไตล์เกาหลี" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ราคา (บาท)</label>
+                        <input type="number" id="prod-price" required placeholder="290" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ลิงก์รูปภาพสินค้า (URL รูปภาพ)</label>
+                        <input type="url" id="prod-image" required placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">ลิงก์สินค้า TikTok (TikTok Shop URL)</label>
+                    <input type="url" id="prod-link" required placeholder="https://vt.tiktok.com/..." class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">คำอธิบายสั้นๆ</label>
+                    <textarea id="prod-desc" rows="2" placeholder="รายละเอียดหรือจุดเด่น..." class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-lg text-sm transition shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus"></i> บันทึกและแสดงผลทันที
+                </button>
+            </form>
+        </div>
+
+        <!-- SECTION C: Manage & Click Stats (จัดการสินค้าและเช็กยอดคลิกรายชิ้น) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-base font-bold text-gray-900 mb-4">สถิติและจัดการสินค้าแยกตามรายการ</h3>
+            <div id="admin-product-list" class="space-y-3"></div>
+        </div>
+
+        <!-- SECTION D: Guide to drive traffic (วิธีดึงคนให้เข้ามาดูเว็บ) -->
+        <div class="bg-red-50 border border-red-100 rounded-2xl p-6 text-sm text-gray-700">
+            <h3 class="font-bold text-red-600 text-base mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-bullhorn"></i> วิธีโปรโมทเว็บให้คนเข้ามาดูและคลิกซื้อเยอะๆ
+            </h3>
+            <ul class="list-disc pl-5 space-y-1.5 text-xs md:text-sm text-gray-600">
+                <li><b>ปักหมุดลิงก์หน้าโปรไฟล์ TikTok (Bio):</b> คัดลอก URL เว็บไซต์ของคุณ (จาก GitHub Pages หรือ Vercel) ไปใส่ไว้ที่ช่องประวัติส่วนตัวบน TikTok</li>
+                <li><b>แปะลิงก์ในคอมเมนต์วิดีโอรีวิว:</b> เวลาลงคลิปรีวิวสินค้าใน TikTok ให้บอกผู้ชมว่า "พิกัดสินค้าจิ้มลิงก์หน้าโปรไฟล์ได้เลยครับ"</li>
+                <li><b>แชร์ลงกลุ่ม Facebook หรือ Social Media อื่นๆ:</b> แชร์ลิงก์หน้าเว็บรวมสินค้าของคุณไปยังแพลตฟอร์มอื่นเพื่อดึงทราฟฟิกเข้ามา</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto py-6 text-center text-xs text-gray-400">
+        <p>&copy; 2026 TikTok Store Manager. Powered by Firebase Firestore.</p>
+    </footer>
+
+    <!-- Firebase SDK & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ==========================================
+        // ⚙️ ตั้งค่า Firebase ของคุณที่นี่
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Switch Tabs UI
+        window.switchTab = function(tab) {
+            const storeView = document.getElementById('view-store');
+            const adminView = document.getElementById('view-admin');
+            const btnStore = document.getElementById('btn-store');
+            const btnAdmin = document.getElementById('btn-admin');
+
+            if (tab === 'store') {
+                storeView.classList.remove('hidden');
+                storeView.classList.add('flex');
+                adminView.classList.remove('flex');
+                adminView.classList.add('hidden');
+                btnStore.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-red-600 text-white transition";
+                btnAdmin.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition";
+            } else {
+                adminView.classList.remove('hidden');
+                adminView.classList.add('flex');
+                storeView.classList.remove('flex');
+                storeView.classList.add('hidden');
+                btnAdmin.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-red-600 text-white transition";
+                btnStore.className = "px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition";
+            }
+        }
+
+        // Realtime Data Sync from Firebase
+        const productsRef = collection(db, "tiktok_products");
+
+        onSnapshot(productsRef, (snapshot) => {
+            const productGrid = document.getElementById('product-grid');
+            const adminList = document.getElementById('admin-product-list');
+            const emptyState = document.getElementById('empty-state');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const productCount = document.getElementById('product-count');
+            const statTotalProducts = document.getElementById('stat-total-products');
+            const statTotalClicks = document.getElementById('stat-total-clicks');
+
+            productGrid.innerHTML = '';
+            adminList.innerHTML = '';
+            loadingSpinner.style.display = 'none';
+
+            let count = 0;
+            let totalClicks = 0;
+
+            if (snapshot.empty) {
+                emptyState.classList.remove('hidden');
+                productCount.innerText = "0 รายการ";
+                statTotalProducts.innerText = "0";
+                statTotalClicks.innerText = "0";
+            } else {
+                emptyState.classList.add('hidden');
+                snapshot.forEach((docSnap) => {
+                    count++;
+                    const p = docSnap.data();
+                    const id = docSnap.id;
+                    const clicks = p.clicks || 0;
+                    totalClicks += clicks;
+
+                    // 1. Render Storefront Card
+                    productGrid.innerHTML += `
+                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
+                            <div class="h-48 bg-gray-100 overflow-hidden relative">
+                                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">
+                                <span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-medium">TikTok Shop</span>
+                            </div>
+                            <div class="p-4 flex flex-col flex-grow">
+                                <h4 class="font-bold text-gray-900 mb-1 text-sm md:text-base">${p.name}</h4>
+                                <p class="text-gray-500 text-xs mb-3 line-clamp-2">${p.desc || '-'}</p>
+                                <div class="mt-auto flex items-center justify-between pt-2 border-t border-gray-50">
+                                    <span class="text-red-600 font-bold text-base md:text-lg">฿${Number(p.price).toLocaleString()}</span>
+                                    <button onclick="trackClick('${id}', '${p.link}')" class="bg-black hover:bg-gray-800 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer">
+                                        <i class="fa-solid fa-cart-shopping"></i> สั่งซื้อ TikTok
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // 2. Render Admin Stat & Management List
+                    adminList.innerHTML += `
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-gray-50 border border-gray-200 p-3.5 rounded-xl text-sm gap-3">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg flex-shrink-0">
+                                <div class="truncate">
+                                    <p class="font-semibold text-gray-800 truncate">${p.name}</p>
+                                    <p class="text-xs text-gray-500">฿${p.price} | ยอดคลิก: <span class="text-red-600 font-bold">${clicks}</span> ครั้ง</p>
+                                </div>
+                            </div>
+                            <button onclick="deleteProduct('${id}')" class="self-end sm:self-auto bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1">
+                                <i class="fa-solid fa-trash"></i> ลบสินค้า
+                            </button>
+                        </div>
+                    `;
+                });
+
+                productCount.innerText = `${count} รายการ`;
+                statTotalProducts.innerText = count;
+                statTotalClicks.innerText = totalClicks;
+            }
+        });
+
+        // Track Click Function (นับยอดคลิก + พาไปลิงก์ TikTok)
+        window.trackClick = async function(id, url) {
+            try {
+                const productRef = doc(db, "tiktok_products", id);
+                await updateDoc(productRef, {
+                    clicks: increment(1)
+                });
+            } catch (error) {
+                console.error("Error updating click count: ", error);
+            }
+            // เปิดลิงก์ TikTok ในแท็บใหม่ทันที
+            window.open(url, '_blank');
+        }
+
+        // Add Product Form Handler
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...`;
+
+            try {
+                await addDoc(collection(db, "tiktok_products"), {
+                    name: document.getElementById('prod-name').value,
+                    price: document.getElementById('prod-price').value,
+                    image: document.getElementById('prod-image').value,
+                    link: document.getElementById('prod-link').value,
+                    desc: document.getElementById('prod-desc').value,
+                    clicks: 0, // เริ่มต้นยอดคลิกเป็น 0
+                    createdAt: new Date()
+                });
+
+                document.getElementById('product-form').reset();
+                alert("เพิ่มสินค้าสำเร็จ! ข้อมูลจะปรากฏที่หน้าหลักทันที");
+                switchTab('store');
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("เกิดข้อผิดพลาด กรุณาตรวจสอบการตั้งค่า Firebase");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-plus"></i> บันทึกและแสดงผลทันที`;
+            }
+        });
+
+        // Delete Product Function
+        window.deleteProduct = async function(id) {
+            if (confirm("คุณต้องการลบสินค้านี้ใช่หรือไม่?")) {
+                try {
+                    await deleteDoc(doc(db, "tiktok_products", id));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    alert("ไม่สามารถลบสินค้าได้");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
