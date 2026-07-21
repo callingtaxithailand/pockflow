@@ -1,119 +1,126 @@
+slides:TikTok Store & Admin Panel:tiktok_store_firebase.html
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ร้านค้า TikTok ของฉัน</title>
-    <!-- Tailwind CSS สำหรับดีไซน์ที่รวดเร็วและสวยงาม -->
+    <title>TikTok Shop & Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Google Fonts (Prompt) -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Prompt', sans-serif; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
-    <!-- Header / Navbar -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-black flex items-center gap-2">
-                <span class="bg-black text-white px-2 py-1 rounded text-sm">TikTok</span> ร้านค้ายอดฮิต
-            </h1>
-            <a href="#products" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium transition shadow-md">
-                ดูสินค้าทั้งหมด
-            </a>
+    <!-- Top Navigation Switcher -->
+    <nav class="bg-black text-white px-4 py-3 flex justify-between items-center shadow-md">
+        <div class="max-w-6xl mx-auto w-full flex justify-between items-center">
+            <span class="font-bold tracking-wider flex items-center gap-2">
+                <i class="fa-brands fa-tiktok"></i> TikTok Store Manager
+            </span>
+            <div class="flex gap-2">
+                <button onclick="switchTab('store')" id="btn-store" class="px-4 py-1.5 rounded-lg text-sm font-medium bg-red-600 text-white transition">หน้าหลัก (ร้านค้า)</button>
+                <button onclick="switchTab('admin')" id="btn-admin" class="px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition">หลังบ้าน (เพิ่มสินค้า)</button>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-gray-900 to-black text-white py-12 px-4 text-center">
-        <div class="max-w-2xl mx-auto">
-            <h2 class="text-3xl font-bold mb-4">สินค้าแนะนำจาก TikTok</h2>
-            <p class="text-gray-300 text-sm md:text-base mb-6">
-                รวมสินค้ายอดฮิต รีวิวแน่น ส่งตรงจาก TikTok Shop กดสั่งซื้อง่าย ปลอดภัย ได้ของชัวร์!
-            </p>
-        </div>
-    </section>
+    <!-- ==================== VIEW 1: STOREFRONT ==================== -->
+    <div id="view-store" class="flex flex-col flex-grow">
+        <!-- Hero Section -->
+        <header class="bg-gradient-to-r from-gray-900 to-black text-white py-12 px-4 text-center">
+            <div class="max-w-2xl mx-auto">
+                <h1 class="text-3xl font-bold mb-3">สินค้าฮิต รีวิวแน่นจาก TikTok</h1>
+                <p class="text-gray-400 text-sm md:text-base">กดสั่งซื้อสินค้าง่ายๆ ส่งตรงจาก TikTok Shop ของแท้ 100%</p>
+            </div>
+        </header>
 
-    <!-- Product Grid Section -->
-    <main id="products" class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
-        <h3 class="text-xl font-bold mb-6 text-gray-900 border-b pb-2">รายการสินค้า</h3>
-        
-        <!-- Grid แสดงสินค้า -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <!-- Product Grid -->
+        <main class="max-w-5xl mx-auto px-4 py-10 flex-grow w-full">
+            <h2 class="text-xl font-bold mb-6 text-gray-900 border-b pb-2 flex items-center justify-between">
+                <span>รายการสินค้าทั้งหมด</span>
+                <span id="product-count" class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">0 รายการ</span>
+            </h2>
 
-            <!-- สินค้าที่ 1 -->
-            <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
-                <div class="h-48 bg-gray-200 overflow-hidden relative">
-                    <!-- รูปสินค้า (เปลี่ยนลิงก์ภาพตรง src ได้) -->
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" alt="สินค้า" class="w-full h-full object-cover">
-                    <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">ฮิตใน TikTok</span>
-                </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <h4 class="font-bold text-gray-900 mb-1">ชื่อสินค้าตัวที่ 1 (ตัวอย่าง)</h4>
-                    <p class="text-gray-500 text-xs mb-3 line-clamp-2">คำอธิบายสั้นๆ ของสินค้า คุณภาพดี การันตีจากยอดขายใน TikTok</p>
-                    <div class="mt-auto flex items-center justify-between">
-                        <span class="text-red-500 font-bold text-lg">฿290</span>
-                        <!-- ปุ่มไปลิงก์ TikTok -->
-                        <a href="ใส่ลิงก์สินค้า_TikTok_ของคุณตรงนี้" target="_blank" class="bg-black hover:bg-gray-800 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1">
-                            สั่งซื้อทาง TikTok
-                        </a>
-                    </div>
-                </div>
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="text-center py-12">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-red-500 mb-2"></i>
+                <p class="text-gray-500 text-sm">กำลังโหลดข้อมูลสินค้าจาก Firebase...</p>
             </div>
 
-            <!-- สินค้าที่ 2 -->
-            <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
-                <div class="h-48 bg-gray-200 overflow-hidden relative">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60" alt="สินค้า" class="w-full h-full object-cover">
-                    <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">ฮิตใน TikTok</span>
-                </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <h4 class="font-bold text-gray-900 mb-1">ชื่อสินค้าตัวที่ 2 (ตัวอย่าง)</h4>
-                    <p class="text-gray-500 text-xs mb-3 line-clamp-2">คำอธิบายสั้นๆ ของสินค้า รายละเอียดฟังก์ชันการใช้งานต่างๆ</p>
-                    <div class="mt-auto flex items-center justify-between">
-                        <span class="text-red-500 font-bold text-lg">฿450</span>
-                        <a href="ใส่ลิงก์สินค้า_TikTok_ของคุณตรงนี้" target="_blank" class="bg-black hover:bg-gray-800 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1">
-                            สั่งซื้อทาง TikTok
-                        </a>
-                    </div>
-                </div>
+            <!-- Dynamic Product Container -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <!-- ข้อมูลจะถูกเติมเข้ามาผ่าน JavaScript ตรงนี้ -->
             </div>
 
-            <!-- สินค้าที่ 3 -->
-            <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
-                <div class="h-48 bg-gray-200 overflow-hidden relative">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60" alt="สินค้า" class="w-full h-full object-cover">
-                    <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">ฮิตใน TikTok</span>
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300 p-8 mt-4">
+                <i class="fa-solid fa-box-open text-4xl text-gray-300 mb-3"></i>
+                <p class="text-gray-500 font-medium">ยังไม่มีสินค้าในระบบ</p>
+                <p class="text-gray-400 text-xs mt-1">ไปที่แท็บ "หลังบ้าน (เพิ่มสินค้า)" เพื่อเพิ่มลิงก์สินค้า TikTok ของคุณได้เลย</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== VIEW 2: ADMIN PANEL ==================== -->
+    <div id="view-admin" class="hidden flex-col flex-grow max-w-4xl mx-auto px-4 py-8 w-full">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-red-500"></i> เพิ่มสินค้าใหม่เข้าร้าน
+            </h2>
+            <form id="product-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อสินค้า</label>
+                    <input type="text" id="prod-name" required placeholder="เช่น เสื้อกันหนาวสไตล์เกาหลี รีวิว 1 ล้านวิว" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
                 </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <h4 class="font-bold text-gray-900 mb-1">ชื่อสินค้าตัวที่ 3 (ตัวอย่าง)</h4>
-                    <p class="text-gray-500 text-xs mb-3 line-clamp-2">คำอธิบายสั้นๆ ของสินค้า ยอดรีวิว 5 ดาวเพียบ</p>
-                    <div class="mt-auto flex items-center justify-between">
-                        <span class="text-red-500 font-bold text-lg">฿590</span>
-                        <a href="ใส่ลิงก์สินค้า_TikTok_ของคุณตรงนี้" target="_blank" class="bg-black hover:bg-gray-800 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1">
-                            สั่งซื้อทาง TikTok
-                        </a>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ราคา (บาท)</label>
+                        <input type="number" id="prod-price" required placeholder="290" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ลิงก์รูปภาพสินค้า (URL รูปภาพ)</label>
+                        <input type="url" id="prod-image" required placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
                     </div>
                 </div>
-            </div>
-
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">ลิงก์สินค้า TikTok (TikTok Shop URL)</label>
+                    <input type="url" id="prod-link" required placeholder="https://vt.tiktok.com/..." class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">คำอธิบายสั้นๆ</label>
+                    <textarea id="prod-desc" rows="2" placeholder="รายละเอียดหรือจุดเด่นของสินค้า..." class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-lg text-sm transition shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus"></i> บันทึกและแสดงผลหน้าเว็บทันที
+                </button>
+            </form>
         </div>
-    </main>
+
+        <!-- Admin Product List Management -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">จัดการสินค้าที่มีอยู่</h3>
+            <div id="admin-product-list" class="space-y-3">
+                <!-- รายการสำหรับลบสินค้า -->
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
-    <footer class="bg-white border-t mt-12 py-6 text-center text-xs text-gray-400">
-        <p>&copy; 2026 TikTok Store. Powered by GitHub & Firebase.</p>
+    <footer class="bg-white border-t mt-auto py-6 text-center text-xs text-gray-400">
+        <p>&copy; 2026 TikTok Store Manager. Powered by Firebase Firestore.</p>
     </footer>
 
-    <!-- Firebase SDK (สำหรับเชื่อมต่อฐานข้อมูลในอนาคต หากต้องการดึงสินค้าจาก Firestore) -->
+    <!-- Firebase SDK & App Logic -->
     <script type="module">
-        // นำเข้า Firebase SDK ตามต้องการได้ที่นี่
-        // ตัวอย่างการตั้งค่า Firebase พื้นฐาน
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // ==========================================
+        // ⚙️ ตั้งค่า Firebase ของคุณที่นี่ (นำค่าจาก Console มาใส่)
+        // ==========================================
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -126,7 +133,139 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        console.log("Firebase Connected Successfully!");
+
+        // UI Tabs Switcher
+        window.switchTab = function(tab) {
+            const storeView = document.getElementById('view-store');
+            const adminView = document.getElementById('view-admin');
+            const btnStore = document.getElementById('btn-store');
+            const btnAdmin = document.getElementById('btn-admin');
+
+            if (tab === 'store') {
+                storeView.classList.remove('hidden');
+                storeView.classList.add('flex');
+                adminView.classList.remove('flex');
+                adminView.classList.add('hidden');
+                btnStore.className = "px-4 py-1.5 rounded-lg text-sm font-medium bg-red-600 text-white transition";
+                btnAdmin.className = "px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition";
+            } else {
+                adminView.classList.remove('hidden');
+                adminView.classList.add('flex');
+                storeView.classList.remove('flex');
+                storeView.classList.add('hidden');
+                btnAdmin.className = "px-4 py-1.5 rounded-lg text-sm font-medium bg-red-600 text-white transition";
+                btnStore.className = "px-4 py-1.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition";
+            }
+        }
+
+        // Realtime Fetch Products from Firestore
+        const productsRef = collection(db, "tiktok_products");
+        
+        onSnapshot(productsRef, (snapshot) => {
+            const productGrid = document.getElementById('product-grid');
+            const adminList = document.getElementById('admin-product-list');
+            const emptyState = document.getElementById('empty-state');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const productCount = document.getElementById('product-count');
+
+            productGrid.innerHTML = '';
+            adminList.innerHTML = '';
+            loadingSpinner.style.display = 'none';
+
+            let count = 0;
+            if (snapshot.empty) {
+                emptyState.classList.remove('hidden');
+                productCount.innerText = "0 รายการ";
+            } else {
+                emptyState.classList.add('hidden');
+                snapshot.forEach((docSnap) => {
+                    count++;
+                    const p = docSnap.data();
+                    const id = docSnap.id;
+
+                    // Render Storefront Card
+                    productGrid.innerHTML += `
+                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
+                            <div class="h-48 bg-gray-100 overflow-hidden relative">
+                                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">
+                                <span class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-medium">TikTok Shop</span>
+                            </div>
+                            <div class="p-4 flex flex-col flex-grow">
+                                <h4 class="font-bold text-gray-900 mb-1 text-sm md:text-base">${p.name}</h4>
+                                <p class="text-gray-500 text-xs mb-3 line-clamp-2">${p.desc || '-'}</p>
+                                <div class="mt-auto flex items-center justify-between pt-2 border-t border-gray-50">
+                                    <span class="text-red-600 font-bold text-base md:text-lg">฿${Number(p.price).toLocaleString()}</span>
+                                    <a href="${p.link}" target="_blank" class="bg-black hover:bg-gray-800 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
+                                        <i class="fa-solid fa-cart-shopping"></i> สั่งซื้อ TikTok
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Render Admin Manager List
+                    adminList.innerHTML += `
+                        <div class="flex items-center justify-between bg-gray-50 border border-gray-200 p-3 rounded-xl text-sm">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg flex-shrink-0">
+                                <div class="truncate">
+                                    <p class="font-semibold text-gray-800 truncate">${p.name}</p>
+                                    <p class="text-xs text-gray-500">฿${p.price} | <a href="${p.link}" target="_blank" class="text-blue-600 underline">ลิงก์สินค้า</a></p>
+                                </div>
+                            </div>
+                            <button onclick="deleteProduct('${id}')" class="bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1.5 rounded-lg text-xs font-medium transition flex-shrink-0 flex items-center gap-1">
+                                <i class="fa-solid fa-trash"></i> ลบ
+                            </button>
+                        </div>
+                    `;
+                });
+                productCount.innerText = `${count} รายการ`;
+            }
+        });
+
+        // Add Product Form Handler
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...`;
+
+            try {
+                await addDoc(collection(db, "tiktok_products"), {
+                    name: document.getElementById('prod-name').value,
+                    price: document.getElementById('prod-price').value,
+                    image: document.getElementById('prod-image').value,
+                    link: document.getElementById('prod-link').value,
+                    desc: document.getElementById('prod-desc').value,
+                    createdAt: new Date()
+                });
+
+                document.getElementById('product-form').reset();
+                alert("เพิ่มสินค้าสำเร็จ! ข้อมูลจะปรากฏที่หน้าหลักทันที");
+                switchTab('store'); // สลับกลับมาดูหน้าร้านค้าอัตโนมัติ
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาตรวจสอบการตั้งค่า Firebase");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-plus"></i> บันทึกและแสดงผลหน้าเว็บทันที`;
+            }
+        });
+
+        // Delete Product Global Function
+        window.deleteProduct = async function(id) {
+            if (confirm("คุณต้องการลบสินค้านี้ออกจากระบบใช่หรือไม่?")) {
+                try {
+                    await deleteDoc(doc(db, "tiktok_products", id));
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    alert("ไม่สามารถลบสินค้าได้");
+                }
+            }
+        }
     </script>
 </body>
 </html>
+```eof
+
+Your slide deck on TikTok Store & Admin Panel is ready! Feel free to take a look and let me know if you'd like to make any edits.
