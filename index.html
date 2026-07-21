@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ร้านค้า TikTok ของฉัน</title>
+    <!-- Tailwind CSS สำหรับดีไซน์ที่รวดเร็วและสวยงาม -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts (Prompt) -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-black flex items-center gap-2">
+                <span class="bg-black text-white px-2 py-1 rounded text-sm">TikTok</span> ร้านค้ายอดฮิต
+            </h1>
+            <a href="#products" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium transition shadow-md">
+                ดูสินค้าทั้งหมด
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-gray-900 to-black text-white py-12 px-4 text-center">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold mb-4">สินค้าแนะนำจาก TikTok</h2>
+            <p class="text-gray-300 text-sm md:text-base mb-6">
+                รวมสินค้ายอดฮิต รีวิวแน่น ส่งตรงจาก TikTok Shop กดสั่งซื้อง่าย ปลอดภัย ได้ของชัวร์!
+            </p>
+        </div>
+    </section>
+
+    <!-- Product Grid Section -->
+    <main id="products" class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
+        <h3 class="text-xl font-bold mb-6 text-gray-900 border-b pb-2">รายการสินค้า</h3>
+        
+        <!-- Grid แสดงสินค้า -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            <!-- สินค้าที่ 1 -->
+            <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <!-- รูปสินค้า (เปลี่ยนลิงก์ภาพตรง src ได้) -->
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60" alt="สินค้า" class="w-full h-full object-cover">
+                    <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">ฮิตใน TikTok</span>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h4 class="font-bold text-gray-900 mb-1">ชื่อสินค้าตัวที่ 1 (ตัวอย่าง)</h4>
+                    <p class="text-gray-500 text-xs mb-3 line-clamp-2">คำอธิบายสั้นๆ ของสินค้า คุณภาพดี การันตีจากยอดขายใน TikTok</p>
+                    <div class="mt-auto flex items-center justify-between">
+                        <span class="text-red-500 font-bold text-lg">฿290</span>
+                        <!-- ปุ่มไปลิงก์ TikTok -->
+                        <a href="ใส่ลิงก์สินค้า_TikTok_ของคุณตรงนี้" target="_blank" class="bg-black hover:bg-gray-800 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1">
+                            สั่งซื้อทาง TikTok
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- สินค้าที่ 2 -->
+            <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60" alt="สินค้า" class="w-full h-full object-cover">
+                    <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">ฮิตใน TikTok</span>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h4 class="font-bold text-gray-900 mb-1">ชื่อสินค้าตัวที่ 2 (ตัวอย่าง)</h4>
+                    <p class="text-gray-500 text-xs mb-3 line-clamp-2">คำอธิบายสั้นๆ ของสินค้า รายละเอียดฟังก์ชันการใช้งานต่างๆ</p>
+                    <div class="mt-auto flex items-center justify-between">
+                        <span class="text-red-500 font-bold text-lg">฿450</span>
+                        <a href="ใส่ลิงก์สินค้า_TikTok_ของคุณตรงนี้" target="_blank" class="bg-black hover:bg-gray-800 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1">
+                            สั่งซื้อทาง TikTok
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- สินค้าที่ 3 -->
+            <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 flex flex-col">
+                <div class="h-48 bg-gray-200 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop&q=60" alt="สินค้า" class="w-full h-full object-cover">
+                    <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">ฮิตใน TikTok</span>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <h4 class="font-bold text-gray-900 mb-1">ชื่อสินค้าตัวที่ 3 (ตัวอย่าง)</h4>
+                    <p class="text-gray-500 text-xs mb-3 line-clamp-2">คำอธิบายสั้นๆ ของสินค้า ยอดรีวิว 5 ดาวเพียบ</p>
+                    <div class="mt-auto flex items-center justify-between">
+                        <span class="text-red-500 font-bold text-lg">฿590</span>
+                        <a href="ใส่ลิงก์สินค้า_TikTok_ของคุณตรงนี้" target="_blank" class="bg-black hover:bg-gray-800 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1">
+                            สั่งซื้อทาง TikTok
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12 py-6 text-center text-xs text-gray-400">
+        <p>&copy; 2026 TikTok Store. Powered by GitHub & Firebase.</p>
+    </footer>
+
+    <!-- Firebase SDK (สำหรับเชื่อมต่อฐานข้อมูลในอนาคต หากต้องการดึงสินค้าจาก Firestore) -->
+    <script type="module">
+        // นำเข้า Firebase SDK ตามต้องการได้ที่นี่
+        // ตัวอย่างการตั้งค่า Firebase พื้นฐาน
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        console.log("Firebase Connected Successfully!");
+    </script>
+</body>
+</html>
